@@ -1,0 +1,28 @@
+
+[
+    {
+        "model": "botiga.iva",
+        "fields": {
+            "id": 1,
+            "nom": "IVA general",
+            "percentatge": 21
+        }
+    },
+    {
+        "model": "botiga.iva",
+        "fields": {
+            "id": 2,
+            "nom": "IVA reducido",
+            "percentatge": 10
+        }
+
+    },
+    {
+        "model": "botiga.iva",
+        "fields": {
+            "id": 3,
+            "nom": "IVA superreducido",
+            "percentatge": 4
+        }
+    }
+]

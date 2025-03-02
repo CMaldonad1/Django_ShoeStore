@@ -1,0 +1,31 @@
+@main_color: #96f1c5;
+@secondary_color: #1d1e18;
+@third_color: rgb(175, 17, 196);
+html{
+    body{
+        background-color: @main_color;
+        color: @secondary_color;
+        header{
+            background-color: @secondary_color;
+            .container{
+                .basket{
+                    position:relative;
+                    height:30px;
+                    color:whitesmoke;
+                    .check{
+                        display: flex;
+                        background-color: @third_color;
+                        justify-content: center;
+                        text-align: center;
+                        align-items: center;
+                        border-radius: 50%;
+                        width: 20px;
+                        height: 20px;
+                        margin-top:-30px;
+                        margin-left: 20px;
+                    }
+                }
+            }
+        }
+    }
+}
