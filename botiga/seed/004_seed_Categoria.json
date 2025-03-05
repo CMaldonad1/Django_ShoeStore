@@ -1,0 +1,66 @@
+
+[
+    {
+        "model": "botiga.categoria",
+        "fields": {
+            "id": 1,
+            "nom": "Streetwear"
+        }
+    }, 
+    {
+        "model": "botiga.categoria",
+        "fields": {
+            "id": 2,
+            "nom": "Sport"
+        }
+    },
+    {
+        "model": "botiga.categoria",
+        "fields": {
+            "id": 3,
+            "nom": "Indoor",
+            "jerarquia": 2
+        }
+    },
+    {
+        "model": "botiga.categoria",
+        "fields": {
+            "id": 4,
+            "nom": "Outdoor",
+            "jerarquia": 2
+        }
+    },
+    {
+        "model": "botiga.categoria",
+        "fields": {
+            "id": 5,
+            "nom": "Running",
+            "jerarquia": 4
+        }
+    },
+    {
+        "model": "botiga.categoria",
+        "fields": {
+            "id": 6,
+            "nom": "Trekking",
+            "jerarquia": 4
+        }
+    },
+    {
+        "model": "botiga.categoria",
+        "fields": {
+            "id": 7,
+            "nom": "Padel",
+            "jerarquia": 3
+        }
+    },
+    {
+        "model": "botiga.categoria",
+        "fields": {
+            "id": 7,
+            "nom": "Basket",
+            "jerarquia": 3
+        }
+    }
+
+]

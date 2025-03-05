@@ -1,0 +1,60 @@
+
+[
+    {
+        "model": "botiga.catprod",
+        "fields": {
+            "id": 1,
+            "prod": 1,
+            "categ": 1
+        }
+    }, 
+    {
+        "model": "botiga.catprod",
+        "fields": {
+            "id": 2,
+            "prod": 1,
+            "categ": 5
+        }
+    },
+    {
+        "model": "botiga.catprod",
+        "fields": {
+            "id": 3,
+            "prod": 2,
+            "categ": 6
+        }
+    },
+    {
+        "model": "botiga.catprod",
+        "fields": {
+            "id": 4,
+            "prod": 3,
+            "categ": 1
+        }
+    },
+    {
+        "model": "botiga.catprod",
+        "fields": {
+            "id": 5,
+            "prod": 4,
+            "categ": 5
+        }
+    },
+    {
+        "model": "botiga.catprod",
+        "fields": {
+            "id": 6,
+            "prod": 4,
+            "categ": 7
+        }
+    },
+    {
+        "model": "botiga.catprod",
+        "fields": {
+            "id": 7,
+            "prod": 5,
+            "categ": 7
+        }
+    }
+
+]

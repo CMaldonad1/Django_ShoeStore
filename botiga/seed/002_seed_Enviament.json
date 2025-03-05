@@ -1,0 +1,51 @@
+
+[
+    {
+        "model": "botiga.enviament",
+        "fields": {
+            "id": 1,
+            "nom": "Correos",
+            "dies_min": 4,
+            "dies_max": 10,
+            "cost": 6.70,
+            "preu_min": 40,
+            "iva": 1
+        }
+    },
+    {
+        "model": "botiga.enviament",
+        "fields": {
+            "id": 2,
+            "nom": "Seur",
+            "dies_min": 2,
+            "dies_max": 3,
+            "cost": 16.40,
+            "preu_min": 90,
+            "iva": 1
+        }
+    },
+    {
+        "model": "botiga.enviament",
+        "fields": {
+            "id": 3,
+            "nom": "MRW",
+            "dies_min": 2,
+            "dies_max": 5,
+            "cost": 12.5,
+            "preu_min": 85,
+            "iva": 1
+        }
+    },
+    {
+        "model": "botiga.enviament",
+        "fields": {
+            "id": 4,
+            "nom": "UPS",
+            "dies_min": 1,
+            "dies_max": 1,
+            "cost": 25,
+            "preu_min": 150,
+            "iva": 1
+        }
+    }
+]

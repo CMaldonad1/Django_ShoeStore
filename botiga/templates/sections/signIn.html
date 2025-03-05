@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="formul col-11 col-md-4 flex-wrap justify-content-evenly align-items-center">
+    <h1>{{ head }}</h1> 
+    <form  class="form_info" method="POST">
+        {% csrf_token %} 
+        {{ form.as_p }}
+        <button class="btn_normal btn">Alta Perfil</button>
+    </form>
+</div>
+{% endblock %}

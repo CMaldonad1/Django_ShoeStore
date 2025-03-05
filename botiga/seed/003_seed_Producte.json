@@ -1,0 +1,52 @@
+[
+    {
+        "model": "botiga.producte",
+        "fields": {
+            "id": 1,
+            "nom": "KD900",
+            "marca": "Kiprun",
+            "descripcio": "Tus aliadas en competiciones para mejorar tus resultados en carretera y en pista en distancias de hasta 10 kilómetros.",
+            "iva": 1
+        }
+    }, 
+    {
+        "model": "botiga.producte",
+        "fields": {
+            "id": 2,
+            "nom": "NH50",
+            "marca": "Quechua",
+            "descripcio": "Estas cómodas zapatillas NH50 han sido diseñadas para la iniciación a los paseos por llanuras, bosques y media montaña con tiempo seco.",
+            "iva": 1
+        }
+    },
+    {
+        "model": "botiga.producte",
+        "fields": {
+            "id": 3,
+            "nom": "Advantage Base 2.0",
+            "marca": "Adidas",
+            "descripcio": "Estas zapatillas son ideales para caminar por la ciudad.",
+            "iva": 1
+        }
+    },
+    {
+        "model": "botiga.producte",
+        "fields": {
+            "id": 4,
+            "nom": "Velocity Nitro 3",
+            "marca":"Puma",
+            "descripcio": "Unas zapatillas de running neutras todo en uno para cualquier distancia.",
+            "iva": 1
+        }
+    },
+    {
+        "model": "botiga.producte",
+        "fields": {
+            "id": 5,
+            "nom": "PS Stab roja",
+            "marca": "Kuikma",
+            "descripcio": "Ideal para los jugadores de pádel que buscan una gran estabilidad y una comodidad óptima.",
+            "iva": 1
+        }
+    }
+]

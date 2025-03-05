@@ -1,0 +1,114 @@
+
+[
+    {
+        "model": "botiga.variant",
+        "fields": {
+            "id": 1,
+            "nom": "Azul Vaquero",
+            "preu": 19.99,
+            "dto": 0,
+            "prod": 1
+        }
+    }, 
+    {
+        "model": "botiga.variant",
+        "fields": {
+            "id": 2,
+            "nom": "Amarillo Limón Palido",
+            "preu": 37.99,
+            "dto": 0.21,
+            "prod": 1
+        }
+    },
+    {
+        "model": "botiga.variant",
+        "fields": {
+            "id": 3,
+            "nom": "Azul Asfalto",
+            "preu": 29.99,
+            "dto": 0,
+            "prod": 1
+        }
+    },
+    {
+        "model": "botiga.variant",
+        "fields": {
+            "id": 4,
+            "nom": "Verde Ahumado",
+            "preu": 13.99,
+            "dto": 0,
+            "prod": 2
+        }
+    },
+    {
+        "model": "botiga.variant",
+        "fields": {
+            "id": 5,
+            "nom": "Negro Ahumado",
+            "preu": 14.99,
+            "dto": 0.1,
+            "prod": 2
+        }
+    },
+    {
+        "model": "botiga.variant",
+        "fields": {
+            "id": 6,
+            "nom": "Azul Vaquero",
+            "preu": 19.99,
+            "dto": 0,
+            "prod": 3
+        }
+    },
+    {
+        "model": "botiga.variant",
+        "fields": {
+            "id": 7,
+            "nom": "Negro",
+            "preu": 39.99,
+            "dto": 0,
+            "prod": 3
+        }
+    },
+    {
+        "model": "botiga.variant",
+        "fields": {
+            "id": 7,
+            "nom": "Blanco",
+            "preu": 56.29,
+            "dto": 0,
+            "prod": 3
+        }
+    },
+    {
+        "model": "botiga.variant",
+        "fields": {
+            "id": 8,
+            "nom": "Amarillo",
+            "preu": 93.49,
+            "dto": 0,
+            "prod": 4
+        }
+    },
+    {
+        "model": "botiga.variant",
+        "fields": {
+            "id": 9,
+            "nom": "Rojo Real",
+            "preu": 75.99,
+            "dto": 0,
+            "prod": 5
+        }
+    },
+    {
+        "model": "botiga.variant",
+        "fields": {
+            "id": 9,
+            "nom": "Azul Ceniza",
+            "preu": 75.99,
+            "dto": 0.15,
+            "prod": 5
+        }
+    }
+
+]

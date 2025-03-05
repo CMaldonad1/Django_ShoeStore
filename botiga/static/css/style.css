@@ -1,9 +1,54 @@
+html {
+  height: 100%;
+}
 html body {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
   background-color: #96f1c5;
   color: #1d1e18;
 }
+html body .btn_normal {
+  color: #1d1e18;
+  background-color: #96f1c5;
+}
+html body .btn_normal:hover {
+  color: #96f1c5;
+  background-color: #ca46dc;
+}
+html body .btn_outline {
+  border-color: #96f1c5;
+  color: #96f1c5;
+}
+html body .btn_outline:hover {
+  color: #ca46dc;
+  border-color: #ca46dc;
+}
 html body header {
   background-color: #1d1e18;
+}
+html body header .container .logo {
+  height: 50px;
+  width: 50px;
+}
+html body header .container .logo img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+html body header .container .selected {
+  border-bottom: 3px solid transparent;
+  border-image: linear-gradient(90deg, #1d1e18, #ca46dc, #1d1e18);
+  border-image-slice: 1;
+}
+html body header .container .selected .nav-link {
+  color: #ca46dc;
+}
+html body header .container .nav-link {
+  color: #96f1c5;
+}
+html body header .container .nav-link:hover {
+  color: #ca46dc;
 }
 html body header .container .basket {
   position: relative;
@@ -12,7 +57,8 @@ html body header .container .basket {
 }
 html body header .container .basket .check {
   display: flex;
-  background-color: #af11c4;
+  background-color: #96f1c5;
+  color: #1d1e18;
   justify-content: center;
   text-align: center;
   align-items: center;
@@ -21,4 +67,47 @@ html body header .container .basket .check {
   height: 20px;
   margin-top: -30px;
   margin-left: 20px;
+  font-size: 12px;
+}
+html body header .container .basket:hover {
+  color: #ca46dc;
+}
+html body header .container .basket:hover .check {
+  background-color: #1d1e18;
+  color: #96f1c5;
+  border: 2px solid #ca46dc;
+}
+html body main {
+  overflow: auto;
+  padding-bottom: 180px;
+  height: 80%;
+}
+html body main .formul {
+  height: 500px;
+  width: 60%;
+  color: whitesmoke;
+  margin: 5% auto;
+  display: flex;
+  flex-direction: row;
+  border-radius: 8px;
+  background-color: #1d1e18;
+  box-shadow: 0 0 30px #000000;
+}
+html body main .formul h1 {
+  color: #96f1c5;
+}
+html body main .formul .form_info p {
+  display: flex;
+  flex-direction: column;
+}
+html body main .formul .line {
+  background-color: #ca46dc;
+}
+html body .ftr {
+  background-color: #1d1e18;
+  color: #96f1c5;
+}
+html body .ftr img {
+  width: 30px;
+  height: 30px;
 }
