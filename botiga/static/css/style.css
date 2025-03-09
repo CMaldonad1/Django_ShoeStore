@@ -8,6 +8,12 @@ html body {
   background-color: #96f1c5;
   color: #1d1e18;
 }
+html body .nav-link {
+  color: #96f1c5;
+}
+html body .nav-link:hover {
+  color: #ca46dc;
+}
 html body .btn_normal {
   color: #1d1e18;
   background-color: #96f1c5;
@@ -18,11 +24,17 @@ html body .btn_normal:hover {
 }
 html body .btn_outline {
   border-color: #96f1c5;
+  background-color: transparent;
   color: #96f1c5;
 }
 html body .btn_outline:hover {
   color: #ca46dc;
   border-color: #ca46dc;
+}
+html body .btn_sidebar {
+  border-radius: 5px;
+  height: 30px;
+  width: 20%;
 }
 html body header {
   background-color: #1d1e18;
@@ -40,14 +52,9 @@ html body header .container .selected {
   border-bottom: 3px solid transparent;
   border-image: linear-gradient(90deg, #1d1e18, #ca46dc, #1d1e18);
   border-image-slice: 1;
-}
-html body header .container .selected .nav-link {
   color: #ca46dc;
 }
-html body header .container .nav-link {
-  color: #96f1c5;
-}
-html body header .container .nav-link:hover {
+html body header .container .selected .nav-link {
   color: #ca46dc;
 }
 html body header .container .basket {
@@ -55,7 +62,23 @@ html body header .container .basket {
   height: 30px;
   color: whitesmoke;
 }
-html body header .container .basket .check {
+html body header .container .basket:hover {
+  color: #ca46dc;
+}
+html body header .container .basket:hover .check {
+  background-color: #1d1e18;
+  color: #ca46dc;
+  border: 2px solid #ca46dc;
+}
+html body header .container .bselected {
+  color: #ca46dc !important;
+}
+html body header .container .bselected .check {
+  background-color: #1d1e18;
+  color: #ca46dc;
+  border: 2px solid #ca46dc;
+}
+html body header .container .check {
   display: flex;
   background-color: #96f1c5;
   color: #1d1e18;
@@ -69,18 +92,34 @@ html body header .container .basket .check {
   margin-left: 20px;
   font-size: 12px;
 }
-html body header .container .basket:hover {
-  color: #ca46dc;
-}
-html body header .container .basket:hover .check {
-  background-color: #1d1e18;
-  color: #96f1c5;
-  border: 2px solid #ca46dc;
-}
 html body main {
   overflow: auto;
-  padding-bottom: 180px;
-  height: 80%;
+  padding-bottom: 0px;
+  height: 100%;
+}
+html body main .infobody {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  height: 100%;
+  width: 100%;
+}
+html body main .infobody aside {
+  color: #ca46dc;
+}
+html body main .infobody aside .sidbr {
+  height: 100%;
+  width: 200px;
+  background-color: #1d1e18;
+}
+html body main .infobody aside .sidbr .option {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  height: 30px;
+  justify-content: left;
+  align-items: center;
 }
 html body main .formul {
   height: 500px;

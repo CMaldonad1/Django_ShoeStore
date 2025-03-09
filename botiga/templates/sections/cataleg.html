@@ -1,5 +1,32 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>{{ head }}</h1> 
+<div class="infobody">
+    <aside>
+        {% include 'sections/sidebar.html' %}
+    </aside>
+    <section>
+        <table>
+            <tr>
+                <th>id</th>
+                <th>nom</th>
+                <th>Jerarquia ID</th>
+                <th>Jerarquia</th>
+                <th>Done?</th>
+            </tr>
+        <h1>{{ head }}</h1> 
 
+            {% for t in test %}
+
+            <tr>
+                <td>{{t.id}}</td>
+                <td>{{t.nom}}</td>
+                <td>{{t.count}}</td>
+                <td>{{t.jerarquia}}</td>
+                <td>{{t.jerarquia_id}}</td>
+            </tr>   
+            
+            {% endfor %}
+        </table>
+    </section>
+</div>
 {% endblock %}

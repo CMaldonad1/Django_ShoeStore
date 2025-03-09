@@ -12,6 +12,12 @@ html{
         flex-direction: column;
         background-color: @main_color;
         color: @secondary_color;
+        .nav-link{
+            color: @main_color;
+            &:hover{
+                color: @third_color;
+            }
+        }
         .btn_normal{
             color: @secondary_color;
             background-color: @main_color;
@@ -22,11 +28,17 @@ html{
         }
         .btn_outline{
             border-color: @main_color;
+            background-color: transparent;
             color: @main_color;
             &:hover{
                 color:@third_color;
                 border-color:@third_color;
             }
+        }
+        .btn_sidebar{
+            border-radius: 5px;
+            height: 30px;
+            width: 20%;
         }
         header{
             background-color: @secondary_color;
@@ -44,49 +56,76 @@ html{
                     border-bottom: 3px solid transparent; 
                     border-image: @gradient;
                     border-image-slice: 1;
+                    color: @third_color;
                     .nav-link{
                         color: @third_color;
                     }
                 }  
-                .nav-link{
-                    color: @main_color;
-                    &:hover{
-                        color: @third_color;
-                    }
-                }
                 .basket{
                     position:relative;
                     height:30px;
                     color:@reg_text;
-                    .check{
-                        display: flex;
-                        background-color: @main_color;
-                        color:@secondary_color;
-                        justify-content: center;
-                        text-align: center;
-                        align-items: center;
-                        border-radius: 50%;
-                        width: 20px;
-                        height: 20px;
-                        margin-top:-30px;
-                        margin-left: 20px;
-                        font-size: 12px;
-                    }
                     &:hover{
                         color: @third_color;
                         .check{
                             background-color:@secondary_color;
-                            color:@main_color;
+                            color:@third_color;
                             border: 2px solid @third_color;
                         }
                     }
+                }
+                .bselected{
+                    color: @third_color !important;
+                    .check{
+                        background-color:@secondary_color;
+                        color:@third_color;
+                        border: 2px solid @third_color;
+                    }
+                }
+                .check{
+                    display: flex;
+                    background-color: @main_color;
+                    color:@secondary_color;
+                    justify-content: center;
+                    text-align: center;
+                    align-items: center;
+                    border-radius: 50%;
+                    width: 20px;
+                    height: 20px;
+                    margin-top:-30px;
+                    margin-left: 20px;
+                    font-size: 12px;
                 }
             }
         }
         main{
             overflow: auto;
-            padding-bottom: 180px;
-            height: 80%;
+            padding-bottom: 0px;
+            height: 100%;
+            .infobody{
+                position: relative;
+                display: flex;
+                flex-wrap: wrap;
+                flex-direction: row;
+                height: 100%;
+                width: 100%;
+                aside{
+                    color:@third_color;
+                    .sidbr{
+                        height:100%;
+                        width:200px;
+                        background-color: @secondary_color;
+                        .option{
+                            position:relative;
+                            display:flex;
+                            flex-direction: row;
+                            height:30px;
+                            justify-content: left;
+                            align-items: center;
+                        }
+                    }
+                }
+            }
             .formul{
                 height:500px;
                 width: 60%;
