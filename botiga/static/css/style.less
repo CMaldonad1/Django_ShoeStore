@@ -40,6 +40,11 @@ html{
             height: 30px;
             width: 20%;
         }
+        .boto_menu{
+            border-radius: 5px;
+            height: 30px;
+            width:30px !important;
+        }
         header{
             background-color: @secondary_color;
             .container{
@@ -97,6 +102,7 @@ html{
                     font-size: 12px;
                 }
             }
+
         }
         main{
             overflow: auto;
@@ -105,12 +111,12 @@ html{
             .infobody{
                 position: relative;
                 display: flex;
-                flex-wrap: wrap;
+                flex-wrap: nowrap;
                 flex-direction: row;
                 height: 100%;
                 width: 100%;
                 aside{
-                    color:@third_color;
+                    height:100%;
                     .sidbr{
                         height:100%;
                         width:200px;
@@ -123,6 +129,27 @@ html{
                             justify-content: left;
                             align-items: center;
                         }
+                        .selected{
+                            color:@third_color;
+                            border-color:@third_color;
+                        }
+                    }
+                }
+                section{
+                    display:flex;
+                    flex-direction: column;
+                    height:100%;
+                    width:100%;
+                    .prodcat{
+                        padding:2%;
+                        height:100%;
+                        overflow-x: scroll;
+                        scrollbar-color: @reg_text @secondary_color;
+                        position: relative;
+                        display: flex;
+                        flex-direction: row;
+                        flex-wrap: wrap;
+                        justify-content:flex-start;
                     }
                 }
             }
@@ -159,5 +186,40 @@ html{
             }
         }
 
+    }
+}
+@media screen and (max-width: 760px){
+    html{
+        body{
+            header{
+                .container{
+                    .logo{
+                        height:40px;
+                        width: 40px;
+                        img{
+                            height: 100%;
+                            width: 100%;
+                            object-fit: cover;
+                        }
+                    }
+                }
+            }   
+        }
+    }
+}
+@media screen and (max-width: 500px){
+    html{
+        body{
+            main{
+                .infobody{
+                    aside{
+                        .sidbr{
+                            position: absolute;
+                            z-index:1 ;
+                        }
+                    }
+                }
+            }
+        }
     }
 }

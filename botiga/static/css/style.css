@@ -36,6 +36,11 @@ html body .btn_sidebar {
   height: 30px;
   width: 20%;
 }
+html body .boto_menu {
+  border-radius: 5px;
+  height: 30px;
+  width: 30px !important;
+}
 html body header {
   background-color: #1d1e18;
 }
@@ -100,13 +105,13 @@ html body main {
 html body main .infobody {
   position: relative;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   flex-direction: row;
   height: 100%;
   width: 100%;
 }
 html body main .infobody aside {
-  color: #ca46dc;
+  height: 100%;
 }
 html body main .infobody aside .sidbr {
   height: 100%;
@@ -120,6 +125,27 @@ html body main .infobody aside .sidbr .option {
   height: 30px;
   justify-content: left;
   align-items: center;
+}
+html body main .infobody aside .sidbr .selected {
+  color: #ca46dc;
+  border-color: #ca46dc;
+}
+html body main .infobody section {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+html body main .infobody section .prodcat {
+  padding: 2%;
+  height: 100%;
+  overflow-x: scroll;
+  scrollbar-color: whitesmoke #1d1e18;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
 }
 html body main .formul {
   height: 500px;
@@ -149,4 +175,21 @@ html body .ftr {
 html body .ftr img {
   width: 30px;
   height: 30px;
+}
+@media screen and (max-width: 760px) {
+  html body header .container .logo {
+    height: 40px;
+    width: 40px;
+  }
+  html body header .container .logo img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+  }
+}
+@media screen and (max-width: 500px) {
+  html body main .infobody aside .sidbr {
+    position: absolute;
+    z-index: 1 ;
+  }
 }

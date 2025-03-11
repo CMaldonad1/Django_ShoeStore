@@ -1,18 +1,24 @@
 <div class="sidbr p-3 ">
   <ul class="list-unstyled ps-0">
     <li id="li-None" class="mb-1">
-      <div id="None" class="option">
+      <div id="div-None" class="option">
         <button id="None" class="btn_sidebar btn_outline" data-bs-toggle="collapse" data-bs-target="#None-collapse" aria-expanded="false">
-          X
+          ★
         </button>
-        <a href="#" class="nav-link">All</a>
+        <a href="{% url 'cataleg' %}" class="nav-link">All</a>
       </div>
     </li>
   </ul>
 </div>
 <script type="text/javascript">
   {% for c in categories %}
-    createElements("{{ c.jerarquia }}","{{ c.nom }}","{{ c.count }}");
+  var categ={
+                  "jq":"{{c.jerarquia}}",
+                  "nm":"{{c.nom}}",
+                  "count":"{{c.count}}",
+                  "id":"{{c.id}}"
+              };
+    createElements(categ);
   {% endfor %}
   addFunctiontoButtons();
 </script>

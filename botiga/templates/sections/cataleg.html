@@ -5,28 +5,47 @@
         {% include 'sections/sidebar.html' %}
     </aside>
     <section>
-        <table>
-            <tr>
-                <th>id</th>
-                <th>nom</th>
-                <th>Jerarquia ID</th>
-                <th>Jerarquia</th>
-                <th>Done?</th>
-            </tr>
-        <h1>{{ head }}</h1> 
-
-            {% for t in test %}
-
-            <tr>
-                <td>{{t.id}}</td>
-                <td>{{t.nom}}</td>
-                <td>{{t.count}}</td>
-                <td>{{t.jerarquia}}</td>
-                <td>{{t.jerarquia_id}}</td>
-            </tr>   
-            
-            {% endfor %}
-        </table>
+        <h2 class="mb-4"> Popular Products </h2>
+        <div id="prodcat" class="prodcat">
+            <script>
+                {% for p in productes %}
+                    var product={
+                        "id":"{{p.id}}",
+                        "prod":"{{p.prod.nom}}",
+                        "prodId":"{{p.prod.id}}",
+                        "var":"{{p.nom}}",
+                        "preu":"{{p.preu}}",
+                        "dto":"{{p.dto}}",
+                        "descr":"{{p.prod.descripcio}}",
+                    };
+                    createProductCard(product);
+                {% endfor %}
+            </script>
+            <div class="col-10 col-sm-5 col-md-4 col-lg-3 p-2">
+                <div class="card">
+                    <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w0NzEyNjZ8MHwxfHNlYXJjaHwxfHxzaG9lfGVufDB8MHx8fDE3MjEwNDEzNjd8MA&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080" class="card-img-top" alt="Product Image">
+                    <div class="card-body">
+                        <h5 class="card-title">Product Name</h5>
+                        <p class="card-text">Short product description goes here.</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="h5 mb-0">$99.99</span>
+                            <div>
+                                <i class="bi bi-star-fill text-warning"></i>
+                                <i class="bi bi-star-fill text-warning"></i>
+                                <i class="bi bi-star-fill text-warning"></i>
+                                <i class="bi bi-star-fill text-warning"></i>
+                                <i class="bi bi-star-half text-warning"></i>
+                                <small class="text-muted">(4.5)</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer d-flex justify-content-between bg-light">
+                        <button class="btn btn-primary btn-sm">Add to Cart</button>
+                        <button class="btn btn-outline-secondary btn-sm"><i class="bi bi-heart"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 </div>
 {% endblock %}
