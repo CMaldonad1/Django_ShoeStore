@@ -41,7 +41,7 @@ def cataleg(request, catid=None):
     if request.method == 'GET':
         productes=Variant.objects.filter(prod_id__in=CatProd.objects.filter(categ_id__in=returnChildrenJerarqui(catid)).values_list('prod', flat=True)).order_by('nom')
     else:
-        productes=Variant.objects.all().order_by('nom')
+        productes=Variant.objects.all()
     
     return render(request, 'sections/cataleg.html',{
         'title': 'cataleg',
