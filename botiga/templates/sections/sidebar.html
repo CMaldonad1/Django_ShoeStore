@@ -1,4 +1,36 @@
 <div class="sidbr p-3 ">
+  <div class="catFiltres" class="mb-4">
+    <div class="d-flex mb-2">
+      <button id="hidefiltreCataleg" class="btn_outline" onClick='hideFiltres("filtreCataleg");'>☰</button>
+      <h4 class="ms-3">Filtres</h4>
+    </div>
+    <div id="filtreCataleg" class="ms-2" hidden>
+      <input type="search" id="nfiltre" class="filtre" placeholder="Search..." aria-label="Search">
+      <div class="filtrebox">
+        <div class="d-flex m-2">
+          <button id="hidepreufiltre" class="btn_outline" onClick='hideFiltres("preufiltre");'>★</button>
+          <h5 class="ms-3">per preu</h5>
+        </div>
+        <div class="preufiltre p-2" id="preufiltre" class="d-flex flex-wrap" hidden="">
+          <label>Preu Min:</label><input type="number" id="pmin" class="filtre">
+          <label>Preu Min:</label><input type="number" id="pmax" class="filtre">
+        </div>
+      </div>
+      <div class="filtrebox">
+        <div class="d-flex m-2">
+          <button id="hidetallesfiltre" class="btn_outline" onClick='hideFiltres("hidetallesfiltre");'>★</button>
+          <h5 class="ms-3">per talla</h5>
+        </div>
+        <div class="tallesfiltre filtrebox" id="tallesfiltre" hidden="">
+    
+        </div>
+      </div>
+      <div class="d-flex flex-column flex-wrap justify-content-between mt-2">
+        <button class="btn_normal mb-2" onClick='filtre();'>Filtra</button>
+        <button class="btn_outline" onClick='desfiltra();'>Desfiltrar</button>
+      </div>
+    </div>
+  </div>
   <ul class="list-unstyled ps-0">
     <li id="li-None" class="mb-1">
       <div id="div-None" class="option">
@@ -10,6 +42,7 @@
     </li>
   </ul>
 </div>
+
 <script type="text/javascript">
   {% for c in categories %}
   var categ={

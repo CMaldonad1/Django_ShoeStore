@@ -1,0 +1,80 @@
+
+[
+    {
+        "model": "botiga.talla",
+        "fields": {
+            "id": 1,
+            "nom": "36"
+        }
+    }, 
+    {
+        "model": "botiga.talla",
+        "fields": {
+            "id": 2,
+            "nom": "37"
+        }
+    }, 
+    {
+        "model": "botiga.talla",
+        "fields": {
+            "id": 3,
+            "nom": "38"
+        }
+    }, 
+    {
+        "model": "botiga.talla",
+        "fields": {
+            "id": 4,
+            "nom": "39"
+        }
+    }, 
+    {
+        "model": "botiga.talla",
+        "fields": {
+            "id": 5,
+            "nom": "40"
+        }
+    }, 
+    {
+        "model": "botiga.talla",
+        "fields": {
+            "id": 6,
+            "nom": "41"
+        }
+    }, 
+    {
+        "model": "botiga.talla",
+        "fields": {
+            "id": 7,
+            "nom": "42"
+        }
+    }, 
+    {
+        "model": "botiga.talla",
+        "fields": {
+            "id": 8,
+            "nom": "43"
+        }
+    }, 
+    {
+        "model": "botiga.talla",
+        "fields": {
+            "id": 9,
+            "nom": "44"
+        }
+    }, 
+    {
+        "model": "botiga.talla",
+        "fields": {
+            "id": 10,
+            "nom": "45"
+        }
+    }, 
+    {
+        "model": "botiga.talla",
+        "fields": {
+            "id": 11,
+            "nom": "46"
+        }
+    }
+]

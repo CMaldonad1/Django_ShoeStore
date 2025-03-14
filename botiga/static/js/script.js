@@ -85,7 +85,6 @@ function createProductCard(product){
     zonavariants=document.getElementById("variant-"+product.prodId);
     creacioMiniImatge(zonavariants, imatge, product);
   }
-
 }
 function creacioElementPare(product, imatge){
   var cataleg= document.getElementById("prodcat");
@@ -147,8 +146,13 @@ function creacioElementPare(product, imatge){
   var veureprod=document.createElement("button");
   veureprod.setAttribute("class","btn btn_normal btn-sm");
   veureprod.innerHTML="Veure";
+  var afegir=document.createElement("button");
+  afegir.setAttribute("class","btn btn_outline btn-sm");
+  afegir.setAttribute("onClick", "cistella();")
+  afegir.innerHTML="afegir";
 
   cardFooter.appendChild(veureprod);
+  cardFooter.appendChild(afegir);
   card.appendChild(cardFooter);
   
   container.appendChild(card);
@@ -178,4 +182,49 @@ function hoverImage(element){
   var dto=element.preu.substring(pos+1)*100;
   document.getElementById("imgtop-"+element.id).setAttribute("src", element.url);
   document.getElementById("preu-"+element.id).innerHTML="<b>Preu:</b> "+preu+" €";
+}
+function hideFiltres(name){
+  var hide=true;
+  var classbutton="btn_outline";
+  var filtres=document.getElementById(name);
+  var button=document.getElementById("hide"+name);
+  button.removeAttribute("class");
+  if(filtres.hidden==true){
+    hide=false;
+    classbutton="btn_normal";
+  }
+  filtres.hidden=hide;
+  button.setAttribute("class",classbutton);
+}
+async function cistella(){
+    try {
+        const response = await fetch('http://127.0.0.1:8000/add');
+        const data = await response.json();
+        const items = data.cistella;
+        document.getElementById('cistella').innerText = items;
+    } catch (error) {
+        document.getElementById('exchangeRate').innerText = 'Error en obtenir el canvi';
+    }
+}
+
+async function filtre(){
+  try {
+    const response = await fetch('http://127.0.0.1:8000/filtrar/', 
+      {method: "POST",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          preu: document.getElementById("pfiltre").value,
+          name: document.getElementById("nfiltre").value,
+        })
+      }
+    );
+    const data = await response.json();
+    const items = data.rs;
+    alert(items);
+  } catch (error) {
+      document.getElementById('exchangeRate').innerText = 'Error en obtenir el canvi';
+  }
 }

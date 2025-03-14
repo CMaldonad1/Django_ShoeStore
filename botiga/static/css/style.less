@@ -2,8 +2,11 @@
 @secondary_color: #1d1e18;
 @third_color: rgb(202, 70, 220);
 @reg_text:whitesmoke;
-@gradient: linear-gradient(90deg, @secondary_color, 
+@main_gradient: linear-gradient(90deg, @secondary_color, 
+                            @main_color,@secondary_color);
+@third_gradient: linear-gradient(90deg, @secondary_color, 
                             @third_color,@secondary_color);
+
 html{
     height:100%;
     body{
@@ -19,6 +22,7 @@ html{
             }
         }
         .btn_normal{
+            border-radius: 5px;
             color: @secondary_color;
             background-color: @main_color;
             &:hover{
@@ -27,6 +31,7 @@ html{
             }
         }
         .btn_outline{
+            border-radius: 5px;
             border-color: @main_color;
             background-color: transparent;
             color: @main_color;
@@ -40,14 +45,9 @@ html{
             height: 30px;
             width: 20%;
         }
-        .boto_menu{
-            border-radius: 5px;
-            height: 30px;
-            width:30px !important;
-        }
         header{
             background-color: @secondary_color;
-            .container{
+            .container-fluid{
                 .logo{
                     height:50px;
                     width: 50px;
@@ -59,7 +59,7 @@ html{
                 }
                 .selected{
                     border-bottom: 3px solid transparent; 
-                    border-image: @gradient;
+                    border-image: @third_gradient;
                     border-image-slice: 1;
                     color: @third_color;
                     .nav-link{
@@ -121,6 +121,8 @@ html{
                         height:100%;
                         width:200px;
                         background-color: @secondary_color;
+                        color:@main_color;
+                        overflow-x: scroll;
                         .option{
                             position:relative;
                             display:flex;
@@ -132,6 +134,41 @@ html{
                         .selected{
                             color:@third_color;
                             border-color:@third_color;
+                        }
+                        .catFiltres{
+                            border-bottom: 3px solid transparent; 
+                            border-image: @main_gradient;
+                            border-image-slice: 1;
+                            padding-bottom:10px;
+                            margin-bottom: 10px;
+                            #filtreCataleg{
+                                display:flex;
+                                flex-wrap: wrap;
+                                color:@main_color;
+                                font-weight: bolder;
+                                height:auto;
+                                width:100%;
+                                .filtre{
+                                    width: 100%;
+                                    color:@reg_text;
+                                    background-color: @secondary_color;;
+                                    border-color: @main_color;
+                                    border-radius: 6px;
+                                    &:hover{
+                                        border-color:@third_color;
+                                    }
+                                }
+                                .filtrebox{
+                                    border: 1px solid @main_color;
+                                    border-radius: 6px;
+                                    margin:5px;
+                                    width:100%;
+                                }
+                            }
+                        }
+                        h5, h4, h3, h2{
+                            display:block;
+                            margin:0px;
                         }
                     }
                 }
@@ -150,6 +187,7 @@ html{
                         flex-direction: row;
                         flex-wrap: wrap;
                         justify-content:flex-start;
+
                     }
                 }
             }

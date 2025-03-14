@@ -1,7 +1,9 @@
 from django.shortcuts import render
-import json
 from django.core.serializers import serialize
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from .forms import *
 from .models import *
 from django.shortcuts import get_object_or_404, get_list_or_404, render, redirect
@@ -42,12 +44,16 @@ def cataleg(request, catid=None):
         productes=Variant.objects.filter(prod_id__in=CatProd.objects.filter(categ_id__in=returnChildrenJerarqui(catid)).values_list('prod', flat=True)).order_by('nom')
     else:
         productes=Variant.objects.all()
+
+    if request.method == 'POST':
+        print(request.POST["price"])
     
     return render(request, 'sections/cataleg.html',{
         'title': 'cataleg',
         'head': 'Productes',
         'categories': categories,
         'productes': productes,
+        'form': filterCat(),
     })
 
 def informacio(request):
@@ -56,14 +62,28 @@ def informacio(request):
         'title': 'Informacio',
         'head': 'Info',
     })
+
 def user(request):
     return render(request, 'sections/usuari.html',{
         'title': 'Usuari',
         'head': 'Usuari',
     })
+
 def shopping(request):
     request.session["page"]="shopping"
     return render(request, 'sections/shopping_cart.html')
+
+def add(request):
+    if 'cistella' not in request.session:
+        request.session['cistella']=1
+    else:
+        request.session['cistella']=request.session['cistella']+1
+    return JsonResponse({'cistella': request.session['cistella']})
+
+@api_view(['POST'])
+def filtrar(request):
+    print(request.data)
+    return JsonResponse({'rs': request.data["preu"]})
 
 #funciò recursiva per treure els productes de les categories
 def returnChildrenJerarqui(id):

@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'django_seed', #añadimos la app django_seed
     'botiga', #añadimos la app botiga
     'bootstrap5',
