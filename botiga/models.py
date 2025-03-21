@@ -70,6 +70,7 @@ class Cistell(models.Model):
 class LineaCistell(models.Model):
     cistell=models.ForeignKey(Cistell, on_delete=models.CASCADE, null=False)
     var=models.ForeignKey(TallaVariant, on_delete=models.CASCADE, null=False)
+    qty=models.IntegerField(null=True)
 
 class Contadors(models.Model):
     tipus=models.CharField(max_length=10, unique=True, null=False)

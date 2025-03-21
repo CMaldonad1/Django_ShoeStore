@@ -17,24 +17,13 @@ function createElements(categ){
   divbutton.setAttribute("id", "div-"+categ.nm);
   divbutton.setAttribute("class", "option");
 
-  if(teFills){
-    var btn=document.createElement("button");
-    btn.setAttribute("id",categ.nm);
-    btn.setAttribute("class","btn_sidebar btn_outline");
-    btn.setAttribute("data-bs-toggle","collapse");
-    btn.setAttribute("data-bs-target","#"+categ.nm+"-collapse");
-    btn.setAttribute("aria-expanded","false");
-    btn.innerHTML="★";
-    divbutton.appendChild(btn);
-  }
-
   var a=document.createElement("a");
   a.setAttribute("class","nav-link");
   a.setAttribute("href","/cataleg/"+categ.id);
   if(!teFills){
     a.innerHTML=" ➤ "+categ.nm;
   }else{
-    a.innerHTML=categ.nm;
+    a.innerHTML=" ★ "+categ.nm;
   }
   divbutton.appendChild(a);
 
@@ -42,26 +31,6 @@ function createElements(categ){
   divcollapse.appendChild(ul);
   li.appendChild(divcollapse);
   elementPare.appendChild(li);
-}
-function addFunctiontoButtons(){
-  var buttons=document.querySelectorAll(".btn_sidebar");
-  buttons.forEach((bt)=>{
-    bt.addEventListener('click',
-      ()=>{
-        hideChildren(bt.id);
-    })
-  });
-}
-function hideChildren(nm){
-  var elementCalled=document.getElementById("li-"+nm);
-  var fills = elementCalled.getElementsByClassName("collapse");
-
-  if(fills.length>0){
-    for(var i=1; i<fills.length;i++){
-      fills[i].classList.remove("show");
-   }
-  }
-  verifyIfSelected(nm);
 }
 function verifyIfSelected(nm){
   var selected=document.getElementById(nm);
@@ -71,8 +40,6 @@ function verifyIfSelected(nm){
   }else{
     selected.classList.add("selected");
   }
-
-
 }
 function createProductCard(product){
   var elementPare=document.getElementById(product.prodId);
@@ -143,9 +110,11 @@ function creacioElementPare(product, imatge){
   cardFooter.setAttribute("id","foot-"+product.prodId);
   cardFooter.setAttribute("class","card-footer d-flex justify-content-between bg-light");
 
-  var veureprod=document.createElement("button");
+  var veureprod=document.createElement("a");
   veureprod.setAttribute("class","btn btn_normal btn-sm");
+  veureprod.setAttribute("href","/info/"+product.id);
   veureprod.innerHTML="Veure";
+
   var afegir=document.createElement("button");
   afegir.setAttribute("class","btn btn_outline btn-sm");
   afegir.setAttribute("onClick", "cistella();")
@@ -188,13 +157,31 @@ function hideFiltres(name){
   var classbutton="btn_outline";
   var filtres=document.getElementById(name);
   var button=document.getElementById("hide"+name);
+  var listvar=document.getElementById("listVar")
   button.removeAttribute("class");
   if(filtres.hidden==true){
     hide=false;
     classbutton="btn_normal";
+    listvar.style.overflowY="scroll";
+    listvar.style.maxHeight="50%";
+  }else{
+    listvar.style.overflowY="hidden";
+    listvar.style.maxHeight="100%";
   }
   filtres.hidden=hide;
   button.setAttribute("class",classbutton);
+}
+function changeImage(event, src) {
+  document.getElementById('mainImage').src = src;
+  document.querySelectorAll('.thumbnail').forEach(thumb => thumb.classList.remove('active'));
+  event.target.classList.add('active');
+}
+function desfiltra(){
+  document.getElementById('pmin').value="";
+  document.getElementById('pmax').value="";
+  document.getElementById('nomf').value="";
+  document.querySelectorAll('input[name=chktalla]:checked').forEach(ckbx => ckbx.checked=false);
+  filtre();
 }
 async function cistella(){
     try {
@@ -206,8 +193,25 @@ async function cistella(){
         document.getElementById('exchangeRate').innerText = 'Error en obtenir el canvi';
     }
 }
-
 async function filtre(){
+  var pmin=document.getElementById('pmin').value;
+  var pmax=document.getElementById('pmax').value;
+  var nom=document.getElementById('nomf').value;
+  var ckbx=document.querySelectorAll('input[name=chktalla]:checked');
+  var talles="";
+
+  //recorrem els checkboxs marcats i fem un array de talles per a pasar-la a la API
+  if(ckbx.length>0){
+    talles=ckbx[0].value;
+    for(var i=1; i < ckbx.length; i++){
+      talles+=","+ckbx[i].value;
+    }
+  }
+  //si el preu minim es superior al máxim es fará que el preu maxim sigui igual al preu minim
+  if(pmin>pmax &&  pmin!='' && pmax!=''){
+    pmax=pmin
+    document.getElementById('pmax').value=pmin
+  }
   try {
     const response = await fetch('http://127.0.0.1:8000/filtrar/', 
       {method: "POST",
@@ -216,15 +220,24 @@ async function filtre(){
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          preu: document.getElementById("pfiltre").value,
-          name: document.getElementById("nfiltre").value,
+          'nom': nom,
+          'pmin': pmin,
+          'pmax': pmax,
+          'talles':talles
         })
       }
     );
     const data = await response.json();
-    const items = data.rs;
-    alert(items);
+    if(data.length==0){
+      alert("No s'ha trobat cap resultat per la busqueda");
+    }else{
+      var pare=document.getElementById("prodcat");
+      pare.innerHTML="";
+      for (var i = 0; i < data.length; i++){
+        createProductCard(data[i]);
+      }
+    }
   } catch (error) {
-      document.getElementById('exchangeRate').innerText = 'Error en obtenir el canvi';
+      alert("Error del servidor en filtrar la informació");
   }
 }

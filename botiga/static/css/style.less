@@ -117,12 +117,17 @@ html{
                 width: 100%;
                 aside{
                     height:100%;
+                    .list-unstyled{
+                        display:block;
+                        height: auto;
+                        max-height: 100%;
+                        overflow-y:none;
+                    }
                     .sidbr{
                         height:100%;
-                        width:200px;
+                        width:250px;
                         background-color: @secondary_color;
                         color:@main_color;
-                        overflow-x: scroll;
                         .option{
                             position:relative;
                             display:flex;
@@ -141,13 +146,16 @@ html{
                             border-image-slice: 1;
                             padding-bottom:10px;
                             margin-bottom: 10px;
+                            max-height: 50%;
+                            width:90%;
+                            overflow-y: scroll;
                             #filtreCataleg{
                                 display:flex;
                                 flex-wrap: wrap;
                                 color:@main_color;
                                 font-weight: bolder;
                                 height:auto;
-                                width:100%;
+                                width:90%;
                                 .filtre{
                                     width: 100%;
                                     color:@reg_text;
@@ -163,7 +171,31 @@ html{
                                     border-radius: 6px;
                                     margin:5px;
                                     width:100%;
+                                    .tallesfiltre{
+                                        width:93%;
+                                        display:flex;
+                                        flex-wrap: wrap;
+                                        flex-direction: row;
+                                        justify-content: center;
+                                        align-items: center;
+                                        padding-left:10px;
+                                    }
+
                                 }
+                                .chkbutton{
+                                    display:inline-block;
+                                    width:25px;
+                                    height:auto;
+                                    text-align: center;
+                                }
+                                input:checked + .chkbutton {
+                                    background-color: @main_color;
+                                    color:@secondary_color;
+                                }
+                                .btnfiltre{
+                                    width:100%;
+                                }
+
                             }
                         }
                         h5, h4, h3, h2{
@@ -187,7 +219,6 @@ html{
                         flex-direction: row;
                         flex-wrap: wrap;
                         justify-content:flex-start;
-
                     }
                 }
             }
@@ -214,6 +245,32 @@ html{
                     background-color:@third_color;
                 }
             }
+            .productevista{
+                border:5px solid @third_color;
+                border-radius: 10px;
+                background-color: @reg_text;
+                padding:10px;
+                .product-image {
+                    max-height: 400px;
+                    object-fit: cover;
+                }
+                .thumbnail {
+                    width: 20%;
+                    height:20% ;
+                    object-fit: cover;
+                    cursor: pointer;
+                    opacity: 0.6;
+                    transition: opacity 0.3s ease;
+                }
+                .thumbnail:hover, .thumbnail.active {
+                    opacity: 1;
+                }
+                .close{
+                    margin-top:5px;
+                    margin-right:5px;
+                }
+            }
+
         }
         .ftr{
             background-color: @secondary_color;

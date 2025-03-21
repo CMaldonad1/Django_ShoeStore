@@ -5,7 +5,17 @@
       <h4 class="ms-3">Filtres</h4>
     </div>
     <div id="filtreCataleg" class="ms-2" hidden>
-      <input type="search" id="nfiltre" class="filtre" placeholder="Search..." aria-label="Search">
+      <!--Filtrar per nom-->
+      <div class="filtrebox">
+        <div class="d-flex m-2">
+          <button id="hidenomfiltre" class="btn_outline" onClick='hideFiltres("nomfiltre");'>★</button>
+          <h5 class="ms-3">per nom</h5>
+        </div>
+        <div class="nomfiltre p-2" id="nomfiltre" class="d-flex flex-wrap" hidden="">
+          <input type="text" id="nomf" class="filtre">
+        </div>
+      </div>
+      <!--Filtrar per preu-->
       <div class="filtrebox">
         <div class="d-flex m-2">
           <button id="hidepreufiltre" class="btn_outline" onClick='hideFiltres("preufiltre");'>★</button>
@@ -13,39 +23,41 @@
         </div>
         <div class="preufiltre p-2" id="preufiltre" class="d-flex flex-wrap" hidden="">
           <label>Preu Min:</label><input type="number" id="pmin" class="filtre">
-          <label>Preu Min:</label><input type="number" id="pmax" class="filtre">
+          <label>Preu Max:</label><input type="number" id="pmax" class="filtre">
         </div>
       </div>
+      <!--Filtrar per talla-->
       <div class="filtrebox">
         <div class="d-flex m-2">
-          <button id="hidetallesfiltre" class="btn_outline" onClick='hideFiltres("hidetallesfiltre");'>★</button>
+          <button id="hidetallesfiltre" class="btn_outline" onClick='hideFiltres("tallesfiltre");'>★</button>
           <h5 class="ms-3">per talla</h5>
         </div>
-        <div class="tallesfiltre filtrebox" id="tallesfiltre" hidden="">
-    
+        <div id="tallesfiltre" class="filtrebox tallesfiltre p-2" hidden="">
+          {% for t in talles %}
+          <div class="col-3 p-1">
+            <input type="checkbox" id="chkbx{{t.id}}" value="{{t.id}}" name="chktalla" style="display:none">
+            <label for="chkbx{{t.id}}" class="chkbutton btn_outline">{{t.nom}}</label>
+          </div>
+          {% endfor %}
         </div>
       </div>
-      <div class="d-flex flex-column flex-wrap justify-content-between mt-2">
-        <button class="btn_normal mb-2" onClick='filtre();'>Filtra</button>
-        <button class="btn_outline" onClick='desfiltra();'>Desfiltrar</button>
+      <div class="btnfiltre d-flex flex-column pt-2">
+        <button class="btnfiltre btn_normal mb-2" onClick='filtre();'>Filtra</button>
+        <button class="btnfiltre btn_outline" onClick='desfiltra();'>Desfiltrar</button>
       </div>
     </div>
   </div>
-  <ul class="list-unstyled ps-0">
+  <ul id="listVar" class="list-unstyled ps-0">
     <li id="li-None" class="mb-1">
       <div id="div-None" class="option">
-        <button id="None" class="btn_sidebar btn_outline" data-bs-toggle="collapse" data-bs-target="#None-collapse" aria-expanded="false">
-          ★
-        </button>
-        <a href="{% url 'cataleg' %}" class="nav-link">All</a>
+        <a href="{% url 'cataleg' %}" class="nav-link">★ All</a>
       </div>
     </li>
   </ul>
 </div>
-
 <script type="text/javascript">
   {% for c in categories %}
-  var categ={
+    var categ={
                   "jq":"{{c.jerarquia}}",
                   "nm":"{{c.nom}}",
                   "count":"{{c.count}}",
@@ -53,5 +65,4 @@
               };
     createElements(categ);
   {% endfor %}
-  addFunctiontoButtons();
 </script>
