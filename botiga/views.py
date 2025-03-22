@@ -18,14 +18,6 @@ def login(request):
     #    Project.objects.create(name=request.POST['name']) 
     return cataleg(request)
 
-def home(request):
-    request.session["page"]="home"
-    return render(request, 'sections/home.html',{
-        'title': 'Home',
-        'head': 'Benvingut a MaviEsports',
-        'login': 2,
-    })
-
 def registrat(request):
     #if request.method == 'POST':
     #    Project.objects.create(name=request.POST['name']) 
@@ -38,15 +30,22 @@ def registrat(request):
 
 def cataleg(request, catid=None):
     request.session["page"]="cataleg"
+    request.session["login"]=1
     #query per obtindre les categories i si tenen fills
     categories=Categoria.objects.raw("SELECT * FROM `botiga_categoria` bc LEFT JOIN (SELECT jerarquia_id, count(jerarquia_id) "
                                     "as \"count\" FROM `botiga_categoria` where jerarquia_id is not null GROUP BY jerarquia_id) "
                                     "cnt on bc.id=cnt.jerarquia_id; ")
     talles=Talla.objects.all()
-    
+    jerarquia=""
     if request.method == 'GET':
+        #guardem el nom de la categoria seleccionada
+        request.session["catSel"]=Categoria.objects.filter(id=catid).values('nom').first()
+        #guardem tota la informació de les jerarquies
+        jerarquia=Categoria.objects.filter(id__in=returnParentJerarqui(catid)).order_by('id')
+        #guardem unicament els productes que estan en el llistat de categories seleccionades
         productes=Variant.objects.filter(prod_id__in=CatProd.objects.filter(categ_id__in=returnChildrenJerarqui(catid)).values_list('prod', flat=True)).order_by('nom')
     else:
+        request.session["catSel"]=""
         productes=Variant.objects.all()      
 
     return render(request, 'sections/cataleg.html',{
@@ -55,8 +54,25 @@ def cataleg(request, catid=None):
         'categories': categories,
         'productes': productes,
         'form': filterCat(),
-        'talles':talles
+        'talles':talles,
+        'jerarquia':jerarquia
     })
+#funciò recursiva per treure els pares de les categories
+def returnParentJerarqui(id):
+    cat=[]
+    cat.append(id)
+    fill=Categoria.objects.filter(id=id).values_list('jerarquia', flat=True)
+    for f in fill:
+        cat.extend(returnParentJerarqui(f))
+    return cat
+#funciò recursiva per treure els fills de les categories
+def returnChildrenJerarqui(id):
+    cat=[]
+    cat.append(id)
+    fill=Categoria.objects.filter(jerarquia=id).values_list('id', flat=True)
+    for f in fill:
+        cat.extend(returnChildrenJerarqui(f))
+    return cat
 
 def informacio(request, varid=None):
     if varid!=None:
@@ -126,14 +142,4 @@ def filtrar(request):
         }
         resposta.append(item)
     # resposta=serialize('json',productes)
-    return JsonResponse(resposta, safe=False)
-
-#funciò recursiva per treure els productes de les categories
-def returnChildrenJerarqui(id):
-    cat=[]
-    cat.append(id)
-    fill=Categoria.objects.filter(jerarquia=id).values_list('id', flat=True)
-    for f in fill:
-        cat.extend(returnChildrenJerarqui(f))
-    return cat
-    
+    return JsonResponse(resposta, safe=False)    

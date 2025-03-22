@@ -203,6 +203,22 @@ html body main .infobody section {
   height: 100%;
   width: 100%;
 }
+html body main .infobody section #breadcrumb-div {
+  width: 100%;
+  height: 40px;
+  display: flex;
+  background-color: #ca46dc;
+  padding: 5px;
+}
+html body main .infobody section #breadcrumb-div .breadcrumb-item {
+  color: whitesmoke !important;
+}
+html body main .infobody section #breadcrumb-div a {
+  color: #96f1c5;
+}
+html body main .infobody section #breadcrumb-div a:hover {
+  color: #1d1e18;
+}
 html body main .infobody section .prodcat {
   padding: 2%;
   height: 100%;

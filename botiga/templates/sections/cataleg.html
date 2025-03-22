@@ -5,7 +5,24 @@
         {% include 'sections/sidebar.html' %}
     </aside>
     <section>
-        <h2 class="ms-4"> Popular Products </h2>
+        <div id="breadcrumb-div">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    {% if jerarquia|length == 0 %}
+                        <li class="breadcrumb-item">Home</li>
+                    {% else %}
+                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                        {% for j in jerarquia %}
+                            {% if j.nom != request.session.catSel.nom %}
+                                <li class="breadcrumb-item active" aria-current="page"><a href="/cataleg/{{j.id}}">{{j.nom}}</a></li>
+                            {% else %}
+                                <li class="breadcrumb-item active" aria-current="page">{{j.nom}}</li>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </ol>
+            </nav>
+        </div>
         <div id="prodcat" class="prodcat">
             <script>
                 {% for p in productes %}

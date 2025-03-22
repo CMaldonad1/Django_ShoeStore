@@ -209,6 +209,23 @@ html{
                     flex-direction: column;
                     height:100%;
                     width:100%;
+                    #breadcrumb-div{
+                        width:100%;
+                        height:40px;
+                        display:flex;
+                        background-color: @third_color;
+                        padding:5px;
+                        .breadcrumb-item{
+                            color:@reg_text !important;
+                        }
+                        a{
+                            color:@main_color;
+                            &:hover{
+                                color:@secondary_color;
+                            }
+                        }
+                        
+                    }
                     .prodcat{
                         padding:2%;
                         height:100%;

@@ -11,19 +11,16 @@
           <img src="{% static 'img/logo.png' %}">
         </div>
         <ul class="nav col-8 col-sm-auto me-sm-auto mb-2 justify-content-center mb-md-0 order-2 order-sm-0">
-          <li {% if request.session.page == 'home' %} class="selected" {% endif %}>
-            <a href="{% url 'home' %}" class="nav-link">Home</a>
-          </li>
           <li {% if request.session.page == 'cataleg' %} class="selected" {% endif %}>
             <a href="{% url 'cataleg' %}" class="nav-link">Catàleg</a>
           </li>
+          {% if request.session.login == 1 %}
+          <li {% if request.session.page == 'home' %} class="selected" {% endif %}>
+            <a href="{% url 'usuari' %}" class="nav-link">Usuari</a>
+          </li>
+          {% endif %}
         </ul>
-        {% if login == 1 %}
-        <!-- si ha fet login sortira aixó-->
-        <div class="text-end col-md-auto mb-3 mb-lg-0 me-md-3 order-5 order-sm-0">
-          <a href="{% url 'usuari' %}" class="nav-link">Usuari</a>
-        </div>
-        {% else %}
+        {% if request.session.login != 1  %}
         <!--si no ho está menú de login-->
         <div class="text-end col-lg-auto mb-3 mb-lg-0 me-md-3 me-2 order-5 order-sm-0">
           <button type="button" class="btn btn_outline">Login</button>

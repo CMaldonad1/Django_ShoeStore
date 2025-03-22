@@ -20,8 +20,8 @@ from botiga import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.home, name='home'),
-    path('cataleg', views.cataleg, name='cataleg'),
+    # path('', views.home, name='home'),
+    path('', views.cataleg, name='cataleg'),
     path('cataleg/<int:catid>/', views.cataleg, name='cataleg'),
     path('info', views.informacio, name='informacio'),
     path('info/<str:varid>/', views.informacio, name='informacio'),
