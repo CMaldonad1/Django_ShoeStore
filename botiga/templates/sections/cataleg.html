@@ -24,41 +24,50 @@
             </nav>
         </div>
         <div id="prodcat" class="prodcat">
-            <script>
-                {% for p in productes %}
-                    var product={
-                        "id":"{{p.id}}",
-                        "prod":"{{p.prod.nom}}",
-                        "prodId":"{{p.prod.id}}",
-                        "var":"{{p.nom}}",
-                        "preu":"{{p.preu}}",
-                        "dto":"{{p.dto}}",
-                        "descr":"{{p.prod.descripcio}}",
-                    };
-                    createProductCard(product);
-                {% endfor %}
-            </script>
-            <div id="1" class="col-10 col-sm-6 col-lg-3 p-2">
+            {% for p in productes %}
+            <div id="{{p.id}}" class="col-10 col-sm-6 col-lg-3 p-2">
                 <div class="card">
-                    <img id="imgtop-1" class="card-img-top" alt="Product Image" src="https://contents.mediadecathlon.com/p2616911/k$005506460860670fe53bdfa2f971c8d3/sq/zapatillas-caminar-adidas-vl-court-30-hombre-blanco.jpg?format=auto&amp;f=646x646"><div class="card-body">
-                        <h5 class="card-title">KD900</h5>
-                        <p class="card-text">Tus aliadas en competiciones para mejorar tus resultados en carretera y en pista en distancias de hasta 10 kilómetros.</p>
-                </div>
-                <div id="options-1" class="d-flex flex-column align-items-center">
-                    <div id="preu-1" class="col-11">
-                        <b>Preu:</b> 37.99 €
+                    <div id="dto-{{p.id}}" class="dtoinfo 
+                            {% if p.variant_set.all.0.dto == 0 %}
+                                d-none 
+                            {% else %}
+                                d-flex
+                            {% endif %}
+                            position-absolute top-0 start-0">
+                        <span>-{% widthratio p.variant_set.all.0.dto 1 100 %}% dto.</span>
                     </div>
-                    <div id="variant-1" class="d-flex flex-row align-items-start p-2">
-                        <img id="1" class="col-2 m-1" alt="37.99-0.21" src="https://contents.mediadecathlon.com/p2616911/k$005506460860670fe53bdfa2f971c8d3/sq/zapatillas-caminar-adidas-vl-court-30-hombre-blanco.jpg?format=auto&amp;f=646x646"><img id="1" class="col-2 m-1" alt="29.99-0.0" src="https://contents.mediadecathlon.com/p2698107/k$091a49ae006f2ebc891f44750f165a51/sq/zapatillas-adidas-advantage-base-20-hombre-negro.jpg?format=auto&amp;f=646x646">
-                        <img id="1" class="col-2 m-1" alt="19.99-0.0" src="https://contents.mediadecathlon.com/p2698107/k$091a49ae006f2ebc891f44750f165a51/sq/zapatillas-adidas-advantage-base-20-hombre-negro.jpg?format=auto&amp;f=646x646">
+                    
+                    <img id="imgtop-{{p.id}}" class="card-img-top" alt="Product Image" src="https://contents.mediadecathlon.com/p2616911/k$005506460860670fe53bdfa2f971c8d3/sq/zapatillas-caminar-adidas-vl-court-30-hombre-blanco.jpg?format=auto&amp;f=646x646">
+                    <div class="card-body">
+                        <h5 class="card-title">{{p.nom}}</h5>
+                        <p class="card-title"><b>Marca:</b> {{p.marca}}</p>
+                        <p class="card-text">{{p.descripcio}}</p>
                     </div>
+                    <div id="options-{{p.id}}" class="d-flex flex-column align-items-center">
+                        <div id="preu-{{p.id}}" class="col-11">
+                            {% if p.variant_set.all.0.dto > 0 %}
+                                <b>Preu:</b> {{p.variant_set.all.0.preu_dto}}€
+                                <s style="color:red;">{{p.variant_set.all.0.preu}}€</s>
+                            {% else %}
+                                <b>Preu:</b> {{p.variant_set.all.0.preu}}€
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div id="variant-{{p.id}}" class="d-flex flex-row align-items-start p-2">
+                    {% for v in p.variant_set.all%}
+                        <img id="{{p.id}}" class="col-2 m-1" alt="{{v.preu}}-{{v.dto}}" src="https://contents.mediadecathlon.com/p2616911/k$005506460860670fe53bdfa2f971c8d3/sq/zapatillas-caminar-adidas-vl-court-30-hombre-blanco.jpg?format=auto&amp;f=646x646">
+                    {% endfor%}
+                    </div>                  
                 </div>
-                <div id="foot-1" class="card-footer d-flex justify-content-between bg-light">
-                    <a class="btn btn_normal btn-sm" href="/info/2">Veure</a>
-                    <button class="btn btn_outline btn-sm" onclick="cistella();">afegir</button>
+                <div id="foot-{{p.id}}" class="card-footer d-flex justify-content-between bg-light">
+                    <a class="btn btn_normal btn-sm" href="/info/{{p.variant_set.all.0.id}}">Veure</a>                    
                 </div>
             </div>
+            {% endfor %}
         </div>
     </section>
 </div>
+<script>
+    recorreMiniImatge();
+</script>
 {% endblock %}

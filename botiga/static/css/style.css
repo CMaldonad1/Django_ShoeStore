@@ -230,6 +230,19 @@ html body main .infobody section .prodcat {
   flex-wrap: wrap;
   justify-content: flex-start;
 }
+html body main .infobody section .prodcat .dtoinfo {
+  background-color: #ca46dc;
+  height: 30px;
+  width: 90px;
+  border-radius: 5px;
+  text-align: center;
+  color: whitesmoke;
+}
+html body main .infobody section .prodcat .dtoinfo span {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
 html body main .formul {
   height: 500px;
   width: 60%;

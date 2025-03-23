@@ -4,6 +4,7 @@ from django.http import HttpResponse, JsonResponse
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from django.views.generic import ListView
 from .forms import *
 from .models import *
 from django.db.models import Prefetch, Q
@@ -37,17 +38,40 @@ def cataleg(request, catid=None):
                                     "cnt on bc.id=cnt.jerarquia_id; ")
     talles=Talla.objects.all()
     jerarquia=""
-    if request.method == 'GET':
+    if catid!=0 and request.session.get('catSel')!="":
+        idSessionCatSel=request.session.get('catSel')["id"]
+        jerarquia=Categoria.objects.filter(id__in=returnParentJerarqui(idSessionCatSel)).order_by('id')
+        productes=Producte.objects.filter(id__in=CatProd.objects.filter(categ_id__in=returnChildrenJerarqui(idSessionCatSel)).values_list('prod', flat=True)).prefetch_related('variant_set__imatges_set')
+    elif catid!=None and catid!=0:
         #guardem el nom de la categoria seleccionada
-        request.session["catSel"]=Categoria.objects.filter(id=catid).values('nom').first()
+        request.session["catSel"]=Categoria.objects.filter(id=catid).values('nom','id').first()
         #guardem tota la informació de les jerarquies
         jerarquia=Categoria.objects.filter(id__in=returnParentJerarqui(catid)).order_by('id')
         #guardem unicament els productes que estan en el llistat de categories seleccionades
-        productes=Variant.objects.filter(prod_id__in=CatProd.objects.filter(categ_id__in=returnChildrenJerarqui(catid)).values_list('prod', flat=True)).order_by('nom')
+        productes=Producte.objects.filter(id__in=CatProd.objects.filter(categ_id__in=returnChildrenJerarqui(catid)).values_list('prod', flat=True)).prefetch_related('variant_set__imatges_set')
     else:
         request.session["catSel"]=""
-        productes=Variant.objects.all()      
+        productes = Producte.objects.prefetch_related(
+                Prefetch('variant_set__imatges_set')
+            )
 
+    if 'filtres' in request.session:
+        filtres=request.session.get('filtres')
+        if filtres['pmin']!="":
+            productes=productes.filter(id__in=Variant.objects.filter(preu__gte = filtres['pmin']).values_list('prod', flat=True))
+        if filtres['pmax']!="":
+            productes=productes.filter(id__in=Variant.objects.filter(preu__lte = filtres['pmax']).values_list('prod', flat=True))
+        if filtres['nom']!="":
+            productes=productes.filter(Q(nom__icontains=filtres['nom'])|Q(marca__icontains=filtres['nom']))
+        if filtres['talles']!="":
+            tallaFiltre=filtres['talles']
+            listtalles=tallaFiltre.split(",")
+            productes=productes.filter(id__in=Variant.objects.filter(id__in=TallaVariant.objects.filter(talla__in=listtalles).values_list('var', flat=True)).values_list('prod', flat=True))
+
+    for producto in productes:
+        for var in producto.variant_set.all():
+            var.preu_dto= round((1-var.dto)*var.preu,2)
+   
     return render(request, 'sections/cataleg.html',{
         'title': 'cataleg',
         'head': 'Productes',
@@ -95,6 +119,7 @@ def informacio(request, varid=None):
         return cataleg(request)
 
 def user(request):
+    request.session["page"]="usuari"
     return render(request, 'sections/usuari.html',{
         'title': 'Usuari',
         'head': 'Usuari',
@@ -117,17 +142,28 @@ def filtrar(request):
     pmax=request.data["pmax"]
     nom=request.data["nom"]
     talles=request.data["talles"]
-    listtalles=talles.split(",")
+    listtalles=""
+    if len(talles)>0:
+        listtalles=talles.split(",")
 
-    productes=Variant.objects.all() 
+    productes=Variant.objects.all()
     if pmin!="":
         productes=productes.filter(preu__gte=pmin)
     if pmax!="":
         productes=productes.filter(preu__lte=pmax)
     if nom!="":
         productes=productes.filter(Q(prod__nom__icontains=nom)|Q(prod__marca__icontains=nom))
-    if talles!="":
+    if listtalles!="":
         productes=productes.filter(id__in=TallaVariant.objects.filter(talla__in=listtalles).values_list('var', flat=True))
+    if request.session.get('catSel') != "":
+        productes=productes.filter(prod__id__in=CatProd.objects.filter(categ__in=returnChildrenJerarqui(request.session.get('catSel')['id'])).values_list('prod', flat=True))
+
+    request.session['filtres']={
+        'pmin':pmin,
+        'pmax':pmax,
+        'nom':nom,
+        'talles':talles
+    }
 
     resposta=[]
     for p in productes:
@@ -135,11 +171,11 @@ def filtrar(request):
             "id": p.id,
             "prod":p.prod.nom,
             "prodId":p.prod.id,
+            "marca":p.prod.marca,
             "var":p.nom,
             "preu":p.preu,
             "dto":p.dto,
             "descr":p.prod.descripcio,
         }
         resposta.append(item)
-    # resposta=serialize('json',productes)
     return JsonResponse(resposta, safe=False)    

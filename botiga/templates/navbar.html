@@ -15,7 +15,7 @@
             <a href="{% url 'cataleg' %}" class="nav-link">Catàleg</a>
           </li>
           {% if request.session.login == 1 %}
-          <li {% if request.session.page == 'home' %} class="selected" {% endif %}>
+          <li {% if request.session.page == 'usuari' %} class="selected" {% endif %}>
             <a href="{% url 'usuari' %}" class="nav-link">Usuari</a>
           </li>
           {% endif %}

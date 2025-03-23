@@ -12,7 +12,7 @@
           <h5 class="ms-3">per nom</h5>
         </div>
         <div class="nomfiltre p-2" id="nomfiltre" class="d-flex flex-wrap" hidden="">
-          <input type="text" id="nomf" class="filtre">
+          <input type="text" id="nomf" class="filtre" {% if request.session.filtres.nom != '' %} value="{{request.session.filtres.nom}}" {% endif %}>
         </div>
       </div>
       <!--Filtrar per preu-->
@@ -22,8 +22,8 @@
           <h5 class="ms-3">per preu</h5>
         </div>
         <div class="preufiltre p-2" id="preufiltre" class="d-flex flex-wrap" hidden="">
-          <label>Preu Min:</label><input type="number" id="pmin" class="filtre">
-          <label>Preu Max:</label><input type="number" id="pmax" class="filtre">
+          <label>Preu Min:</label><input type="number" id="pmin" class="filtre" {% if request.session.filtres.pmin != '' %} value="{{request.session.filtres.pmin}}" {% endif %}>
+          <label>Preu Max:</label><input type="number" id="pmax" class="filtre" {% if request.session.filtres.pmax != '' %} value="{{request.session.filtres.pmax}}" {% endif %}>
         </div>
       </div>
       <!--Filtrar per talla-->
@@ -35,7 +35,7 @@
         <div id="tallesfiltre" class="filtrebox tallesfiltre p-2" hidden="">
           {% for t in talles %}
           <div class="col-3 p-1">
-            <input type="checkbox" id="chkbx{{t.id}}" value="{{t.id}}" name="chktalla" style="display:none">
+            <input type="checkbox" id="chkbx{{t.id}}" value="{{t.id}}" name="chktalla" style="display:none" {% if t.id in string_talles %} checked {% endif %}>
             <label for="chkbx{{t.id}}" class="chkbutton btn_outline">{{t.nom}}</label>
           </div>
           {% endfor %}
@@ -50,7 +50,7 @@
   <ul id="listVar" class="list-unstyled ps-0">
     <li id="li-None" class="mb-1">
       <div id="div-None" class="option">
-        <a href="{% url 'cataleg' %}" class="nav-link">★ All</a>
+        <a href="{% url 'cataleg' catid=0 %}" class="nav-link">★ All</a>
       </div>
     </li>
   </ul>

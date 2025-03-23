@@ -2,6 +2,7 @@
 {% block content %}
 <div class="container col-10 d-flex flex-row mt-5">
     <div class="position-relative d-flex flex-column flex-lg-row productevista justify-content-around ">
+        <!--Tancar finestra-->
         <div class="close d-flex position-absolute top-0 end-0">
             <a href="/" class="btn btn_normal">X</a>
         </div>
@@ -19,14 +20,19 @@
             <h2 class="mb-3">{{prod.0.prod.nom}}</h2>
             <p class="text-muted mb-4"><b>Marca: </b>{{prod.0.prod.marca}}</p>
             <div class="mb-3 d-flex flex-row align-items-end">
+                {% if prod.0.dto == 0 %}
+                <div>
+                    <span class="h4">Preu: </span>
+                    <span id="preuvar" class="text-muted">{{prod.0.preu}}</span>
+                </div>
+                {%else%}
                 <div>
                     <span class="h4">Preu: </span>
                     <span id="preuvar" class="text-muted"><s>{{prod.0.preu}}</s></span>
                 </div>
-                {% if prod.0.dto > 0 %}
                 <div class="ps-4">
                     <span class="h5">Dto: </span>
-                    <span id="dtovar" class="text-muted">{{prod.0.dto}}</span>
+                    <span id="dtovar" class="text-muted">-{% widthratio prod.0.dto 1 100 %}%</span>
                 </div>
                 {% endif %}
             </div>

@@ -44,6 +44,7 @@ function verifyIfSelected(nm){
 function createProductCard(product){
   var elementPare=document.getElementById(product.prodId);
   var imatge;
+
   if(elementPare==null){
     imatge="https://contents.mediadecathlon.com/p2616911/k$005506460860670fe53bdfa2f971c8d3/sq/zapatillas-caminar-adidas-vl-court-30-hombre-blanco.jpg?format=auto&f=646x646";
     creacioElementPare(product, imatge);
@@ -55,6 +56,7 @@ function createProductCard(product){
 }
 function creacioElementPare(product, imatge){
   var cataleg= document.getElementById("prodcat");
+  
   var container=document.createElement("div");
   container.setAttribute("id", product.prodId)
   container.setAttribute("class","col-10 col-sm-6 col-lg-3 p-2");
@@ -67,6 +69,19 @@ function creacioElementPare(product, imatge){
 
   var card=document.createElement("div");
   card.setAttribute("class","card");
+  
+  var dto=document.createElement("div");
+  dto.setAttribute("id","dto-"+product.prodId);
+ 
+  if(product.dto>0){
+     dto.setAttribute("class","dtoinfo position-absolute top-0 start-0 d-flex");
+  }else{
+    dto.setAttribute("class","dtoinfo position-absolute top-0 start-0 d-none")
+  }
+  var span=document.createElement("span");
+  span.innerText=(product.dto*100)+"% dto."
+  dto.appendChild(span);
+  card.appendChild(dto);
 
   var cardbody=document.createElement("div");
   cardbody.setAttribute("class","card-body");
@@ -75,11 +90,16 @@ function creacioElementPare(product, imatge){
   cardtitle.setAttribute("class","card-title");
   cardtitle.innerHTML=product.prod;
 
+  var marca=document.createElement("p")
+  marca.setAttribute("class","card-title")
+  marca.innerHTML="<b>Marca:</b> "+product.marca;
+
   var descr=document.createElement("p");
   descr.setAttribute("class","card-text");
   descr.innerHTML=product.descr;
 
   cardbody.appendChild(cardtitle);
+  cardbody.appendChild(marca);
   cardbody.appendChild(descr)
 
   card.appendChild(img);
@@ -93,7 +113,6 @@ function creacioElementPare(product, imatge){
   preu.setAttribute("id","preu-"+product.prodId);
   preu.setAttribute("class","col-11");
   preu.innerHTML="<b>Preu:</b> "+product.preu+" €";
-
   options.appendChild(preu);
 
   var zonavariants=document.createElement("div");
@@ -129,12 +148,14 @@ function creacioElementPare(product, imatge){
 
   return container;
 }
-function creacioMiniImatge(zonavariants, imatge, product){
-  var img= document.createElement("img");
-  img.setAttribute("id",product.prodId)
-  img.setAttribute("class","col-2 m-1");
-  img.setAttribute("alt", product.preu+"-"+product.dto);
-  img.setAttribute("src", imatge);
+function recorreMiniImatge(){
+  document.querySelectorAll('[id*="variant-"]').forEach(
+    el => el.querySelectorAll('img').forEach( img =>
+      addhover(img)
+    )
+  );
+}
+function addhover(img){
   img.addEventListener('mouseover', (ev)=>{
     var element={
       "id":ev.explicitOriginalTarget.id,
@@ -143,14 +164,35 @@ function creacioMiniImatge(zonavariants, imatge, product){
     }
     hoverImage(element);
   });
+}
+function creacioMiniImatge(zonavariants, imatge, product){
+  var img= document.createElement("img");
+  img.setAttribute("id",product.prodId)
+  img.setAttribute("class","col-2 m-1");
+  img.setAttribute("alt", product.preu+"-"+product.dto);
+  img.setAttribute("src", imatge);
+  addhover(img);
   zonavariants.appendChild(img);
 }
 function hoverImage(element){
   var pos=element.preu.indexOf("-");
   var preu=element.preu.substring(0,pos);
-  var dto=element.preu.substring(pos+1)*100;
+  var dto=element.preu.substring(pos+1);
+  var preuElement=document.getElementById("preu-"+element.id)
+  var dtoElement=document.getElementById("dto-"+element.id)
+  dtoElement.classList.remove("d-flex");
+  dtoElement.classList.remove("d-none");
   document.getElementById("imgtop-"+element.id).setAttribute("src", element.url);
-  document.getElementById("preu-"+element.id).innerHTML="<b>Preu:</b> "+preu+" €";
+  if(dto>0){
+    dtoElement.classList.add("d-flex")
+    dtoElement.querySelector("span").innerText=(dto*100)+"% dto.";
+
+    preuElement.innerHTML="<b>Preu:</b> "+ (preu*(1-dto)).toFixed(2)+"€ <s style='color:red;'>"+preu+"€</s>";
+  }else{
+    dtoElement.classList.add("d-none")
+    preuElement.innerHTML="<b>Preu:</b> "+preu+"€";
+  }
+  
 }
 function hideFiltres(name){
   var hide=true;
@@ -228,6 +270,7 @@ async function filtre(){
       }
     );
     const data = await response.json();
+    
     if(data.length==0){
       alert("No s'ha trobat cap resultat per la busqueda");
     }else{
