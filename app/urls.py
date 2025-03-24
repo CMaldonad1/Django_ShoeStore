@@ -31,4 +31,5 @@ urlpatterns = [
     path('sign_in/', views.registrat, name='registrat'),
     path('add/', views.add, name='add'),
     path('filtrar/', views.filtrar, name='filtrar'),
+    path('variantInfo/', views.variantInfo, name='variantInfo'),
 ]

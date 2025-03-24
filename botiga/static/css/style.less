@@ -15,6 +15,7 @@ html{
         flex-direction: column;
         background-color: @main_color;
         color: @secondary_color;
+
         .nav-link{
             color: @main_color;
             &:hover{
@@ -108,6 +109,9 @@ html{
             overflow: auto;
             padding-bottom: 0px;
             height: 100%;
+            s{
+                color:red !important;
+            }
             .infobody{
                 position: relative;
                 display: flex;
@@ -227,15 +231,12 @@ html{
                         
                     }
                     .prodcat{
-                        padding:2%;
+                        padding:1%;
                         height:100%;
+                        width:100%;
                         overflow-x: scroll;
                         scrollbar-color: @reg_text @secondary_color;
-                        position: relative;
-                        display: flex;
-                        flex-direction: row;
-                        flex-wrap: wrap;
-                        justify-content:flex-start;
+                        --bs-gutter-x: 0rem !important;
                         .dtoinfo{
                             background-color: @third_color;
                             height:30px;
@@ -328,12 +329,6 @@ html{
                     }
                 }
             }   
-        }
-    }
-}
-@media screen and (max-width: 500px){
-    html{
-        body{
             main{
                 .infobody{
                     aside{

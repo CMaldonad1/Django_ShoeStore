@@ -43,13 +43,11 @@ function verifyIfSelected(nm){
 }
 function createProductCard(product){
   var elementPare=document.getElementById(product.prodId);
-  var imatge;
 
+  var imatge="/static/"+product.imatges[0]
   if(elementPare==null){
-    imatge="https://contents.mediadecathlon.com/p2616911/k$005506460860670fe53bdfa2f971c8d3/sq/zapatillas-caminar-adidas-vl-court-30-hombre-blanco.jpg?format=auto&f=646x646";
     creacioElementPare(product, imatge);
   }else{
-    imatge="https://contents.mediadecathlon.com/p2698107/k$091a49ae006f2ebc891f44750f165a51/sq/zapatillas-adidas-advantage-base-20-hombre-negro.jpg?format=auto&f=646x646";
     zonavariants=document.getElementById("variant-"+product.prodId);
     creacioMiniImatge(zonavariants, imatge, product);
   }
@@ -79,7 +77,7 @@ function creacioElementPare(product, imatge){
     dto.setAttribute("class","dtoinfo position-absolute top-0 start-0 d-none")
   }
   var span=document.createElement("span");
-  span.innerText=(product.dto*100)+"% dto."
+  span.innerText="-"+(product.dto*100)+"% dto."
   dto.appendChild(span);
   card.appendChild(dto);
 
@@ -112,7 +110,12 @@ function creacioElementPare(product, imatge){
   var preu=document.createElement("div");
   preu.setAttribute("id","preu-"+product.prodId);
   preu.setAttribute("class","col-11");
-  preu.innerHTML="<b>Preu:</b> "+product.preu+" €";
+  if(product.dto>0){
+    preu.innerHTML="<b>Preu:</b> "+ (product.preu*(1-product.dto>0)).toFixed(2)+"€ <s>"+product.preu+"€</s>";
+  }else{
+    preu.innerHTML="<b>Preu:</b> "+product.preu+"€";
+  }
+
   options.appendChild(preu);
 
   var zonavariants=document.createElement("div");
@@ -176,10 +179,13 @@ function creacioMiniImatge(zonavariants, imatge, product){
 }
 function hoverImage(element){
   var pos=element.preu.indexOf("-");
+  var pos2=element.preu.indexOf("_");
   var preu=element.preu.substring(0,pos);
   var dto=element.preu.substring(pos+1);
-  var preuElement=document.getElementById("preu-"+element.id)
-  var dtoElement=document.getElementById("dto-"+element.id)
+  var variant=element.preu.substring(pos2+1);
+  var preuElement=document.getElementById("preu-"+element.id);
+  var dtoElement=document.getElementById("dto-"+element.id);
+  var btnElement=document.getElementById("btn-"+element.id);
   dtoElement.classList.remove("d-flex");
   dtoElement.classList.remove("d-none");
   document.getElementById("imgtop-"+element.id).setAttribute("src", element.url);
@@ -187,12 +193,12 @@ function hoverImage(element){
     dtoElement.classList.add("d-flex")
     dtoElement.querySelector("span").innerText=(dto*100)+"% dto.";
 
-    preuElement.innerHTML="<b>Preu:</b> "+ (preu*(1-dto)).toFixed(2)+"€ <s style='color:red;'>"+preu+"€</s>";
+    preuElement.innerHTML="<b>Preu:</b> "+ (preu*(1-dto)).toFixed(2)+"€ <s>"+preu+"€</s>";
   }else{
     dtoElement.classList.add("d-none")
     preuElement.innerHTML="<b>Preu:</b> "+preu+"€";
   }
-  
+  btnElement.setAttribute("href","/info/"+variant);
 }
 function hideFiltres(name){
   var hide=true;
@@ -213,17 +219,109 @@ function hideFiltres(name){
   filtres.hidden=hide;
   button.setAttribute("class",classbutton);
 }
-function changeImage(event, src) {
-  document.getElementById('mainImage').src = src;
-  document.querySelectorAll('.thumbnail').forEach(thumb => thumb.classList.remove('active'));
-  event.target.classList.add('active');
+function setImage(event, src){
+  document.getElementById("imgGran").setAttribute("src",src)
 }
-function desfiltra(){
-  document.getElementById('pmin').value="";
-  document.getElementById('pmax').value="";
-  document.getElementById('nomf').value="";
-  document.querySelectorAll('input[name=chktalla]:checked').forEach(ckbx => ckbx.checked=false);
-  filtre();
+async function changeVariant(event) {
+  try {
+    const response = await fetch('http://127.0.0.1:8000/variantInfo/', 
+      {method: "POST",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          'idVar': event.explicitOriginalTarget.id
+        })
+      }
+    );
+    const data = await response.json();
+    if(data.length==0){
+      alert("No s'ha trobat cap resultat per la busqueda");
+    }else{
+      informationChangeVar(data)
+
+    }
+  } catch (error) {
+      alert("Error del servidor en filtrar la informació");
+  }
+}
+function informationChangeVar(data){
+  generarPreuInfo(data);
+  document.getElementById("imgGran").setAttribute("src","/static/"+data.imatges[0])
+  generarImatgesPetites(data.imatges)
+  generarTallesSelector(data.talles);
+  activaBotoCarro();
+}
+function generarTallesSelector(talles){
+  var pare=document.getElementById("sTalles");
+  pare.innerHTML="";
+  var fill=document.createElement("option");
+  fill.value= 0;
+  fill.text="-";
+  pare.appendChild(fill);
+  for(i=0; i<talles.length;i++){
+    console.info(talles[i].tNom)
+      var opt=fill.cloneNode()
+      opt.value= talles[i].tId;
+      opt.text=talles[i].tNom;
+      pare.appendChild(opt);
+  }
+}
+function generarImatgesPetites(imatges){
+  var pare=document.getElementById("imgProd");
+  pare.innerHTML="";
+  for(i=0; i<imatges.length; i++){
+    var el=document.createElement("img");
+    el.setAttribute("src","/static/"+imatges[i]);
+    el.setAttribute("class","thumbnail rounded active");
+    el.addEventListener("mouseenter",(ev)=>{
+      setImage(ev, ev.explicitOriginalTarget.src)
+    })
+    pare.appendChild(el);
+  }
+}
+function generarPreuInfo(data){
+  var pare=document.getElementById("preuSection");
+  pare.innerHTML="";
+  var preu=data.preu
+  var preu_dto=data.preu;
+  var dto=data.dto;
+
+  var divPreu=document.createElement("div");
+  var spanPreu1=document.createElement("span");
+  spanPreu1.setAttribute('class','h4');
+  spanPreu1.innerText="Preu: ";
+
+  var spanPreu2=document.createElement("span");
+  spanPreu2.setAttribute('id','preuvar');
+  spanPreu2.setAttribute('class','text-muted');
+
+  divPreu.appendChild(spanPreu1);
+  pare.appendChild(divPreu);
+  if(dto>0){
+    preu_dto=(data.preu*(1-dto)).toFixed(2);
+    spanPreu2.innerHTML=preu_dto+"€ <s>"+preu+"€</s>";
+
+    var divDto= document.createElement("div");
+    divDto.setAttribute('class','ps-4');
+
+    var spanDto1=document.createElement("span");
+    spanDto1.setAttribute('class','h5');
+    spanDto1.innerText="Dto: "
+
+    var spanDto2=document.createElement("span");
+    spanDto2.setAttribute('id','dtovar');
+    spanDto2.setAttribute('class','text-muted');
+    spanDto2.innerText=dto*100+"%";
+
+    divDto.appendChild(spanDto1);
+    divDto.appendChild(spanDto2);
+    pare.appendChild(divDto);
+  }else{
+    spanPreu2.innerText=preu+"€";
+  }
+  divPreu.appendChild(spanPreu2);
 }
 async function cistella(){
     try {
@@ -234,6 +332,13 @@ async function cistella(){
     } catch (error) {
         document.getElementById('exchangeRate').innerText = 'Error en obtenir el canvi';
     }
+}
+function desfiltra(){
+  document.getElementById('pmin').value="";
+  document.getElementById('pmax').value="";
+  document.getElementById('nomf').value="";
+  document.querySelectorAll('input[name=chktalla]:checked').forEach(ckbx => ckbx.checked=false);
+  filtre();
 }
 async function filtre(){
   var pmin=document.getElementById('pmin').value;
@@ -282,5 +387,17 @@ async function filtre(){
     }
   } catch (error) {
       alert("Error del servidor en filtrar la informació");
+  }
+}
+function activaBotoCarro(){
+  var e=document.getElementById("sTalles");
+  var btn=document.getElementById("addCart");
+  var qty=document.getElementById("quantity");
+  if(e.options[e.selectedIndex].value == 0){
+    btn.disabled=true;
+    qty.disabled=true;
+  }else{
+    btn.disabled=false;
+    qty.disabled=false;
   }
 }

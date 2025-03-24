@@ -1,0 +1,256 @@
+
+[
+    {
+        "model": "botiga.imatges",
+        "fields": {
+            "id": 1,
+            "url": "img/productes/1_1_1.avif",
+            "var": "1"
+        }
+    },{
+        "model": "botiga.imatges",
+        "fields": {
+            "id": 2,
+            "url": "img/productes/1_1_2.avif",
+            "var": "1"
+        }
+    },{
+        "model": "botiga.imatges",
+        "fields": {
+            "id": 3,
+            "url": "img/productes/1_1_3.avif",
+            "var": "1"
+        }
+    },{
+        "model": "botiga.imatges",
+        "fields": {
+            "id": 4,
+            "url": "img/productes/1_1_4.avif",
+            "var": "1"
+        }
+    },{
+        "model": "botiga.imatges",
+        "fields": {
+            "id": 5,
+            "url": "img/productes/1_2_1.avif",
+            "var": "2"
+        }
+    },{
+        "model": "botiga.imatges",
+        "fields": {
+            "id": 6,
+            "url": "img/productes/1_2_2.avif",
+            "var": "2"
+        }
+    },{
+        "model": "botiga.imatges",
+        "fields": {
+            "id": 7,
+            "url": "img/productes/1_2_3.avif",
+            "var": "2"
+        }
+    },{
+        "model": "botiga.imatges",
+        "fields": {
+            "id": 8,
+            "url": "img/productes/1_2_4.avif",
+            "var": "2"
+        }
+    },{
+        "model": "botiga.imatges",
+        "fields": {
+            "id": 9,
+            "url": "img/productes/1_3_1.avif",
+            "var": "3"
+        }
+    },{
+        "model": "botiga.imatges",
+        "fields": {
+            "id": 10,
+            "url": "img/productes/1_3_2.avif",
+            "var": "3"
+        }
+    },{
+        "model": "botiga.imatges",
+        "fields": {
+            "id": 11,
+            "url": "img/productes/1_3_3.avif",
+            "var": "3"
+        }
+    },{
+        "model": "botiga.imatges",
+        "fields": {
+            "id": 12,
+            "url": "img/productes/1_3_4.avif",
+            "var": "3"
+        }
+    },{
+        "model": "botiga.imatges",
+        "fields": {
+            "id": 13,
+            "url": "img/productes/2_1_1.avif",
+            "var": "4"
+        }
+    },{
+        "model": "botiga.imatges",
+        "fields": {
+            "id": 14,
+            "url": "img/productes/2_1_2.avif",
+            "var": "4"
+        }
+    },{
+        "model": "botiga.imatges",
+        "fields": {
+            "id": 15,
+            "url": "img/productes/2_1_3.avif",
+            "var": "4"
+        }
+    },{
+        "model": "botiga.imatges",
+        "fields": {
+            "id": 16,
+            "url": "img/productes/2_1_4.avif",
+            "var": "4"
+        }
+    },{
+        "model": "botiga.imatges",
+        "fields": {
+            "id": 17,
+            "url": "img/productes/2_2_1.avif",
+            "var": "5"
+        }
+    },{
+        "model": "botiga.imatges",
+        "fields": {
+            "id": 18,
+            "url": "img/productes/2_2_2.avif",
+            "var": "5"
+        }
+    },{
+        "model": "botiga.imatges",
+        "fields": {
+            "id": 19,
+            "url": "img/productes/2_2_3.avif",
+            "var": "5"
+        }
+    },{
+        "model": "botiga.imatges",
+        "fields": {
+            "id": 20,
+            "url": "img/productes/2_2_4.avif",
+            "var": "5"
+        }
+    },{
+        "model": "botiga.imatges",
+        "fields": {
+            "id": 21,
+            "url": "img/productes/3_1_1.avif",
+            "var": "6"
+        }
+    },{
+        "model": "botiga.imatges",
+        "fields": {
+            "id": 22,
+            "url": "img/productes/3_1_2.avif",
+            "var": "6"
+        }
+    },{
+        "model": "botiga.imatges",
+        "fields": {
+            "id": 23,
+            "url": "img/productes/3_1_3.avif",
+            "var": "6"
+        }
+    },{
+        "model": "botiga.imatges",
+        "fields": {
+            "id": 24,
+            "url": "img/productes/3_1_4.avif",
+            "var": "6"
+        }
+    },{
+        "model": "botiga.imatges",
+        "fields": {
+            "id": 25,
+            "url": "img/productes/3_2_1.avif",
+            "var": "7"
+        }
+    },{
+        "model": "botiga.imatges",
+        "fields": {
+            "id": 26,
+            "url": "img/productes/3_2_2.avif",
+            "var": "7"
+        }
+    },{
+        "model": "botiga.imatges",
+        "fields": {
+            "id": 27,
+            "url": "img/productes/3_2_3.avif",
+            "var": "7"
+        }
+    },{
+        "model": "botiga.imatges",
+        "fields": {
+            "id": 28,
+            "url": "img/productes/3_2_4.avif",
+            "var": "7"
+        }
+    },{
+        "model": "botiga.imatges",
+        "fields": {
+            "id": 29,
+            "url": "img/productes/4_1_1.avif",
+            "var": "8"
+        }
+    },{
+        "model": "botiga.imatges",
+        "fields": {
+            "id": 30,
+            "url": "img/productes/4_1_2.avif",
+            "var": "8"
+        }
+    },{
+        "model": "botiga.imatges",
+        "fields": {
+            "id": 31,
+            "url": "img/productes/4_1_3.avif",
+            "var": "8"
+        }
+    },{
+        "model": "botiga.imatges",
+        "fields": {
+            "id": 32,
+            "url": "img/productes/4_1_4.avif",
+            "var": "8"
+        }
+    },{
+        "model": "botiga.imatges",
+        "fields": {
+            "id": 33,
+            "url": "img/productes/5_1_1.avif",
+            "var": "9"
+        }
+    },{
+        "model": "botiga.imatges",
+        "fields": {
+            "id": 34,
+            "url": "img/productes/5_1_2.avif",
+            "var": "9"
+        }
+    },{
+        "model": "botiga.imatges",
+        "fields": {
+            "id": 35,
+            "url": "img/productes/5_1_3.avif",
+            "var": "9"
+        }
+    },{
+        "model": "botiga.imatges",
+        "fields": {
+            "id": 36,
+            "url": "img/productes/5_1_4.avif",
+            "var": "9"
+        }
+    }
+]

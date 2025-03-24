@@ -99,6 +99,9 @@ html body main {
   padding-bottom: 0px;
   height: 100%;
 }
+html body main s {
+  color: red !important;
+}
 html body main .infobody {
   position: relative;
   display: flex;
@@ -220,15 +223,12 @@ html body main .infobody section #breadcrumb-div a:hover {
   color: #1d1e18;
 }
 html body main .infobody section .prodcat {
-  padding: 2%;
+  padding: 1%;
   height: 100%;
+  width: 100%;
   overflow-x: scroll;
   scrollbar-color: whitesmoke #1d1e18;
-  position: relative;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: flex-start;
+  --bs-gutter-x: 0rem !important;
 }
 html body main .infobody section .prodcat .dtoinfo {
   background-color: #ca46dc;
@@ -308,8 +308,6 @@ html body .ftr img {
     width: 100%;
     object-fit: cover;
   }
-}
-@media screen and (max-width: 500px) {
   html body main .infobody aside .sidbr {
     position: absolute;
     z-index: 1 ;

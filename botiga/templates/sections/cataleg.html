@@ -1,9 +1,11 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
 <div class="infobody">
     <aside>
         {% include 'sections/sidebar.html' %}
     </aside>
+    <!--braedcrumb-->
     <section>
         <div id="breadcrumb-div">
             <nav aria-label="breadcrumb">
@@ -11,7 +13,7 @@
                     {% if jerarquia|length == 0 %}
                         <li class="breadcrumb-item">Home</li>
                     {% else %}
-                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                        <li class="breadcrumb-item"><a href="/cataleg/0">Home</a></li>
                         {% for j in jerarquia %}
                             {% if j.nom != request.session.catSel.nom %}
                                 <li class="breadcrumb-item active" aria-current="page"><a href="/cataleg/{{j.id}}">{{j.nom}}</a></li>
@@ -23,10 +25,11 @@
                 </ol>
             </nav>
         </div>
-        <div id="prodcat" class="prodcat">
+        <!--llistat de productes-->
+        <div id="prodcat" class="prodcat row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 row-cols-xxl-5">
             {% for p in productes %}
-            <div id="{{p.id}}" class="col-10 col-sm-6 col-lg-3 p-2">
-                <div class="card">
+            <div id="{{p.id}}" class="card p-1">
+                <div class="card h-100">
                     <div id="dto-{{p.id}}" class="dtoinfo 
                             {% if p.variant_set.all.0.dto == 0 %}
                                 d-none 
@@ -36,8 +39,7 @@
                             position-absolute top-0 start-0">
                         <span>-{% widthratio p.variant_set.all.0.dto 1 100 %}% dto.</span>
                     </div>
-                    
-                    <img id="imgtop-{{p.id}}" class="card-img-top" alt="Product Image" src="https://contents.mediadecathlon.com/p2616911/k$005506460860670fe53bdfa2f971c8d3/sq/zapatillas-caminar-adidas-vl-court-30-hombre-blanco.jpg?format=auto&amp;f=646x646">
+                    <img id="imgtop-{{p.id}}" class="card-img-top" alt="Product Image" src="{% static p.variant_set.all.0.imatges_set.all.0.url %}">
                     <div class="card-body">
                         <h5 class="card-title">{{p.nom}}</h5>
                         <p class="card-title"><b>Marca:</b> {{p.marca}}</p>
@@ -47,7 +49,7 @@
                         <div id="preu-{{p.id}}" class="col-11">
                             {% if p.variant_set.all.0.dto > 0 %}
                                 <b>Preu:</b> {{p.variant_set.all.0.preu_dto}}€
-                                <s style="color:red;">{{p.variant_set.all.0.preu}}€</s>
+                                <s>{{p.variant_set.all.0.preu}}€</s>
                             {% else %}
                                 <b>Preu:</b> {{p.variant_set.all.0.preu}}€
                             {% endif %}
@@ -55,12 +57,12 @@
                     </div>
                     <div id="variant-{{p.id}}" class="d-flex flex-row align-items-start p-2">
                     {% for v in p.variant_set.all%}
-                        <img id="{{p.id}}" class="col-2 m-1" alt="{{v.preu}}-{{v.dto}}" src="https://contents.mediadecathlon.com/p2616911/k$005506460860670fe53bdfa2f971c8d3/sq/zapatillas-caminar-adidas-vl-court-30-hombre-blanco.jpg?format=auto&amp;f=646x646">
+                        <img id="{{p.id}}" class="col-2 m-1" alt="{{v.preu}}-{{v.dto}}_{{v.id}}" src="{% static v.imatges_set.all.0.url %}">
                     {% endfor%}
                     </div>                  
                 </div>
                 <div id="foot-{{p.id}}" class="card-footer d-flex justify-content-between bg-light">
-                    <a class="btn btn_normal btn-sm" href="/info/{{p.variant_set.all.0.id}}">Veure</a>                    
+                    <a id="btn-{{p.id}}" class="btn btn_normal btn-sm" href="/info/{{p.variant_set.all.0.id}}">Veure</a>                    
                 </div>
             </div>
             {% endfor %}
