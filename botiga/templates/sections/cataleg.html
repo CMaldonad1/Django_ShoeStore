@@ -26,10 +26,10 @@
             </nav>
         </div>
         <!--llistat de productes-->
-        <div id="prodcat" class="prodcat row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 row-cols-xxl-5">
+        <div id="prodcat" class="prodcat row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 row-cols-xxl-5">
             {% for p in productes %}
-            <div id="{{p.id}}" class="card p-1">
-                <div class="card h-100">
+            <div id="{{p.id}}" class="p-1">
+                <div class="card">
                     <div id="dto-{{p.id}}" class="dtoinfo 
                             {% if p.variant_set.all.0.dto == 0 %}
                                 d-none 
@@ -43,7 +43,7 @@
                     <div class="card-body">
                         <h5 class="card-title">{{p.nom}}</h5>
                         <p class="card-title"><b>Marca:</b> {{p.marca}}</p>
-                        <p class="card-text">{{p.descripcio}}</p>
+                        <!-- <p class="card-text">{{p.descripcio}}</p> -->
                     </div>
                     <div id="options-{{p.id}}" class="d-flex flex-column align-items-center">
                         <div id="preu-{{p.id}}" class="col-11">
@@ -59,11 +59,12 @@
                     {% for v in p.variant_set.all%}
                         <img id="{{p.id}}" class="col-2 m-1" alt="{{v.preu}}-{{v.dto}}_{{v.id}}" src="{% static v.imatges_set.all.0.url %}">
                     {% endfor%}
-                    </div>                  
+                    </div>  
+                    <div id="foot-{{p.id}}" class="card-footer d-flex justify-content-between bg-light">
+                        <a id="btn-{{p.id}}" class="btn btn_normal btn-sm" href="/info/{{p.variant_set.all.0.id}}">Veure</a>                    
+                    </div>                
                 </div>
-                <div id="foot-{{p.id}}" class="card-footer d-flex justify-content-between bg-light">
-                    <a id="btn-{{p.id}}" class="btn btn_normal btn-sm" href="/info/{{p.variant_set.all.0.id}}">Veure</a>                    
-                </div>
+
             </div>
             {% endfor %}
         </div>

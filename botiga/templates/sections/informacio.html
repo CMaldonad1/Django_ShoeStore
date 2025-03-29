@@ -18,6 +18,7 @@
         </div>
         <!-- Product Details -->
         <div class="col-10 col-md-8 col-lg-5 ">
+            <p id="variantID" hidden>{{prod.0.id}}</p>
             <h2 class="mb-3">{{prod.0.prod.nom}}</h2>
             <p class="text-muted mb-4"><b>Marca: </b>{{prod.0.prod.marca}}</p>
             <div id="preuSection" class="mb-3 d-flex flex-row align-items-end">
@@ -54,16 +55,29 @@
                     <select id="sTalles" class="form-control" onchange="activaBotoCarro()">
                         <option value="0"> - </option>
                     {% for talla_variant in prod.0.tallavariant_set.all %}
-                        <option value="{{talla_variant.talla.id}}" {% if talla_variant.qty == 0 %} disabled {% endif %}>{{talla_variant.talla.nom}}</option>
+                        <option value="{{talla_variant.id}}" {% if talla_variant.qty == 0 %} disabled {% endif %}>{{talla_variant.talla.nom}} (Max Uds: {{talla_variant.qty}})</option>
                     {% endfor %}
                     </select>
                 </div>
                 <div>
-                    <label for="quantity" class="form-label">Quantity:</label>
-                    <input type="number" class="form-control" id="quantity" value="1" min="1" style="width: 70px;">
+                    <div class="d-flex flex-column mb-4">
+                        <label for="sQty" class="form-label">Quantity:</label>
+                        <div class="d-flex flex-row">
+                            <button data-mdb-button-init data-mdb-ripple-init class="incrdcr btn btn_normal px-3 me-2"
+                            onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
+                            -
+                            </button>
+                            <input id="sQty" min="1" name="quantity" value="1" type="number" class="form-control" disabled/>
+                            <button data-mdb-button-init data-mdb-ripple-init class="incrdcr btn btn_normal px-3 ms-2"
+                            onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
+                            +
+                            </button>
+                        </div>
+
+                    </div>
                 </div>
             </div>
-            <button id="addCart" class="btn btn_normal mb-3 me-2" disabled>
+            <button id="addCart" class="btn btn_normal mb-3 me-2" onClick='cistella(1);' disabled>
                 <i class="bi bi-cart-plus"></i> Add to Cart
             </button>
         </div>

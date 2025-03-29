@@ -27,9 +27,14 @@ urlpatterns = [
     path('info/<str:varid>/', views.informacio, name='informacio'),
     path('prod/', views.cataleg, name='productes'),
     path('user/', views.user, name='usuari'),
-    path('cistella/', views.shopping, name='cistella'),
     path('sign_in/', views.registrat, name='registrat'),
-    path('add/', views.add, name='add'),
+    path('add/', views.addCistella, name='add'),
+
+    path('cistella/', views.shopping, name='cistella'),
+    path('vuidarCistella/', views.vuidarCistella, name='vuidarCistella'),
+    path('updateCistella/', views.updateCistella, name='updateCistella'),
+
     path('filtrar/', views.filtrar, name='filtrar'),
     path('variantInfo/', views.variantInfo, name='variantInfo'),
+
 ]

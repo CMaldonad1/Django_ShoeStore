@@ -6,7 +6,19 @@
                             @main_color,@secondary_color);
 @third_gradient: linear-gradient(90deg, @secondary_color, 
                             @third_color,@secondary_color);
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+  width: 50px;
+}
 
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+  width: 50px;
+}
 html{
     height:100%;
     body{
@@ -15,7 +27,9 @@ html{
         flex-direction: column;
         background-color: @main_color;
         color: @secondary_color;
-
+        .secondaryText{
+            color:@third_color;
+        }
         .nav-link{
             color: @main_color;
             &:hover{
@@ -40,6 +54,10 @@ html{
                 color:@third_color;
                 border-color:@third_color;
             }
+        }
+        .btn_outline2{
+            color: @reg_text ;
+            border-color: @reg_text;
         }
         .btn_sidebar{
             border-radius: 5px;
@@ -301,7 +319,17 @@ html{
                     margin-right:5px;
                 }
             }
-
+            #shoppingCart{
+                #pagamentinfo{
+                    color:@reg_text;
+                    background-color: @secondary_color !important;
+                    border-radius: 5px;
+                    hr{
+                        background-color: @third_color;
+                        height: 3px;
+                    }
+                }
+            }
         }
         .ftr{
             background-color: @secondary_color;

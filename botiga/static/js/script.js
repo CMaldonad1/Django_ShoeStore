@@ -1,3 +1,4 @@
+// creació de l'estructura de l'arbre d'elements
 function createElements(categ){
   var teFills=(categ.count!="None");
   var elementPare=document.getElementById("li-"+categ.jq);
@@ -41,6 +42,7 @@ function verifyIfSelected(nm){
     selected.classList.add("selected");
   }
 }
+//creació de les tarjetes de la vista "cataleg"
 function createProductCard(product){
   var elementPare=document.getElementById(product.prodId);
 
@@ -57,7 +59,7 @@ function creacioElementPare(product, imatge){
   
   var container=document.createElement("div");
   container.setAttribute("id", product.prodId)
-  container.setAttribute("class","col-10 col-sm-6 col-lg-3 p-2");
+  container.setAttribute("class"," p-1");
 
   var img= document.createElement("img");
   img.setAttribute("id","imgtop-"+product.prodId);
@@ -87,18 +89,17 @@ function creacioElementPare(product, imatge){
   var cardtitle=document.createElement("h5");
   cardtitle.setAttribute("class","card-title");
   cardtitle.innerHTML=product.prod;
+  cardbody.appendChild(cardtitle);
 
   var marca=document.createElement("p")
   marca.setAttribute("class","card-title")
   marca.innerHTML="<b>Marca:</b> "+product.marca;
-
-  var descr=document.createElement("p");
-  descr.setAttribute("class","card-text");
-  descr.innerHTML=product.descr;
-
-  cardbody.appendChild(cardtitle);
   cardbody.appendChild(marca);
-  cardbody.appendChild(descr)
+
+  // var descr=document.createElement("p");
+  // descr.setAttribute("class","card-text");
+  // descr.innerHTML=product.descr;
+  // cardbody.appendChild(descr)
 
   card.appendChild(img);
   card.appendChild(cardbody);
@@ -125,7 +126,6 @@ function creacioElementPare(product, imatge){
   creacioMiniImatge(zonavariants, imatge, product);
 
   options.appendChild(zonavariants);
-  
   card.appendChild(options);
 
   var cardFooter=document.createElement("div");
@@ -137,13 +137,7 @@ function creacioElementPare(product, imatge){
   veureprod.setAttribute("href","/info/"+product.id);
   veureprod.innerHTML="Veure";
 
-  var afegir=document.createElement("button");
-  afegir.setAttribute("class","btn btn_outline btn-sm");
-  afegir.setAttribute("onClick", "cistella();")
-  afegir.innerHTML="afegir";
-
   cardFooter.appendChild(veureprod);
-  cardFooter.appendChild(afegir);
   card.appendChild(cardFooter);
   
   container.appendChild(card);
@@ -151,12 +145,14 @@ function creacioElementPare(product, imatge){
 
   return container;
 }
-function recorreMiniImatge(){
-  document.querySelectorAll('[id*="variant-"]').forEach(
-    el => el.querySelectorAll('img').forEach( img =>
-      addhover(img)
-    )
-  );
+function creacioMiniImatge(zonavariants, imatge, product){
+  var img= document.createElement("img");
+  img.setAttribute("id",product.prodId)
+  img.setAttribute("class","col-2 m-1");
+  img.setAttribute("alt", product.preu+"-"+product.dto);
+  img.setAttribute("src", imatge);
+  addhover(img);
+  zonavariants.appendChild(img);
 }
 function addhover(img){
   img.addEventListener('mouseover', (ev)=>{
@@ -168,20 +164,11 @@ function addhover(img){
     hoverImage(element);
   });
 }
-function creacioMiniImatge(zonavariants, imatge, product){
-  var img= document.createElement("img");
-  img.setAttribute("id",product.prodId)
-  img.setAttribute("class","col-2 m-1");
-  img.setAttribute("alt", product.preu+"-"+product.dto);
-  img.setAttribute("src", imatge);
-  addhover(img);
-  zonavariants.appendChild(img);
-}
 function hoverImage(element){
   var pos=element.preu.indexOf("-");
   var pos2=element.preu.indexOf("_");
   var preu=element.preu.substring(0,pos);
-  var dto=element.preu.substring(pos+1);
+  var dto=element.preu.substring(pos+1,pos2);
   var variant=element.preu.substring(pos2+1);
   var preuElement=document.getElementById("preu-"+element.id);
   var dtoElement=document.getElementById("dto-"+element.id);
@@ -200,6 +187,15 @@ function hoverImage(element){
   }
   btnElement.setAttribute("href","/info/"+variant);
 }
+//afegir hover quan carrega per primera vegada la página
+function recorreMiniImatge(){
+  document.querySelectorAll('[id*="variant-"]').forEach(
+    el => el.querySelectorAll('img').forEach( img =>
+      addhover(img)
+    )
+  );
+}
+
 function hideFiltres(name){
   var hide=true;
   var classbutton="btn_outline";
@@ -243,12 +239,13 @@ async function changeVariant(event) {
 
     }
   } catch (error) {
-      alert("Error del servidor en filtrar la informació");
+      alert(error);
   }
 }
 function informationChangeVar(data){
   generarPreuInfo(data);
   document.getElementById("imgGran").setAttribute("src","/static/"+data.imatges[0])
+  document.getElementById("variantID").innerHTML=data.id;
   generarImatgesPetites(data.imatges)
   generarTallesSelector(data.talles);
   activaBotoCarro();
@@ -264,7 +261,7 @@ function generarTallesSelector(talles){
     console.info(talles[i].tNom)
       var opt=fill.cloneNode()
       opt.value= talles[i].tId;
-      opt.text=talles[i].tNom;
+      opt.text=talles[i].tNom+" (Max Uds: "+ talles[i].qty+")";
       pare.appendChild(opt);
   }
 }
@@ -323,15 +320,35 @@ function generarPreuInfo(data){
   }
   divPreu.appendChild(spanPreu2);
 }
-async function cistella(){
-    try {
-        const response = await fetch('http://127.0.0.1:8000/add');
-        const data = await response.json();
-        const items = data.cistella;
-        document.getElementById('cistella').innerText = items;
-    } catch (error) {
-        document.getElementById('exchangeRate').innerText = 'Error en obtenir el canvi';
+
+async function cistella(data){
+  var e=document.getElementById("sTalles");
+  try {
+    const response = await fetch('http://127.0.0.1:8000/add/', 
+      {method: "POST",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          'var': e.options[e.selectedIndex].value,
+          'qty': document.getElementById("sQty").value,
+        })
+      }
+    );
+    const data = await response.json();
+    const items = data.cistella;
+    var elementExists=document.getElementById('cistella');
+    if(!elementExists){
+      var cistella=document.createElement("div");
+      cistella.setAttribute('id','cistella');
+      cistella.setAttribute('class','check position-absolute');
+      document.getElementById('divCistella').appendChild(cistella);
     }
+    document.getElementById('cistella').innerText = items;
+  } catch (error) {
+    alert("Error en accedir a la informació de la cistella");
+  }
 }
 function desfiltra(){
   document.getElementById('pmin').value="";
@@ -390,14 +407,47 @@ async function filtre(){
   }
 }
 function activaBotoCarro(){
+  var disabled=true;
   var e=document.getElementById("sTalles");
   var btn=document.getElementById("addCart");
-  var qty=document.getElementById("quantity");
-  if(e.options[e.selectedIndex].value == 0){
-    btn.disabled=true;
-    qty.disabled=true;
-  }else{
-    btn.disabled=false;
-    qty.disabled=false;
+  var qty=document.getElementById("sQty");
+  var tallaSel=e.options[e.selectedIndex].text
+  var qtyTalla=tallaSel.substring(tallaSel.indexOf(":")+2, tallaSel.length-1);
+  var btns=document.getElementsByClassName("incrdcr");
+
+  if(e.options[e.selectedIndex].value != 0){
+    qty.setAttribute('max',qtyTalla);
+    if(qty.value>qtyTalla){
+      qty.value=qtyTalla;
+    }
+    disabled=false;
   }
+  btn.disabled=disabled;
+  for(i=0;i<btns.length;i++){
+    btns[i].disabled=disabled;
+  }
+}
+async function updateItemCistell(id){
+  var index=id.indexOf("_");
+  var accio=id.substring(0, index);
+  var variant=id.substring(index+1)
+  var element=document.getElementById("qty_"+variant);
+  var currValue=parseInt(element.value);
+  var incrDecr=1
+  if(accio=="dcr"){
+    incrDecr=-1
+  }
+  element.value=currValue+incrDecr
+  const response = await fetch('http://127.0.0.1:8000/updateCistella/', 
+    {method: "POST",
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        'var': variant,
+        'qty': element.value,
+      })
+    }
+  );
 }

@@ -1,151 +1,146 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
-<section class="h-100 h-custom">
-    <div class="container h-100 py-5">
-      <div class="row d-flex justify-content-center align-items-center h-100">
-        <div class="col">
-          <div class="card shopping-cart" style="border-radius: 15px;">
-            <div class="card-body">
-  
-              <div class="row">
-                <div class="col-lg-6 px-5 py-4">
-  
-                  <h3 class="mb-5 pt-2 text-center fw-bold text-uppercase">Your products</h3>
-  
-                  <div class="d-flex align-items-center mb-5">
-                    <div class="flex-shrink-0">
-                      <img src="https://mdbcdn.b-cdn.net/img/Photos/Horizontal/E-commerce/Products/13.webp"
-                        class="img-fluid" style="width: 150px;" alt="Generic placeholder image">
-                    </div>
-                    <div class="flex-grow-1 ms-3">
-                      <a href="#!" class="float-end"><i class="fas fa-times"></i></a>
-                      <h5 class="text-primary">Samsung Galaxy M11 64GB</h5>
-                      <h6 style="color: #9e9e9e;">Color: white</h6>
-                      <div class="d-flex align-items-center">
-                        <p class="fw-bold mb-0 me-5 pe-3">799$</p>
-                        <div class="def-number-input number-input safari_only">
-                          <button data-mdb-button-init onclick="this.parentNode.querySelector('input[type=number]').stepDown()"
-                            class="minus"></button>
-                          <input class="quantity fw-bold bg-body-tertiary text-body" min="0" name="quantity" value="1"
-                            type="number">
-                          <button data-mdb-button-init onclick="this.parentNode.querySelector('input[type=number]').stepUp()"
-                            class="plus"></button>
-                        </div>
-                      </div>
-                    </div>
+<section id="shoppingCart" class="h-100 h-custom">
+  <div class="container py-4 h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col">
+        <div class="card">
+          <div class="card-body p-3">
+            <div class="row">
+              <!-- Descritpion of the shopping items -->
+              <div class="col-lg-7">
+                <!-- botons de cistella -->
+                <div class="d-flex position-relative">
+                  <h5 class="mb-3"><a href="/" class="text-body">
+                    <i class="fas fa-long-arrow-alt-left me-2"></i>Continue shopping</a>
+                  </h5>
+                  <div class="close d-flex position-absolute top-0 end-0">
+                    <form method="POST">
+                      {% csrf_token %}
+                      <button name="accion" value="vuidar" class="btn btn_normal ">
+                        Eliminar cistella
+                      </button>
+                    </form>
                   </div>
-  
-                  <div class="d-flex align-items-center mb-5">
-                    <div class="flex-shrink-0">
-                      <img src="https://mdbcdn.b-cdn.net/img/Photos/Horizontal/E-commerce/Products/6.webp"
-                        class="img-fluid" style="width: 150px;" alt="Generic placeholder image">
-                    </div>
-                    <div class="flex-grow-1 ms-3">
-                      <a href="#!" class="float-end"><i class="fas fa-times"></i></a>
-                      <h5 class="text-primary">Headphones Bose 35 II</h5>
-                      <h6 style="color: #9e9e9e;">Color: Red</h6>
-                      <div class="d-flex align-items-center">
-                        <p class="fw-bold mb-0 me-5 pe-3">239$</p>
-                        <div class="def-number-input number-input safari_only">
-                          <button data-mdb-button-init onclick="this.parentNode.querySelector('input[type=number]').stepDown()"
-                            class="minus"></button>
-                          <input class="quantity fw-bold bg-body-tertiary text-body" min="0" name="quantity" value="1"
-                            type="number">
-                          <button data-mdb-button-init onclick="this.parentNode.querySelector('input[type=number]').stepUp()"
-                            class="plus"></button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-  
-                  <div class="d-flex align-items-center mb-5">
-                    <div class="flex-shrink-0">
-                      <img src="https://mdbcdn.b-cdn.net/img/Photos/Horizontal/E-commerce/Products/1.webp"
-                        class="img-fluid" style="width: 150px;" alt="Generic placeholder image">
-                    </div>
-                    <div class="flex-grow-1 ms-3">
-                      <a href="#!" class="float-end"><i class="fas fa-times"></i></a>
-                      <h5 class="text-primary">iPad 9.7 6-gen WiFi 32GB</h5>
-                      <h6 style="color: #9e9e9e;">Color: rose pink</h6>
-                      <div class="d-flex align-items-center">
-                        <p class="fw-bold mb-0 me-5 pe-3">659$</p>
-                        <div class="def-number-input number-input safari_only">
-                          <button data-mdb-button-init onclick="this.parentNode.querySelector('input[type=number]').stepDown()"
-                            class="minus"></button>
-                          <input class="quantity fw-bold bg-body-tertiary text-body" min="0" name="quantity" value="2"
-                            type="number">
-                          <button data-mdb-button-init onclick="this.parentNode.querySelector('input[type=number]').stepUp()"
-                            class="plus"></button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-  
-                  <hr class="line mb-4" style="height: 2px; opacity: 1;">
-  
-                  <div class="d-flex justify-content-between px-x">
-                    <p class="fw-bold">Discount:</p>
-                    <p class="fw-bold">95$</p>
-                  </div>
-                  <div class="d-flex justify-content-between p-2 mb-2">
-                    <h5 class="fw-bold mb-0">Total:</h5>
-                    <h5 class="fw-bold mb-0">2261$</h5>
-                  </div>
-  
                 </div>
-                <div class="col-lg-6 px-5 py-4">
-  
-                  <h3 class="mb-5 pt-2 text-center fw-bold text-uppercase">Payment</h3>
-  
-                  <form class="mb-5">
-  
-                    <div data-mdb-input-init class="form-outline mb-5">
-                      <input type="text" id="typeText" class="form-control form-control-lg" siez="17"
-                        value="1234 5678 9012 3457" minlength="19" maxlength="19" />
-                      <label class="form-label" for="typeText">Card Number</label>
+                <hr>
+                <!-- numero d'items -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                  <div class="d-flex flex-row align-items-center justify-content-between col-12">
+                    <h2 class="secondaryText col-6 m-0"><b>Shopping cart</b></h2>
+                    <div class="col-5">
+                      {% if 'cistella' in request.session and request.session.cistella != 0 %}
+                      <p id="infoCistell" class="mb-0 ">Tens <b class="secondaryText">{{ request.session.cistella }}</b> productes al cistell</p>
+                      {% else %}
+                      <p id="infoCistell" class="mb-0 ">Cistella buida</p>
+                      {% endif %}
                     </div>
-  
-                    <div data-mdb-input-init class="form-outline mb-5">
-                      <input type="text" id="typeName" class="form-control form-control-lg" siez="17"
-                        value="John Smith" />
-                      <label class="form-label" for="typeName">Name on card</label>
-                    </div>
-  
-                    <div class="row">
-                      <div class="col-md-6 mb-5">
-                        <div data-mdb-input-init class="form-outline">
-                          <input type="text" id="typeExp" class="form-control form-control-lg" value="01/22"
-                            size="7" id="exp" minlength="7" maxlength="7" />
-                          <label class="form-label" for="typeExp">Expiration</label>
+                  </div>
+                </div>
+                <!-- secció productes -->
+                <div id="llistatCistella" class="card mb-3 mb-lg-0">
+                  <!--producte-->
+                  {% for ll in llistat %}
+                  <form method="POST">
+                  {% csrf_token %}
+                  <div class="card-body">
+                    <div class="d-flex flex-wrap justify-content-between col-auto">
+                      <div class="d-flex flex-row align-items-center col-8 col-md-5">
+                        <div>
+                          <img
+                            src="{% static ll.var.imatges_set.all.0.url %}"
+                            class="img-fluid rounded-3" alt="Shopping item" style="width: 65px;">
+                        </div>
+                        <div class="ms-3">
+                          <h5><a href="/info/{{ll.var.id}}">{{ll.var.prod.nom}}</a></h5>
+                          <p class="small mb-0"><b>Variant:</b> {{ll.var.nom}}</p>
+                          {% if ll.var.dto > 0%}
+                          <p class="small mb-0"><b>Dto:</b> {% widthratio ll.var.dto 1 100 %}%</p>
+                          {% endif %}
                         </div>
                       </div>
-                      <div class="col-md-6 mb-5">
-                        <div data-mdb-input-init class="form-outline">
-                          <input type="password" id="typeText" class="form-control form-control-lg"
-                            value="&#9679;&#9679;&#9679;" size="1" minlength="3" maxlength="3" />
-                          <label class="form-label" for="typeText">Cvv</label>
+                      <div class="col-4 col-md-auto me-0 align-items-center">
+                        <h5>Talla</h5>
+                        <p class="small mb-0"><b class="secondaryText">{{ll.talla.nom}}</b></p>
+                      </div>
+                      <div class="d-flex flex-row align-items-center justify-content-between col-12 col-md-5">
+                        <!-- Quantity -->
+                        <div class="d-flex col-auto align-items-center">
+                          <button type="submit" name="accion" value="decr" class="btn btn_normal px-3 me-2">
+                          -
+                          </button>
+                          <div class="btn">
+                            <span>{{ll.qty_compr}}</span>
+                          </div>
+                          <button type="submit" name="accion" value="incr" class="btn btn_normal px-3 ms-2">
+                            +
+                          </button>
                         </div>
+                        <!--total-->
+                        <div>
+                          <p class="mb-0">{{ll.preu_qty|floatformat:2}}€</p>
+                        </div>
+                        <input type="hidden" name="qty" value="{{ ll.qty_compr }}" />
+                        <input type="hidden" name="id" value="{{ ll.id }}" />
+                        <a href="#!" style="color: #cecece;"><i class="fas fa-trash-alt"></i></a>
                       </div>
                     </div>
-  
-                    <p class="mb-5">Lorem ipsum dolor sit amet consectetur, adipisicing elit <a
-                        href="#!">obcaecati sapiente</a>.</p>
-  
-                    <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn_normal btn-lg">Buy now</button>
-  
-                    <h5 class="fw-bold mb-5" style="position: absolute; bottom: 0;">
-                      <a href="#!"><i class="fas fa-angle-left me-2"></i>Back to shopping</a>
-                    </h5>
-  
+                  </div>
                   </form>
-  
+                  {% endfor %}
                 </div>
               </div>
-  
+              <!-- pagament info -->
+              <div id="pagamentinfo" class="col-lg-5">
+                <div class="rounded-3">
+                  <div class="card-body">
+                    <!-- Fra  -->
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                      <h4 class="secondaryText mb-0">Detall Compra</h4>
+                    </div>
+                    <!-- enviaments -->
+                    <form method="POST">
+                      {% csrf_token %}
+                      <p id="infoEnv"></p>
+                      <select name="enviament" id="enviament" class="col-12 align-text-center mb-3" onchange="this.form.submit()"">
+                        <option value="0">-Escollegeix enviament-</option>
+                        {% for env in enviament %}
+                        <option value="{{env.id}}" {% if env.id == opcSelect %} selected {% endif %}>{{env.nom}} (Entrega: {{env.dies_min}} a {{env.dies_max}} dies - Gratis amb compres de: {{env.preu_min}})</option>
+                        {% endfor %}
+                      </select>
+                    </form>
+                    <!-- imports -->
+                    <div class="d-flex justify-content-between">
+                      <p class="mb-2">Subtotal</p>
+                      <p class="mb-2">{{ request.session.fra.totalSinIva|floatformat:2 }}€</p>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                      <p class="mb-2">Gastos Enviament:</p>
+                      <p class="mb-2">{{ request.session.fra.totalEnvio|floatformat:2 }}€</p>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                      <p class="mb-2">Total Iva</p>
+                      <p class="mb-2">{{ request.session.fra.totalIva|floatformat:2 }}€</p>
+                    </div>
+                    <hr class="my-4">
+                    <div class="d-flex justify-content-between mb-4">
+                      <p class="mb-2">Total (IVA Incl.)</p>
+                      <p class="mb-2">{{ request.session.fra.totalFra|floatformat:2 }}€</p>
+                    </div>
+                    <button type="button" class="btn btn_outline btn_outline2 bt-xl ">
+                      <div class="d-flex justify-content-between">
+                        <span>Pagar Cistell<i class="fas fa-long-arrow-alt-right ms-2"></i></span>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 {% endblock %}

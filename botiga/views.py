@@ -31,7 +31,7 @@ def registrat(request):
 
 def cataleg(request, catid=None):
     request.session["page"]="cataleg"
-    request.session["login"]=1
+    request.session["login"]=0
     #query per obtindre les categories i si tenen fills
     categories=Categoria.objects.raw("SELECT * FROM `botiga_categoria` bc LEFT JOIN (SELECT jerarquia_id, count(jerarquia_id) "
                                     "as \"count\" FROM `botiga_categoria` where jerarquia_id is not null GROUP BY jerarquia_id) "
@@ -139,15 +139,127 @@ def user(request):
     })
 
 def shopping(request):
-    request.session["page"]="shopping"
-    return render(request, 'sections/shopping_cart.html')
-
-def add(request):
-    if 'cistella' not in request.session:
-        request.session['cistella']=1
+    if 'enviament' in request.session:
+        opcion=request.session['enviament']
     else:
-        request.session['cistella']=request.session['cistella']+1
+        request.session['enviament']=0
+
+    if request.method == 'POST':
+        accion = request.POST.get('accion')
+        if accion=='vuidar':
+            vuidarCistella(request)
+        elif accion=='incr' or accion=='decr':
+            updateCistella(request)
+        else:
+            opcion = request.POST.get('enviament')
+            request.session['enviament']=opcion
+
+    request.session["page"]="shopping"
+    items=request.session.get('items', [])
+    ids=[]
+    for item in items:
+        ids.append(item['id'])
+
+    llistat=TallaVariant.objects.filter(id__in=ids).select_related('var').prefetch_related('var__imatges_set')
+    if len(llistat)==0:
+        opcion=0
+        request.session['enviament']=opcion
+    enviament=Enviament.objects.all()
+
+    request.session['fra']=calcularCistella(request, llistat, items, opcion)
+    return render(request, 'sections/shopping_cart.html',{
+        'llistat':llistat,
+        'enviament':enviament,
+        'opcSelect':int(request.session['enviament'])
+    })
+
+def calcularCistella(request, llistat, items, opcion):
+    #Calculem els totals per les factures
+    totalSinIva=0
+    totalIva=0
+    #totalIva=
+    totalFra=0
+    cost=0
+    #iterem per el llistat de productes i calculem l'iva i el guardem en una variable diccionari
+    for ll in llistat:
+        for i in items:
+            if ll.id == int(i['id']):
+                auxSinIva= round(i['qty']*ll.var.preu*(1-ll.var.dto),2)
+                auxIva= round(auxSinIva*(ll.var.prod.iva.percentatge/100), 2)
+                ll.preu_qty=auxSinIva
+                ll.qty_compr=i['qty']
+                totalSinIva +=auxSinIva
+                totalIva += auxIva
+                totalFra += auxSinIva+auxIva
+    
+    #si s'ha escollit una opció d'enviament farem el calcul d'aquest
+    if opcion!=0:
+        enviament=Enviament.objects.filter(id=opcion).first()
+        if enviament.preu_min>totalSinIva:
+            cost=enviament.cost
+            auxIva=round(cost*(enviament.iva.percentatge/100),2)
+            totalIva+=auxIva
+            totalFra+=cost+auxIva
+
+    return {
+            'totalSinIva':totalSinIva,
+            'totalEnvio':cost,
+            'totalIva':totalIva,
+            'totalFra':totalFra
+        }
+
+def updateCistella(request):
+    items=request.session.get('items', [])
+    var=request.POST.get('id')
+    qty=int(request.POST.get('qty'))
+    #identifiquem el botó per sapiguer que está fent l'usuari
+    accion = request.POST.get('accion')
+    incrDecr=1
+    if accion=='decr':
+        incrDecr=-1
+    #actualitzem el valor de la cistella
+    request.session['cistella']=request.session['cistella']+incrDecr
+    if (qty+incrDecr)<=0:
+        request.session['items'] = [item for item in items if item["id"] != var]
+    else:
+        for item in items:
+            if item['id']==var:
+                item['qty']+=incrDecr
+                break
+
+@api_view(['POST'])
+def addCistella(request):
+    var=request.data["var"]
+    qty=int(request.data["qty"])
+
+    items=request.session.get('items', [])
+    # incrementem el contador de la cistella
+    if 'cistella' not in request.session:
+        request.session['cistella']=qty
+    else:
+        request.session['cistella']=request.session['cistella']+qty
+
+    # guardem els items que han agregat a la cistella
+    prod_exist=False
+    
+    for item in items:
+        if item['id']==var:
+            item['qty']+=qty
+            prod_exist=True
+            break
+
+    if not prod_exist:
+        items.append({
+            "id":var,
+            "qty":qty
+            })
+    request.session['items']=items
     return JsonResponse({'cistella': request.session['cistella']})
+
+def vuidarCistella(request):
+    if 'cistella' in request.session:
+        request.session.pop('cistella')
+        request.session.pop('items')
 
 @api_view(['POST'])
 def filtrar(request):
@@ -210,9 +322,10 @@ def variantInfo(request):
         for t in p.tallavariant_set.all():
             talla={
                 'tNom':t.talla.nom,
-                'tId':t.talla.id,
+                'tId':t.id,
                 'qty':t.qty
             }
+            print(t.qty)
             talles.append(talla)
         item={
             "id": p.id,
