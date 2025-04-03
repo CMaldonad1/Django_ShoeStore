@@ -87,7 +87,7 @@ function creacioElementPare(product, imatge){
   cardbody.setAttribute("class","card-body");
 
   var cardtitle=document.createElement("h5");
-  cardtitle.setAttribute("class","card-title");
+  cardtitle.setAttribute("class","card-title crd_nm");
   cardtitle.innerHTML=product.prod;
   cardbody.appendChild(cardtitle);
 
@@ -236,7 +236,6 @@ async function changeVariant(event) {
       alert("No s'ha trobat cap resultat per la busqueda");
     }else{
       informationChangeVar(data)
-
     }
   } catch (error) {
       alert(error);
@@ -246,6 +245,7 @@ function informationChangeVar(data){
   generarPreuInfo(data);
   document.getElementById("imgGran").setAttribute("src","/static/"+data.imatges[0])
   document.getElementById("variantID").innerHTML=data.id;
+  document.getElementById("model").innerHTML="<b>Marca: </b>"+data.nom
   generarImatgesPetites(data.imatges)
   generarTallesSelector(data.talles);
   activaBotoCarro();
@@ -320,7 +320,6 @@ function generarPreuInfo(data){
   }
   divPreu.appendChild(spanPreu2);
 }
-
 async function cistella(data){
   var e=document.getElementById("sTalles");
   try {
@@ -338,17 +337,26 @@ async function cistella(data){
     );
     const data = await response.json();
     const items = data.cistella;
-    var elementExists=document.getElementById('cistella');
-    if(!elementExists){
-      var cistella=document.createElement("div");
-      cistella.setAttribute('id','cistella');
-      cistella.setAttribute('class','check position-absolute');
-      document.getElementById('divCistella').appendChild(cistella);
+    if(items==-1){
+      activarModal();
+    }else{
+      var elementExists=document.getElementById('cistella');
+      if(!elementExists){
+        var cistella=document.createElement("div");
+        cistella.setAttribute('id','cistella');
+        cistella.setAttribute('class','check position-absolute');
+        document.getElementById('divCistella').appendChild(cistella);
+      }
+      document.getElementById('cistella').innerText = items;
     }
-    document.getElementById('cistella').innerText = items;
   } catch (error) {
-    alert("Error en accedir a la informació de la cistella");
+    // alert("Error en accedir a la informació de la cistella");
+    alert(error)
   }
+}
+function activaModal(){
+  var myModal = new bootstrap.Modal(document.getElementById('login'), {});
+  myModal.show();
 }
 function desfiltra(){
   document.getElementById('pmin').value="";

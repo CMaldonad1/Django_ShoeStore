@@ -64,7 +64,7 @@ class User(models.Model):
         return self.nom
 
 class Cistell(models.Model):
-    enviament=models.ForeignKey(Enviament, on_delete=models.DO_NOTHING)
+    enviament=models.ForeignKey(Enviament, on_delete=models.DO_NOTHING, null=True)
     client=models.ForeignKey(User, on_delete=models.DO_NOTHING, null=False)
 
 class LineaCistell(models.Model):

@@ -27,6 +27,13 @@ html{
         flex-direction: column;
         background-color: @main_color;
         color: @secondary_color;
+        .modal-content{
+            color:@reg_text;
+            background-color: @secondary_color;
+            h1{
+                color:@third_color;
+            }
+        }
         .secondaryText{
             color:@third_color;
         }
@@ -255,6 +262,14 @@ html{
                         overflow-x: scroll;
                         scrollbar-color: @reg_text @secondary_color;
                         --bs-gutter-x: 0rem !important;
+                        .card-body{
+                            .crd_nm{
+                                font-weight: bold;
+                                font-size:15px;
+                                color:@third_color
+                            }
+                            
+                        }
                         .dtoinfo{
                             background-color: @third_color;
                             height:30px;
@@ -320,6 +335,10 @@ html{
                 }
             }
             #shoppingCart{
+                #llistatCistella{
+                    overflow-y: scroll;
+                    height: 250px;       
+                }
                 #pagamentinfo{
                     color:@reg_text;
                     background-color: @secondary_color !important;
@@ -328,6 +347,14 @@ html{
                         background-color: @third_color;
                         height: 3px;
                     }
+                }
+            }
+            .eliminar{
+                background-color: transparent;
+                border:none;
+                color:@secondary_color;
+                &:hover{
+                    color: @third_color;
                 }
             }
         }

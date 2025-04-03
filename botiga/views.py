@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.core.serializers import serialize
 from django.http import HttpResponse, JsonResponse
 from rest_framework import status
+from django.db.models import Sum
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.views.generic import ListView
@@ -10,13 +11,55 @@ from .models import *
 from django.db.models import Prefetch, Q
 from django.shortcuts import get_object_or_404, get_list_or_404, render, redirect
 import json
+from .decorator import unauthenticated_user
 #request.session["nom"] = request.POST.get("nom_param", "")
 #request.session.clear()
 
 # Create your views here.
 def login(request):
-    #if request.method == 'POST':
-    #    Project.objects.create(name=request.POST['name']) 
+    if request.method == 'POST':
+        user=request.POST.get('user')
+        pswd=request.POST.get('pswd')
+        logOK=User.objects.filter(mail__iexact=user, pswd=pswd).first()
+        #verifiquem que l'usuari s'ha loginat correctament
+        if logOK:
+            idUser=logOK.id
+            #borrem el possible missatge d'error
+            if 'logerr' in request.session:
+                request.session.pop('logerr')
+            #guardem en sessió les dades de l'usuari
+            request.session["login"]={
+                'id':idUser,
+                'nom':logOK.nom
+                }
+            #verifiquem si te cistells
+            exist=Cistell.objects.filter(client__id=idUser, enviament__isnull=True).first()
+            qty=0
+            # #si te cistell guardem l'id i contem quants items té, sino creem un de nou 
+            if exist:
+                cistell=exist.id
+                auxqty=LineaCistell.objects.filter(cistell=cistell).aggregate(Sum('qty'))
+                if auxqty['qty__sum']==None:
+                    qty=0
+                else:
+                    qty=auxqty['qty__sum']
+            else:
+                novaCistella=Cistell(client=logOK)
+                novaCistella.save()
+                cistell=novaCistella.id
+            request.session['cistella']={
+                    'id':cistell,
+                    'qty':qty
+                }
+        else:
+            request.session['logerr']="Usuari i/o contrasenya incorrecta!"
+    return cataleg(request)
+
+def logoff(request):
+    if 'login' in request.session:
+        request.session.pop('login')
+    if 'cistella' in request.session:
+        request.session.pop('cistella')
     return cataleg(request)
 
 def registrat(request):
@@ -30,8 +73,9 @@ def registrat(request):
     })
 
 def cataleg(request, catid=None):
+    if 'logerr' in request.session:
+        request.session.pop('logerr')
     request.session["page"]="cataleg"
-    request.session["login"]=0
     #query per obtindre les categories i si tenen fills
     categories=Categoria.objects.raw("SELECT * FROM `botiga_categoria` bc LEFT JOIN (SELECT jerarquia_id, count(jerarquia_id) "
                                     "as \"count\" FROM `botiga_categoria` where jerarquia_id is not null GROUP BY jerarquia_id) "
@@ -139,6 +183,11 @@ def user(request):
     })
 
 def shopping(request):
+    request.session["page"]="shopping"
+    
+    if 'logerr' in request.session:
+        request.session.pop('logerr')
+
     if 'enviament' in request.session:
         opcion=request.session['enviament']
     else:
@@ -150,56 +199,59 @@ def shopping(request):
             vuidarCistella(request)
         elif accion=='incr' or accion=='decr':
             updateCistella(request)
+        elif accion=='delete':
+            deleteItem(request)
         else:
-            opcion = request.POST.get('enviament')
-            request.session['enviament']=opcion
+            opcion = int(request.POST.get('enviament'))
+            
 
-    request.session["page"]="shopping"
-    items=request.session.get('items', [])
-    ids=[]
-    for item in items:
-        ids.append(item['id'])
+    llistat=LineaCistell.objects.filter(cistell_id=request.session['cistella']['id']).all()
 
-    llistat=TallaVariant.objects.filter(id__in=ids).select_related('var').prefetch_related('var__imatges_set')
     if len(llistat)==0:
         opcion=0
-        request.session['enviament']=opcion
-    enviament=Enviament.objects.all()
 
-    request.session['fra']=calcularCistella(request, llistat, items, opcion)
+    enviament=Enviament.objects.all()
+    request.session['enviament']=opcion
+    request.session['fra']=calcularCistella(llistat, opcion)
     return render(request, 'sections/shopping_cart.html',{
         'llistat':llistat,
         'enviament':enviament,
         'opcSelect':int(request.session['enviament'])
     })
 
-def calcularCistella(request, llistat, items, opcion):
+def deleteItem(request):
+    var=request.POST.get('id')
+    LineaCistell.objects.filter(var_id=var).delete()
+    qty=int(request.POST.get('qty'))*-1
+
+def calcularCistella(llistat, opcion):
     #Calculem els totals per les factures
     totalSinIva=0
-    totalIva=0
-    #totalIva=
+    # totalIva=0
+    totalIva=[]
     totalFra=0
     cost=0
     #iterem per el llistat de productes i calculem l'iva i el guardem en una variable diccionari
     for ll in llistat:
-        for i in items:
-            if ll.id == int(i['id']):
-                auxSinIva= round(i['qty']*ll.var.preu*(1-ll.var.dto),2)
-                auxIva= round(auxSinIva*(ll.var.prod.iva.percentatge/100), 2)
-                ll.preu_qty=auxSinIva
-                ll.qty_compr=i['qty']
-                totalSinIva +=auxSinIva
-                totalIva += auxIva
-                totalFra += auxSinIva+auxIva
+        iva=ll.var.var.prod.iva.percentatge
+        auxSinIva= round(ll.qty*ll.var.var.preu*(1-ll.var.var.dto),2)
+        auxTotalIva= round(auxSinIva*(iva/100), 2)
+        ll.preu_qty=auxSinIva
+        totalSinIva +=auxSinIva
+        calculIva(totalIva,iva,auxTotalIva)
+        totalFra += auxSinIva+auxTotalIva
     
     #si s'ha escollit una opció d'enviament farem el calcul d'aquest
     if opcion!=0:
         enviament=Enviament.objects.filter(id=opcion).first()
         if enviament.preu_min>totalSinIva:
             cost=enviament.cost
-            auxIva=round(cost*(enviament.iva.percentatge/100),2)
-            totalIva+=auxIva
-            totalFra+=cost+auxIva
+            iva=enviament.iva.percentatge
+            auxTotalIva=round(cost*(iva/100),2)
+            calculIva(totalIva,iva,auxTotalIva)
+            totalFra+=cost+auxTotalIva
+
+    totalIva=sorted(totalIva, key=lambda k: k.get('nom'), reverse=True)
 
     return {
             'totalSinIva':totalSinIva,
@@ -208,59 +260,75 @@ def calcularCistella(request, llistat, items, opcion):
             'totalFra':totalFra
         }
 
+def calculIva(totalIva,iva,total):
+        exist=False
+        for i in totalIva:
+            if i['nom']==iva:
+                i['total']+=total
+                exist=True
+                break
+        if not exist:
+            totalIva.append({
+                'nom':iva,
+                'total':total
+            })
+
+def updateSessionCistella(request,qty):
+    value=int(request.session['cistella']['qty'])+qty
+    if value<=0:
+        value=0
+    request.session['cistella']['qty']=value
+    request.session.modified = True
+
 def updateCistella(request):
-    items=request.session.get('items', [])
     var=request.POST.get('id')
     qty=int(request.POST.get('qty'))
+
     #identifiquem el botó per sapiguer que está fent l'usuari
     accion = request.POST.get('accion')
     incrDecr=1
     if accion=='decr':
         incrDecr=-1
     #actualitzem el valor de la cistella
-    request.session['cistella']=request.session['cistella']+incrDecr
-    if (qty+incrDecr)<=0:
-        request.session['items'] = [item for item in items if item["id"] != var]
+    updateSessionCistella(request,incrDecr)
+    incrDecr+=qty
+    if (incrDecr)<=0:
+        deleteItem(request)
     else:
-        for item in items:
-            if item['id']==var:
-                item['qty']+=incrDecr
-                break
+        updateLinea(request, var, incrDecr)
+
+def producteEnCistella(request,var):
+    cistellId=request.session['cistella']['id']
+    exist=LineaCistell.objects.filter(cistell_id=cistellId,var_id=var).first()
+    if exist:
+        return exist.qty
+    else:
+        return 0
+
+def updateLinea(request, var, qty):
+    idCistell=request.session['cistella']['id']
+    LineaCistell.objects.update_or_create(cistell_id=idCistell, var_id=var, defaults={'qty': qty})
 
 @api_view(['POST'])
+@unauthenticated_user
 def addCistella(request):
     var=request.data["var"]
     qty=int(request.data["qty"])
-
-    items=request.session.get('items', [])
+    qtyCistella=request.session['cistella']['qty']
+    exist=producteEnCistella(request,var)
+    exist+=qty
+    updateLinea(request, var, exist)
+       
     # incrementem el contador de la cistella
-    if 'cistella' not in request.session:
-        request.session['cistella']=qty
-    else:
-        request.session['cistella']=request.session['cistella']+qty
+    updateSessionCistella(request,qty)
 
     # guardem els items que han agregat a la cistella
-    prod_exist=False
-    
-    for item in items:
-        if item['id']==var:
-            item['qty']+=qty
-            prod_exist=True
-            break
-
-    if not prod_exist:
-        items.append({
-            "id":var,
-            "qty":qty
-            })
-    request.session['items']=items
-    return JsonResponse({'cistella': request.session['cistella']})
+    return JsonResponse({'cistella': request.session['cistella']['qty']})
 
 def vuidarCistella(request):
-    if 'cistella' in request.session:
-        request.session.pop('cistella')
-        request.session.pop('items')
-
+    LineaCistell.objects.filter(cistell_id=request.session['cistella']['id']).delete()
+    request.session['cistella']['qty']=0
+    
 @api_view(['POST'])
 def filtrar(request):
     pmin=request.data["pmin"]
@@ -325,10 +393,10 @@ def variantInfo(request):
                 'tId':t.id,
                 'qty':t.qty
             }
-            print(t.qty)
             talles.append(talla)
         item={
             "id": p.id,
+            "nom": p.nom,
             "preu":p.preu,
             "dto":p.dto,
             "imatges":imatges,

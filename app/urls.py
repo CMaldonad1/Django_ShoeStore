@@ -30,11 +30,10 @@ urlpatterns = [
     path('sign_in/', views.registrat, name='registrat'),
     path('add/', views.addCistella, name='add'),
 
+    path('login/',views.login,name='login'),
+    path('logoff/',views.logoff,name='logoff'),
     path('cistella/', views.shopping, name='cistella'),
-    path('vuidarCistella/', views.vuidarCistella, name='vuidarCistella'),
-    path('updateCistella/', views.updateCistella, name='updateCistella'),
 
     path('filtrar/', views.filtrar, name='filtrar'),
     path('variantInfo/', views.variantInfo, name='variantInfo'),
-
 ]

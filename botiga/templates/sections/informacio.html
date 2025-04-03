@@ -19,9 +19,10 @@
         <!-- Product Details -->
         <div class="col-10 col-md-8 col-lg-5 ">
             <p id="variantID" hidden>{{prod.0.id}}</p>
-            <h2 class="mb-3">{{prod.0.prod.nom}}</h2>
-            <p class="text-muted mb-4"><b>Marca: </b>{{prod.0.prod.marca}}</p>
-            <div id="preuSection" class="mb-3 d-flex flex-row align-items-end">
+            <h2 class="mb-1">{{prod.0.prod.nom}}</h2>
+            <p id="model" class="text-muted mb-1"><b>Model: </b>{{prod.0.nom}}</p>
+            <p class="text-muted mb-2"><b>Marca: </b>{{prod.0.prod.marca}}</p>
+            <div id="preuSection" class="mb-2 d-flex flex-row align-items-end">
                 {% if prod.0.dto == 0 %}
                 <div>
                     <span class="h4">Preu: </span>
@@ -38,9 +39,9 @@
                 </div>
                 {% endif %}
             </div>
-            <p class="mb-4">{{prod.0.prod.descripcio}}</p>
+            <p class="mb-2">{{prod.0.prod.descripcio}}</p>
             <!--Seccio Variants-->
-            <div class="mb-4">
+            <div class="mb-2">
                 <h5>Variants:</h5>
                 <div class="d-flex col-8">
                     {% for p in prod%}
@@ -49,7 +50,7 @@
                 </div>
             </div>
             <!--Seccio quantitats i talles-->
-            <div class="mb-4 d-flex flex-row">
+            <div class="mb-2 d-flex flex-row">
                 <div class="me-4">
                     <label for="sTalles" class="form-label">Talla:</label>
                     <select id="sTalles" class="form-control" onchange="activaBotoCarro()">

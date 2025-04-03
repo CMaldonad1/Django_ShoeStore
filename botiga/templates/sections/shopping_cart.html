@@ -2,7 +2,7 @@
 {% load static %}
 {% block content %}
 <section id="shoppingCart" class="h-100 h-custom">
-  <div class="container py-4 h-100">
+  <div class="container py-2 h-100">
     <div class="row d-flex justify-content-center align-items-center h-100">
       <div class="col">
         <div class="card">
@@ -18,7 +18,10 @@
                   <div class="close d-flex position-absolute top-0 end-0">
                     <form method="POST">
                       {% csrf_token %}
-                      <button name="accion" value="vuidar" class="btn btn_normal ">
+                      <button name="accion" value="vuidar" class="btn btn_normal"
+                      {% if 'cistella' not in request.session or request.session.cistella == 0 %}
+                        disabled
+                      {% endif %}>
                         Eliminar cistella
                       </button>
                     </form>
@@ -30,8 +33,8 @@
                   <div class="d-flex flex-row align-items-center justify-content-between col-12">
                     <h2 class="secondaryText col-6 m-0"><b>Shopping cart</b></h2>
                     <div class="col-5">
-                      {% if 'cistella' in request.session and request.session.cistella != 0 %}
-                      <p id="infoCistell" class="mb-0 ">Tens <b class="secondaryText">{{ request.session.cistella }}</b> productes al cistell</p>
+                      {% if 'cistella' in request.session and request.session.cistella.qty != 0 %}
+                      <p id="infoCistell" class="mb-0 ">Tens <b class="secondaryText">{{ request.session.cistella.qty }}</b> productes al cistell</p>
                       {% else %}
                       <p id="infoCistell" class="mb-0 ">Cistella buida</p>
                       {% endif %}
@@ -45,46 +48,52 @@
                   <form method="POST">
                   {% csrf_token %}
                   <div class="card-body">
-                    <div class="d-flex flex-wrap justify-content-between col-auto">
-                      <div class="d-flex flex-row align-items-center col-8 col-md-5">
+                    <div class="d-flex flex-wrap justify-content-between col-12">
+                      <div class="d-flex flex-row align-items-center col-8 col-md-5 order-0">
                         <div>
                           <img
-                            src="{% static ll.var.imatges_set.all.0.url %}"
+                            src="{% static ll.var.var.imatges_set.all.0.url %}"
                             class="img-fluid rounded-3" alt="Shopping item" style="width: 65px;">
                         </div>
                         <div class="ms-3">
-                          <h5><a href="/info/{{ll.var.id}}">{{ll.var.prod.nom}}</a></h5>
-                          <p class="small mb-0"><b>Variant:</b> {{ll.var.nom}}</p>
-                          {% if ll.var.dto > 0%}
-                          <p class="small mb-0"><b>Dto:</b> {% widthratio ll.var.dto 1 100 %}%</p>
+                          <h5><a href="/info/{{ll.var.id}}">{{ll.var.var.prod.nom}}</a></h5>
+                          <p class="small mb-0"><b>Variant:</b> {{ll.var.var.nom}}</p>
+                          {% if ll.var.var.dto > 0%}
+                          <p class="small mb-0"><b>Dto:</b> {% widthratio ll.var.var.dto 1 100 %}%</p>
                           {% endif %}
                         </div>
                       </div>
-                      <div class="col-4 col-md-auto me-0 align-items-center">
+                      <!-- talla info -->
+                      <div class="col-2 col-md-auto me-0 align-items-center align-text-center order-0">
                         <h5>Talla</h5>
-                        <p class="small mb-0"><b class="secondaryText">{{ll.talla.nom}}</b></p>
+                        <p class="small mb-0 "><b class="secondaryText">{{ll.var.talla.nom}}</b></p>
                       </div>
-                      <div class="d-flex flex-row align-items-center justify-content-between col-12 col-md-5">
+                      <!-- qty i total -->
+                      <div class="d-flex flex-row align-items-center justify-content-between mt-1 mt-md-0 col-8 col-md-auto order-1 order-md-0">
                         <!-- Quantity -->
                         <div class="d-flex col-auto align-items-center">
-                          <button type="submit" name="accion" value="decr" class="btn btn_normal px-3 me-2">
+                          <button type="submit" name="accion" value="decr" class="btn btn_normal">
                           -
                           </button>
                           <div class="btn">
-                            <span>{{ll.qty_compr}}</span>
+                            <span>{{ll.qty}}</span>
                           </div>
-                          <button type="submit" name="accion" value="incr" class="btn btn_normal px-3 ms-2">
+                          <button type="submit" name="accion" value="incr" class="btn btn_normal">
                             +
                           </button>
                         </div>
                         <!--total-->
                         <div>
-                          <p class="mb-0">{{ll.preu_qty|floatformat:2}}€</p>
+                          <p class="mb-1 ms-2">{{ll.preu_qty|floatformat:2}}€</p>
                         </div>
-                        <input type="hidden" name="qty" value="{{ ll.qty_compr }}" />
-                        <input type="hidden" name="id" value="{{ ll.id }}" />
+                        <input type="hidden" name="qty" value="{{ ll.qty }}" />
+                        <input type="hidden" name="id" value="{{ ll.var.id }}" />
                         <a href="#!" style="color: #cecece;"><i class="fas fa-trash-alt"></i></a>
                       </div>
+                      <!-- delete -->
+                      <button type="submit" name="accion" value="delete" class="d-flex align-items-center justify-content-center eliminar" onclick="this.form.submit()">
+                          <svg height="20px" width="20px" fill="currentColor" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 457.503 457.503" xml:space="preserve"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <g> <path d="M381.575,57.067h-90.231C288.404,25.111,261.461,0,228.752,0C196.043,0,169.1,25.111,166.16,57.067H75.929 c-26.667,0-48.362,21.695-48.362,48.362c0,26.018,20.655,47.292,46.427,48.313v246.694c0,31.467,25.6,57.067,57.067,57.067 h195.381c31.467,0,57.067-25.6,57.067-57.067V153.741c25.772-1.02,46.427-22.294,46.427-48.313 C429.936,78.761,408.242,57.067,381.575,57.067z M165.841,376.817c0,8.013-6.496,14.509-14.508,14.509 c-8.013,0-14.508-6.496-14.508-14.509V186.113c0-8.013,6.496-14.508,14.508-14.508c8.013,0,14.508,6.496,14.508,14.508V376.817z M243.26,376.817c0,8.013-6.496,14.509-14.508,14.509c-8.013,0-14.508-6.496-14.508-14.509V186.113 c0-8.013,6.496-14.508,14.508-14.508c8.013,0,14.508,6.496,14.508,14.508V376.817z M320.679,376.817 c0,8.013-6.496,14.509-14.508,14.509c-8.013,0-14.509-6.496-14.509-14.509V186.113c0-8.013,6.496-14.508,14.509-14.508 s14.508,6.496,14.508,14.508V376.817z"></path></svg>
+                      </button>
                     </div>
                   </div>
                   </form>
@@ -103,7 +112,11 @@
                     <form method="POST">
                       {% csrf_token %}
                       <p id="infoEnv"></p>
-                      <select name="enviament" id="enviament" class="col-12 align-text-center mb-3" onchange="this.form.submit()"">
+                      <select name="enviament" id="enviament" class="col-12 align-text-center mb-3" onchange="this.form.submit()"
+                      {% if 'cistella' not in request.session or request.session.cistella == 0 %}
+                        disabled
+                      {% endif %}>
+                      >
                         <option value="0">-Escollegeix enviament-</option>
                         {% for env in enviament %}
                         <option value="{{env.id}}" {% if env.id == opcSelect %} selected {% endif %}>{{env.nom}} (Entrega: {{env.dies_min}} a {{env.dies_max}} dies - Gratis amb compres de: {{env.preu_min}})</option>
@@ -111,24 +124,29 @@
                       </select>
                     </form>
                     <!-- imports -->
-                    <div class="d-flex justify-content-between">
-                      <p class="mb-2">Subtotal</p>
-                      <p class="mb-2">{{ request.session.fra.totalSinIva|floatformat:2 }}€</p>
+                    <div class="d-flex justify-content-between mb-3">
+                      <span>Subtotal</span>
+                      <span>{{ request.session.fra.totalSinIva|floatformat:2 }}€</span>
                     </div>
-                    <div class="d-flex justify-content-between">
-                      <p class="mb-2">Gastos Enviament:</p>
-                      <p class="mb-2">{{ request.session.fra.totalEnvio|floatformat:2 }}€</p>
+                    <div class="d-flex justify-content-between mb-3">
+                      <span>Gastos Enviament:</span>
+                      <span>{{ request.session.fra.totalEnvio|floatformat:2 }}€</span>
                     </div>
-                    <div class="d-flex justify-content-between">
-                      <p class="mb-2">Total Iva</p>
-                      <p class="mb-2">{{ request.session.fra.totalIva|floatformat:2 }}€</p>
+                    {% for iva in request.session.fra.totalIva %}
+                    <div class="d-flex justify-content-between mb-3">
+                      <span>Total IVA {{iva.nom}}%</span>
+                      <span>{{ iva.total|floatformat:2 }}€</span>
                     </div>
-                    <hr class="my-4">
-                    <div class="d-flex justify-content-between mb-4">
-                      <p class="mb-2">Total (IVA Incl.)</p>
-                      <p class="mb-2">{{ request.session.fra.totalFra|floatformat:2 }}€</p>
+                    {% endfor %}
+                    <hr class="my-1">
+                    <div class="d-flex justify-content-between mt-3">
+                      <p>Total (IVA Incl.)</p>
+                      <p>{{ request.session.fra.totalFra|floatformat:2 }}€</p>
                     </div>
-                    <button type="button" class="btn btn_outline btn_outline2 bt-xl ">
+                    <button type="button" class="btn btn_outline btn_outline2 bt-xl"
+                    {% if 'cistella' not in request.session or request.session.cistella == 0 %}
+                      disabled
+                    {% endif %}>
                       <div class="d-flex justify-content-between">
                         <span>Pagar Cistell<i class="fas fa-long-arrow-alt-right ms-2"></i></span>
                       </div>

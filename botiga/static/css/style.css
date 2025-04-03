@@ -20,6 +20,13 @@ html body {
   background-color: #96f1c5;
   color: #1d1e18;
 }
+html body .modal-content {
+  color: whitesmoke;
+  background-color: #1d1e18;
+}
+html body .modal-content h1 {
+  color: #ca46dc;
+}
 html body .secondaryText {
   color: #ca46dc;
 }
@@ -249,6 +256,11 @@ html body main .infobody section .prodcat {
   scrollbar-color: whitesmoke #1d1e18;
   --bs-gutter-x: 0rem !important;
 }
+html body main .infobody section .prodcat .card-body .crd_nm {
+  font-weight: bold;
+  font-size: 15px;
+  color: #ca46dc;
+}
 html body main .infobody section .prodcat .dtoinfo {
   background-color: #ca46dc;
   height: 30px;
@@ -309,6 +321,10 @@ html body main .productevista .close {
   margin-top: 5px;
   margin-right: 5px;
 }
+html body main #shoppingCart #llistatCistella {
+  overflow-y: scroll;
+  height: 250px;
+}
 html body main #shoppingCart #pagamentinfo {
   color: whitesmoke;
   background-color: #1d1e18 !important;
@@ -317,6 +333,14 @@ html body main #shoppingCart #pagamentinfo {
 html body main #shoppingCart #pagamentinfo hr {
   background-color: #ca46dc;
   height: 3px;
+}
+html body main .eliminar {
+  background-color: transparent;
+  border: none;
+  color: #1d1e18;
+}
+html body main .eliminar:hover {
+  color: #ca46dc;
 }
 html body .ftr {
   background-color: #1d1e18;
