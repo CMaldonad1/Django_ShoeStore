@@ -15,15 +15,15 @@
   <body>
     {% include 'navbar.html' %}
     {% include 'sections/login.html' %}
-    {% if 'logerr' in request.session %}
-      <script>
-        activaModal();
-      </script>
-    {% endif %}
     <main class="container-fluid p-0">
       {% block content %}
       {% endblock %}
     </main>
+    {% if 'logerr' in request.session %}
+      <script>
+        activarModal();
+      </script>
+    {% endif %}
     {% include 'footer.html' %}
   </body>
 </html>

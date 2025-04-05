@@ -1,9 +1,16 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
+<div id="breadcrumb-div">
+  <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+          <li class="breadcrumb-item">Cistella</li>
+      </ol>
+  </nav>
+</div>
 <section id="shoppingCart" class="h-100 h-custom">
-  <div class="container py-2 h-100">
-    <div class="row d-flex justify-content-center align-items-center h-100">
+  <div class="container">
+    <div class="row d-flex justify-content-center mt-5 h-100">
       <div class="col">
         <div class="card">
           <div class="card-body p-3">
@@ -143,14 +150,17 @@
                       <p>Total (IVA Incl.)</p>
                       <p>{{ request.session.fra.totalFra|floatformat:2 }}€</p>
                     </div>
-                    <button type="button" class="btn btn_outline btn_outline2 bt-xl"
-                    {% if 'cistella' not in request.session or request.session.cistella == 0 %}
-                      disabled
-                    {% endif %}>
-                      <div class="d-flex justify-content-between">
-                        <span>Pagar Cistell<i class="fas fa-long-arrow-alt-right ms-2"></i></span>
-                      </div>
-                    </button>
+                    <a type="button" class="btn btn_outline btn_outline2 bt-xl
+                    {% if 'enviament' not in request.session or request.session.enviament == 0 %}
+                      disabled_link
+                    {% endif %}"  href="{% url 'pagament'%}">
+                      <span>Pagar Cistell 
+                        {% if request.session.fra.totalFra%}
+                        ⇨ {{ request.session.fra.totalFra|floatformat:2 }} €
+                        {% endif%}
+                        <i class="fas fa-long-arrow-alt-right ms-2"></i>
+                      </span>
+                    </a>
                   </div>
                 </div>
               </div>

@@ -23,7 +23,7 @@
         {% if 'login' not in request.session or request.session.login.id == 0  %}
         <!--si no ho está menú de login-->
         <div class="text-end col-2 col-sm-4 mb-0 order-3 order-sm-0 d-flex flex-wrap align-items-center align-items-sm-end justify-content-end ">
-          <button type="button" class="btn btn_outline" data-bs-toggle="modal" data-bs-target="#login">Login</button>
+          <button type="button" class="btn btn_normal" data-bs-toggle="modal" data-bs-target="#login">Login</button>
           <!-- <a class="btn btn_normal" href="{% url 'registrat' %}">Sign-up</a> -->
         </div>
         {% else %}

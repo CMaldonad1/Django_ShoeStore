@@ -350,13 +350,13 @@ async function cistella(data){
       document.getElementById('cistella').innerText = items;
     }
   } catch (error) {
-    // alert("Error en accedir a la informació de la cistella");
-    alert(error)
+    alert("Error en accedir a la informació de la cistella");
   }
 }
-function activaModal(){
+async function activarModal(){
   var myModal = new bootstrap.Modal(document.getElementById('login'), {});
   myModal.show();
+  const response = await fetch('http://127.0.0.1:8000/eliminarMissatge/') 
 }
 function desfiltra(){
   document.getElementById('pmin').value="";

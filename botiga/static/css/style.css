@@ -20,6 +20,15 @@ html body {
   background-color: #96f1c5;
   color: #1d1e18;
 }
+html body .bgSecondary {
+  background-color: #ca46dc;
+}
+html body .disabled_link {
+  pointer-events: none;
+  cursor: default;
+  color: grey !important;
+  border-color: grey !important;
+}
 html body .modal-content {
   color: whitesmoke;
   background-color: #1d1e18;
@@ -42,7 +51,7 @@ html body .btn_normal {
   background-color: #96f1c5;
 }
 html body .btn_normal:hover {
-  color: #96f1c5;
+  color: whitesmoke;
   background-color: #ca46dc;
 }
 html body .btn_outline {
@@ -232,22 +241,6 @@ html body main .infobody section {
   height: 100%;
   width: 100%;
 }
-html body main .infobody section #breadcrumb-div {
-  width: 100%;
-  height: 40px;
-  display: flex;
-  background-color: #ca46dc;
-  padding: 5px;
-}
-html body main .infobody section #breadcrumb-div .breadcrumb-item {
-  color: whitesmoke !important;
-}
-html body main .infobody section #breadcrumb-div a {
-  color: #96f1c5;
-}
-html body main .infobody section #breadcrumb-div a:hover {
-  color: #1d1e18;
-}
 html body main .infobody section .prodcat {
   padding: 1%;
   height: 100%;
@@ -321,18 +314,31 @@ html body main .productevista .close {
   margin-top: 5px;
   margin-right: 5px;
 }
+html body main hr {
+  color: #ca46dc;
+  background-color: #ca46dc;
+  height: 5px;
+}
 html body main #shoppingCart #llistatCistella {
   overflow-y: scroll;
-  height: 250px;
+  max-height: 400px;
 }
 html body main #shoppingCart #pagamentinfo {
+  height: fit-content;
   color: whitesmoke;
   background-color: #1d1e18 !important;
   border-radius: 5px;
 }
-html body main #shoppingCart #pagamentinfo hr {
-  background-color: #ca46dc;
-  height: 3px;
+html body main #pagamentSection {
+  padding: 10px;
+  color: whitesmoke;
+}
+html body main #pagamentSection #resum,
+html body main #pagamentSection #pagament {
+  background-color: #1d1e18;
+  padding: 15px;
+  margin-bottom: 5px;
+  border-radius: 10px;
 }
 html body main .eliminar {
   background-color: transparent;
@@ -341,6 +347,22 @@ html body main .eliminar {
 }
 html body main .eliminar:hover {
   color: #ca46dc;
+}
+html body main #breadcrumb-div {
+  width: 100%;
+  height: 40px;
+  display: flex;
+  background-color: #ca46dc;
+  padding: 5px;
+}
+html body main #breadcrumb-div .breadcrumb-item {
+  color: whitesmoke !important;
+}
+html body main #breadcrumb-div a {
+  color: #96f1c5;
+}
+html body main #breadcrumb-div a:hover {
+  color: #1d1e18;
 }
 html body .ftr {
   background-color: #1d1e18;

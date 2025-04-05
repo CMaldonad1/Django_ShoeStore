@@ -1,47 +1,134 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h4 class="secondaryText mb-0">Card details</h4>
+<div id="breadcrumb-div">
+  <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'cistella' %}">Cistell</a></li>
+          <li class="breadcrumb-item">Pagament</li>
+      </ol>
+  </nav>
 </div>
- <!-- tipus de pagament -->
- <img class="me-2" width="45px"
- src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce-gateway-stripe/assets/images/visa.svg"
- alt="Visa" />
- <img class="me-2" width="45px"
-   src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce-gateway-stripe/assets/images/amex.svg"
-   alt="American Express" />
- <img class="me-2" width="45px"
-   src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce-gateway-stripe/assets/images/mastercard.svg"
-   alt="Mastercard" />
- <!-- informació pagament -->
- <form class="mt-4">
-   <div data-mdb-input-init class="form-outline form-white mb-2">
-     <input type="text" id="typeName" class="form-control form-control-md" siez="17"
-       placeholder="Cardholder's Name" />
-     <label class="form-label" for="typeName">Cardholder's Name</label>
-   </div>
-   <div data-mdb-input-init class="form-outline form-white mb-2">
-     <input type="text" id="typeText" class="form-control form-control-md" siez="17"
-       placeholder="1234 5678 9012 3457" minlength="19" maxlength="19" />
-     <label class="form-label" for="typeText">Card Number</label>
-   </div>
-   <div class="row mb-2">
-     <div class="col-md-6">
-       <div data-mdb-input-init class="form-outline form-white">
-         <input type="text" id="typeExp" class="form-control form-control-md"
-           placeholder="MM/YYYY" size="7" id="exp" minlength="7" maxlength="7" />
-         <label class="form-label" for="typeExp">Expiration</label>
-       </div>
-     </div>
-     <div class="col-md-6">
-       <div data-mdb-input-init class="form-outline form-white">
-         <input type="password" id="typeText" class="form-control form-control-md"
-           placeholder="&#9679;&#9679;&#9679;" size="1" minlength="3" maxlength="3" />
-         <label class="form-label" for="typeText">Cvv</label>
-       </div>
-     </div>
-   </div>
- </form>
+<section id="shoppingCart" class="h-100 h-custom">
+  <div>
+    <div id="pagamentSection" class="row d-flex justify-content-center h-100">
+      <div class="col-11 col-lg-10 col-xl-8">
+        <!-- resum de compra -->
+        <div id="resum" class="col-11 col-sm-9 col-md-7 col-lg-6 payment order-1 order-md-0">
+          <h4 class="d-flex justify-content-between align-items-center mb-3">
+            <span class="secondaryText">Resum compra</span>
+            <span class="badge bgSecondary rounded-pill">{{request.session.cistella.qty}}</span>
+          </h4>
+          <strong>
+            <ul class="list-group mb-3">
+              <li class="list-group-item d-flex justify-content-between lh-sm">
+                <span class="my-0">Total a pagar:</span>
+                <span class="text-muted">{{request.session.fra.totalFra|floatformat:2}}€</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between lh-sm">
+                <span class="my-0">Enviament Seleccionat:</span>
+                <span class="text-muted">{{enviament.nom}}</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between lh-sm">
+                <span class="my-0">Dies entrega:</span>
+                <span class="text-muted">Entre {{enviament.dies_min}} i {{enviament.dies_max}} dia/es</span>
+              </li>
+            </ul>
+          </strong>
+        </div>
+        <!-- Informacio targeta y usuari -->
+        <div id="pagament" class="d-flex flex-row flex-wrap col-12">
+          <!-- informació usuari -->
+          <div id="infoUsuari" class="col-12 col-md-7 d-flex justify-content-center flex-wrap">
+            <h4 class="mb-3 secondaryText">Direcció de facturació i enviament</h4>
+            <div class="row g-3">
+              <div class="col-6 col-sm-5 me-1">
+                <label for="nom" class="form-label">Nom</label>
+                <input type="text" class="form-control" id="nom" value="{{user.nom}}" disabled>
+              </div>
+              <div class="col-6 col-sm-5">
+                <label for="cognom" class="form-label">Cognom 1</label>
+                <input type="text" class="form-control" id="cognom" value="{{user.cognom}}" disabled>
+              </div>
+              <div class="col-6 col-sm-5">
+                <label for="cognom2" class="form-label">Cognom 2</label>
+                <input type="text" class="form-control" id="cognom2" value="{{user.cognom2}}" disabled>
+              </div>
+              <div class="col-sm-5">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" value="{{user.mail}}" disabled>
+              </div>
+              <div class="col-sm-7">
+                <label for="direccio" class="form-label">Direcció</label>
+                <input type="text" class="form-control" id="direccio" value="{{user.direccio}}"disabled>
+              </div>
+              <div class="col-sm-7">
+                <label for="poblacio" class="form-label">Població</label>
+                <input type="text" class="form-control" id="poblacio" value="{{user.poblacio}}" disabled>
+              </div>
+              <div class="col-4 col-sm-3">
+                <label for="cp" class="form-label">Codi Postal</label>
+                <input type="text" class="form-control" id="cp" value="{{user.cp}}" disabled>
+              </div>
+              <div class="col-8 col-sm-7">
+                <label for="pais" class="form-label">Pais</label>
+                <input type="text" class="form-control" id="pais" value="{{user.pais}}" disabled>
+              </div>
+              <hr class="my-4 d-md-none">
+            </div>
+          </div>
+          <!-- Tarjeta -->
+          <div id="infotarjeta" class="col-12 col-md-5 col-lg-5 d-flex justify-content-center align-items-start">
+            <div class="col-8 col-md-10">
+              <div>
+                <h4 class="secondaryText mb-0">Informació de tarjeta</h4>
+              </div>
+              <!-- tipus de pagament -->
+              <img id="visa" class="me-2" width="45px"
+              src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce-gateway-stripe/assets/images/visa.svg"
+              alt="Visa" hidden/>
+              <img id="americanExpr" class="me-2" width="45px"
+                src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce-gateway-stripe/assets/images/amex.svg"
+                alt="American Express" hidden/>
+              <img id="mastercard" class="me-2" width="45px"
+                src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce-gateway-stripe/assets/images/mastercard.svg"
+                alt="Mastercard" hidden/>
+              <!-- informació pagament -->
+              <form class="mt-4">
+                <div class="form-outline form-white mb-2">
+                  <label class="form-label" for="typeName">Nom </label>
+                  <input type="text" id="typeName" class="form-control form-control-md" siez="17"
+                    value="{{user.nom}} {{user.cognom}} {{ user.cognom2 }}" />
+                </div>
+                <div class="form-outline form-white mb-2">
+                  <label class="form-label" for="typeText">Numero de tarjeta</label>
+                  <input type="text" id="typeText" class="form-control form-control-md" siez="17"
+                    placeholder="1234 5678 9012 3457" minlength="19" maxlength="19" />
+                </div>
+                <div class="row mb-2">
+                  <div class="col-6">
+                      <label class="form-label" for="typeExp">Caducitat</label>
+                      <input type="text" id="typeExp" class="form-control form-control-md"
+                        placeholder="MM/YYYY" size="7" id="exp" minlength="7" maxlength="7" />
+                  </div>
+                  <div class="col-6">
+                      <label class="form-label" for="typeText">Cvv</label>
+                      <input type="password" id="typeText" class="form-control form-control-md"
+                        placeholder="&#9679;&#9679;&#9679;" size="1" minlength="3" maxlength="3" />
+                  </div>
+                </div>
+                <div class="container d-flex justify-content-center">
+                  <a type="button" class="btn btn_normal bt-xl mt-2" 
+                  href="{% url 'realitzarPagament'%}">
+                    Efectuar pagament
+                  </a>
+                </div>
+              </form>
+            </div>
+          </div>
+      </div>
+    </div>
+  </div>
+</section>
 
 {% endblock %}

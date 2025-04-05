@@ -20,7 +20,6 @@ from botiga import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('', views.home, name='home'),
     path('', views.cataleg, name='cataleg'),
     path('cataleg/<int:catid>/', views.cataleg, name='cataleg'),
     path('info', views.informacio, name='informacio'),
@@ -33,7 +32,10 @@ urlpatterns = [
     path('login/',views.login,name='login'),
     path('logoff/',views.logoff,name='logoff'),
     path('cistella/', views.shopping, name='cistella'),
+    path('pagament/', views.pagamentCistella, name='pagament'),
+    path('realitzarPagament/', views.realitzarPagament, name='realitzarPagament'),
 
     path('filtrar/', views.filtrar, name='filtrar'),
     path('variantInfo/', views.variantInfo, name='variantInfo'),
+    path('eliminarMissatge/', views.eliminarMissatge, name='eliminarMissatge'),
 ]

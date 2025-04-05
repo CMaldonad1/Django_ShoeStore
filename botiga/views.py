@@ -1,19 +1,14 @@
 from django.shortcuts import render
 from django.core.serializers import serialize
-from django.http import HttpResponse, JsonResponse
-from rest_framework import status
+from django.core.mail import send_mail
+from django.http import JsonResponse
 from django.db.models import Sum
 from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from django.views.generic import ListView
 from .forms import *
 from .models import *
 from django.db.models import Prefetch, Q
-from django.shortcuts import get_object_or_404, get_list_or_404, render, redirect
-import json
-from .decorator import unauthenticated_user
-#request.session["nom"] = request.POST.get("nom_param", "")
-#request.session.clear()
+from django.shortcuts import render
+from .decorator import *
 
 # Create your views here.
 def login(request):
@@ -22,7 +17,7 @@ def login(request):
         pswd=request.POST.get('pswd')
         logOK=User.objects.filter(mail__iexact=user, pswd=pswd).first()
         #verifiquem que l'usuari s'ha loginat correctament
-        if logOK:
+        if logOK!=None:
             idUser=logOK.id
             #borrem el possible missatge d'error
             if 'logerr' in request.session:
@@ -53,13 +48,17 @@ def login(request):
                 }
         else:
             request.session['logerr']="Usuari i/o contrasenya incorrecta!"
-    return cataleg(request)
-
+    page=request.session.get('page')
+    match page:
+        case 'cataleg':
+            return cataleg(request)
+        case 'shopping':
+            return shopping(request)
+        case 'informacio':
+            return informacio(request, request.session.get('item'))
+        
 def logoff(request):
-    if 'login' in request.session:
-        request.session.pop('login')
-    if 'cistella' in request.session:
-        request.session.pop('cistella')
+    request.session.clear()
     return cataleg(request)
 
 def registrat(request):
@@ -73,8 +72,6 @@ def registrat(request):
     })
 
 def cataleg(request, catid=None):
-    if 'logerr' in request.session:
-        request.session.pop('logerr')
     request.session["page"]="cataleg"
     #query per obtindre les categories i si tenen fills
     categories=Categoria.objects.raw("SELECT * FROM `botiga_categoria` bc LEFT JOIN (SELECT jerarquia_id, count(jerarquia_id) "
@@ -82,7 +79,7 @@ def cataleg(request, catid=None):
                                     "cnt on bc.id=cnt.jerarquia_id; ")
     talles=Talla.objects.all()
     jerarquia=""
-    if request.session.get('catSel')!="" and catid==None:
+    if 'catSel' in request.session and request.session.get('catSel')!="" and catid==None:
         idSessionCatSel=request.session.get('catSel')["id"]
         jerarquia=Categoria.objects.filter(id__in=returnParentJerarqui(idSessionCatSel)).order_by('id')
         productes=Producte.objects.filter(id__in=CatProd.objects.filter(categ_id__in=returnChildrenJerarqui(idSessionCatSel)).values_list('prod', flat=True)).prefetch_related('variant_set__imatges_set')
@@ -148,6 +145,7 @@ def returnChildrenJerarqui(id):
 
 def informacio(request, varid=None):
     request.session["page"]="informacio"
+    request.session['item']=varid
     if varid!=None:
         #volem que la variant seleccionada surti primer
         varSel = Variant.objects.filter(id=varid).prefetch_related(
@@ -175,23 +173,21 @@ def informacio(request, varid=None):
     else:
         return cataleg(request)
 
+@pagarLimitation
 def user(request):
     request.session["page"]="usuari"
     return render(request, 'sections/usuari.html',{
         'title': 'Usuari',
         'head': 'Usuari',
     })
-
+#programa de la vista de la cistella
 def shopping(request):
     request.session["page"]="shopping"
     
-    if 'logerr' in request.session:
-        request.session.pop('logerr')
-
     if 'enviament' in request.session:
         opcion=request.session['enviament']
     else:
-        request.session['enviament']=0
+        opcion=0
 
     if request.method == 'POST':
         accion = request.POST.get('accion')
@@ -203,27 +199,28 @@ def shopping(request):
             deleteItem(request)
         else:
             opcion = int(request.POST.get('enviament'))
-            
-
-    llistat=LineaCistell.objects.filter(cistell_id=request.session['cistella']['id']).all()
-
-    if len(llistat)==0:
-        opcion=0
-
-    enviament=Enviament.objects.all()
+    
     request.session['enviament']=opcion
-    request.session['fra']=calcularCistella(llistat, opcion)
-    return render(request, 'sections/shopping_cart.html',{
-        'llistat':llistat,
-        'enviament':enviament,
-        'opcSelect':int(request.session['enviament'])
-    })
 
+    if 'cistella' in request.session:
+        llistat=LineaCistell.objects.filter(cistell_id=request.session['cistella']['id']).all()
+        enviament=Enviament.objects.all()
+        request.session['fra']=calcularCistella(llistat, opcion)
+
+        return render(request, 'sections/shopping_cart.html',{
+            'llistat':llistat,
+            'enviament':enviament,
+            'opcSelect':int(opcion)
+        })
+    else:
+        return render(request, 'sections/shopping_cart.html')
+
+#elimnació d'un item de la cistella
 def deleteItem(request):
     var=request.POST.get('id')
     LineaCistell.objects.filter(var_id=var).delete()
     qty=int(request.POST.get('qty'))*-1
-
+#calcul de l'import de la cistella tenint en compte l'opció d'enviament
 def calcularCistella(llistat, opcion):
     #Calculem els totals per les factures
     totalSinIva=0
@@ -259,7 +256,7 @@ def calcularCistella(llistat, opcion):
             'totalIva':totalIva,
             'totalFra':totalFra
         }
-
+#calcul de l'iva per tipus i creació d'un JSON amb els diferents import
 def calculIva(totalIva,iva,total):
         exist=False
         for i in totalIva:
@@ -272,14 +269,14 @@ def calculIva(totalIva,iva,total):
                 'nom':iva,
                 'total':total
             })
-
+#actualització de l'informació de la qty d'items de la cistella
 def updateSessionCistella(request,qty):
     value=int(request.session['cistella']['qty'])+qty
     if value<=0:
         value=0
     request.session['cistella']['qty']=value
     request.session.modified = True
-
+#increment o decrement dels items de la cistella
 def updateCistella(request):
     var=request.POST.get('id')
     qty=int(request.POST.get('qty'))
@@ -296,7 +293,7 @@ def updateCistella(request):
         deleteItem(request)
     else:
         updateLinea(request, var, incrDecr)
-
+#verificació de si l'item existeix en la cisetlla
 def producteEnCistella(request,var):
     cistellId=request.session['cistella']['id']
     exist=LineaCistell.objects.filter(cistell_id=cistellId,var_id=var).first()
@@ -304,17 +301,34 @@ def producteEnCistella(request,var):
         return exist.qty
     else:
         return 0
-
+#actualització del valor del item de la cistellas
 def updateLinea(request, var, qty):
     idCistell=request.session['cistella']['id']
     LineaCistell.objects.update_or_create(cistell_id=idCistell, var_id=var, defaults={'qty': qty})
+
+def realitzarPagament(request):
+    send_mail(
+        "Pagament Realitzat correctament",
+        "test",
+        "info@botigamavi.com",
+        ["cmaldonadov@hotmail.es"]
+    )
+#pagament de cistella
+@pagarLimitation
+def pagamentCistella(request):
+    user=User.objects.filter(id=request.session['login']['id']).first()
+    enviament=Enviament.objects.filter(id=request.session.get('enviament')).first()
+    return render(request, 'sections/pagament.html',
+                  {
+                      'user':user,
+                      'enviament':enviament,
+                  })
 
 @api_view(['POST'])
 @unauthenticated_user
 def addCistella(request):
     var=request.data["var"]
     qty=int(request.data["qty"])
-    qtyCistella=request.session['cistella']['qty']
     exist=producteEnCistella(request,var)
     exist+=qty
     updateLinea(request, var, exist)
@@ -405,3 +419,9 @@ def variantInfo(request):
         
         resposta.append(item)
     return JsonResponse(resposta[0], safe=False) 
+
+@api_view(['GET'])
+def eliminarMissatge(request):
+    if 'logerr' in request.session:
+        request.session.pop('logerr')
+    return JsonResponse({'done':1}, safe=False) 

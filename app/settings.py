@@ -129,3 +129,12 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # SMTP server host
+EMAIL_PORT = 465  # SMTP server port (587 for TLS, 465 for SSL)
+EMAIL_USE_TLS = False  # True for TLS, False for SSL
+EMAIL_HOST_USER = 'maldovtest@gmail.com'  # SMTP server username
+EMAIL_HOST_PASSWORD = 'sqjajovmsawmsptq'  # SMTP server password
+EMAIL_USE_SSL = True  # Set to True if using SSL
+DEFAULT_FROM_EMAIL = 'info@botigamavi.com'  # Default sender email address
