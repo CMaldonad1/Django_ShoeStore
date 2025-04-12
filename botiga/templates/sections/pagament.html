@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-<div id="breadcrumb-div">
+<div id="breadcrumb-div" class="position-sticky fixed-top">
   <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="{% url 'cistella' %}">Cistell</a></li>
-          <li class="breadcrumb-item">Pagament</li>
+      <ol class="breadcrumb ms-4">
+          <li class="breadcrumb-item"><a href="{% url 'cistella' %}">1. Cistell</a></li>
+          <li class="breadcrumb-item">2. Pagament</li>
       </ol>
   </nav>
 </div>
@@ -36,6 +36,9 @@
             </ul>
           </strong>
         </div>
+        <center>
+          <span id="pagamentErr" style="color:red;"></span>
+        </center>
         <!-- Informacio targeta y usuari -->
         <div id="pagament" class="d-flex flex-row flex-wrap col-12">
           <!-- informació usuari -->
@@ -78,54 +81,56 @@
             </div>
           </div>
           <!-- Tarjeta -->
-          <div id="infotarjeta" class="col-12 col-md-5 col-lg-5 d-flex justify-content-center align-items-start">
-            <div class="col-8 col-md-10">
-              <div>
-                <h4 class="secondaryText mb-0">Informació de tarjeta</h4>
-              </div>
-              <!-- tipus de pagament -->
-              <img id="visa" class="me-2" width="45px"
-              src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce-gateway-stripe/assets/images/visa.svg"
-              alt="Visa" hidden/>
-              <img id="americanExpr" class="me-2" width="45px"
-                src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce-gateway-stripe/assets/images/amex.svg"
-                alt="American Express" hidden/>
-              <img id="mastercard" class="me-2" width="45px"
-                src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce-gateway-stripe/assets/images/mastercard.svg"
-                alt="Mastercard" hidden/>
-              <!-- informació pagament -->
-              <form class="mt-4">
+          <div id="Tarjeta" class="col-12 col-md-5 col-lg-5">
+            <div id="infotarjeta" class=" d-flex justify-content-center align-items-start">
+              <div class="col-8 col-md-10">
+                <div>
+                  <h4 class="thirdText mb-0">Informació de tarjeta</h4>
+                </div>
+                <!-- informació pagament -->
                 <div class="form-outline form-white mb-2">
-                  <label class="form-label" for="typeName">Nom </label>
-                  <input type="text" id="typeName" class="form-control form-control-md" siez="17"
-                    value="{{user.nom}} {{user.cognom}} {{ user.cognom2 }}" />
+                  <label class="form-label" for="tarjetaNom">Nom </label>
+                  <input type="text" id="tarjetaNom" class="form-control form-control-md" siez="17"
+                    value="{{user.nom}} {{user.cognom}} {{ user.cognom2 }}" onfocusout="verifyNom()"/>
+                    <span id="tarjetaNomErr" class="err"></span>
                 </div>
                 <div class="form-outline form-white mb-2">
-                  <label class="form-label" for="typeText">Numero de tarjeta</label>
-                  <input type="text" id="typeText" class="form-control form-control-md" siez="17"
-                    placeholder="1234 5678 9012 3457" minlength="19" maxlength="19" />
+                  <label class="form-label" for="numTarj">Numero de tarjeta</label>
+                  <div class="d-flex flex-row">
+                    <div>
+                      <input type="text" id="numTarj" class="form-control form-control-md" siez="17"
+                      placeholder="1234 5678 9012 3457" minlength="19" maxlength="19" onfocusout="verifyTarjeta()"/>
+                    </div>
+                    <div class="d-flex justify-content-center align-items-center ms-2">
+                      <img id="tarjeta" class="me-2" width="45px" src="" />
+                    </div>
+                  </div>
+                  <span id="tarErr" class="err"></span>
                 </div>
                 <div class="row mb-2">
                   <div class="col-6">
-                      <label class="form-label" for="typeExp">Caducitat</label>
-                      <input type="text" id="typeExp" class="form-control form-control-md"
-                        placeholder="MM/YYYY" size="7" id="exp" minlength="7" maxlength="7" />
+                      <label class="form-label" for="caducitat">Caducitat</label>
+                      <input type="text" id="caducitat" class="form-control form-control-md"
+                        placeholder="MM/YYYY" size="7" id="exp" minlength="7" maxlength="7"  onfocusout="verifyCaducitat()"/>
+                      <span id="cadErr" class="err"></span>
                   </div>
                   <div class="col-6">
-                      <label class="form-label" for="typeText">Cvv</label>
-                      <input type="password" id="typeText" class="form-control form-control-md"
-                        placeholder="&#9679;&#9679;&#9679;" size="1" minlength="3" maxlength="3" />
+                      <label class="form-label" for="cvv">CVV</label>
+                      <input type="password" id="cvv" class="form-control form-control-md"
+                        placeholder="&#9679;&#9679;&#9679;" size="1" minlength="3" maxlength="3" onfocusout="verifyCvv()"/>
+                      <span id="cvvErr" class="err"></span>
                   </div>
                 </div>
                 <div class="container d-flex justify-content-center">
-                  <a type="button" class="btn btn_normal bt-xl mt-2" 
-                  href="{% url 'realitzarPagament'%}">
+                  <button type="button" class="btn btn_normal2 bt-xl mt-2 mb-2" 
+                  onclick="callPagament()">
                     Efectuar pagament
-                  </a>
+                  </button>
                 </div>
-              </form>
-            </div>
+              </div>
+            </div> 
           </div>
+      </div>
       </div>
     </div>
   </div>

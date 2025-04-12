@@ -4,7 +4,7 @@
         "model": "botiga.user",
         "fields": {
             "id": 1,
-            "mail": "nere@hotmail.com",
+            "mail": "cmandando@gmail.com",
             "nom": "Nerea",
             "cognom": "Pagés",
             "cognom2": "Puyuelo",
@@ -12,13 +12,14 @@
             "direccio": "Crta de Valls",
             "poblacio": "Santa Margarida de Montbui",
             "cp": "08710",
-            "pais": "Espanya"
+            "pais": "Espanya",
+            "nif":"47107398L"
         }
     },    {
         "model": "botiga.user",
         "fields": {
             "id": 2,
-            "mail": "chia@hotmail.com",
+            "mail": "cmaldonadov@hotmail.es",
             "nom": "Chia",
             "cognom": "Maldonado",
             "cognom2": "Pagés",
@@ -26,7 +27,8 @@
             "direccio": "Crta de Valls",
             "poblacio": "Santa Margarida de Montbui",
             "cp": "08710",
-            "pais": "Espanya"
+            "pais": "Espanya",
+            "nif":"47107396L"
         }
     }
 ]

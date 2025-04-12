@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.core.serializers import serialize
-from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 from django.http import JsonResponse
 from django.db.models import Sum
 from rest_framework.decorators import api_view
@@ -9,6 +9,11 @@ from .models import *
 from django.db.models import Prefetch, Q
 from django.shortcuts import render
 from .decorator import *
+import requests
+from django.http import HttpResponse
+from requests.auth import HTTPBasicAuth
+from django.conf import settings
+from django.template.loader import render_to_string
 
 # Create your views here.
 def login(request):
@@ -25,10 +30,11 @@ def login(request):
             #guardem en sessió les dades de l'usuari
             request.session["login"]={
                 'id':idUser,
-                'nom':logOK.nom
+                'nom':logOK.nom,
+                'mail':logOK.mail
                 }
             #verifiquem si te cistells
-            exist=Cistell.objects.filter(client__id=idUser, enviament__isnull=True).first()
+            exist=Cistell.objects.filter(client__id=idUser, pagada=False).first()
             qty=0
             # #si te cistell guardem l'id i contem quants items té, sino creem un de nou 
             if exist:
@@ -220,6 +226,8 @@ def deleteItem(request):
     var=request.POST.get('id')
     LineaCistell.objects.filter(var_id=var).delete()
     qty=int(request.POST.get('qty'))*-1
+    updateSessionCistella(request,qty)
+
 #calcul de l'import de la cistella tenint en compte l'opció d'enviament
 def calcularCistella(llistat, opcion):
     #Calculem els totals per les factures
@@ -287,12 +295,14 @@ def updateCistella(request):
     if accion=='decr':
         incrDecr=-1
     #actualitzem el valor de la cistella
-    updateSessionCistella(request,incrDecr)
-    incrDecr+=qty
-    if (incrDecr)<=0:
+    qty+=incrDecr
+    
+    if (qty)<=0:
         deleteItem(request)
     else:
-        updateLinea(request, var, incrDecr)
+        updateLinea(request, var, qty)
+        updateSessionCistella(request,incrDecr)
+
 #verificació de si l'item existeix en la cisetlla
 def producteEnCistella(request,var):
     cistellId=request.session['cistella']['id']
@@ -306,13 +316,113 @@ def updateLinea(request, var, qty):
     idCistell=request.session['cistella']['id']
     LineaCistell.objects.update_or_create(cistell_id=idCistell, var_id=var, defaults={'qty': qty})
 
+
+@api_view(['POST'])
 def realitzarPagament(request):
-    send_mail(
-        "Pagament Realitzat correctament",
-        "test",
-        "info@botigamavi.com",
-        ["cmaldonadov@hotmail.es"]
+    # idCistell=request.session['cistella']['id']
+    email=request.session['login']['mail']
+    # pagarCistell(idCistell)
+    # idFactura=creacioFactura(request, idCistell)
+    idFactura=1
+    # altaIvaFactura(request,idFactura)
+    # altaLineasFra(idCistell, idFactura)
+    ##falta hacer que se carge la sesion de la factura, enviament y cesta
+    ##que cree una nueva cesta para el usuario 
+    ##crear una página nueva donde pueda volver a comprar e informando
+    ##que el pago se realizó correctament
+    response=jasperFactura(idFactura)
+    header="Pagament realitzat correctament!"
+    if response.status_code==200:
+        enviarEmail(request,response,idFactura)
+        msg="S'ha fet arribar al teu correu "+email+" la factura de la teva compra.<br>"
+    else:
+        msg="La teva factura no s'ha pogut enviar al teu correu "+email+" per problemes técnics.<br>"
+    
+    msg+="Pots tornar a renviarte les teves factures a través del teu perfil."
+    html_content=render_to_string('sections/pagamentComplet.html',
+                                  {
+                                      'header':header,
+                                      'msg':msg
+                                })
+    return HttpResponse(html_content)
+
+def jasperFactura(idFactura):
+    jasperserver_url = settings.JASPER_URL
+    username = settings.JASPER_USER
+    password = settings.JASPER_PASSWORD
+    params={
+        'fact_id':idFactura
+    }
+    response = requests.get(
+        jasperserver_url,
+        params=params,
+        auth=HTTPBasicAuth(username, password),
+        headers={'Accept': 'application/pdf'}
     )
+    return response
+
+def enviarEmail(request, response, idFactura):
+    email= EmailMessage(
+        subject="Factura "+str(idFactura),
+        body="Hola "+request.session['login']['nom']+",<br><br>graciès per la teva compra. "+ 
+            "Troba adjunt la teva factura.<br><br>"+
+            "Atentament,<br>"+
+            "MaviBotiga",
+        from_email=settings.EMAIL_HOST_USER,
+        to=[request.session['login']['mail']]
+    )
+    email.content_subtype = 'html'
+    email.attach(
+        "Factura_"+str(idFactura)+".pdf",
+        response.content,
+        'application/pdf'
+    )
+    email.send()
+
+def pagarCistell(idCistell):
+    cistell=Cistell.objects.get(id=idCistell)
+    cistell.pagada=True
+    cistell.save()
+    
+def creacioFactura(request,idCistell):
+    metodePago=MetodePagament.objects.filter(id=1).first()
+    tipus=Contadors.objects.filter(id=1).first()
+    botiga=Botiga.objects.filter(id=1).first()
+    numFormat=f"{tipus.qty:06d}"
+    numFra=tipus.tipus+"-"+numFormat
+    costEnviament=request.session['fra']['totalEnvio']
+    totalFra=request.session['fra']['totalFra']
+
+    fra=Factura(numero=numFra,tipus=tipus,
+                cistell_id=idCistell,pagament=metodePago,
+                botiga=botiga,gtoEnvio=costEnviament,
+                totalFra=totalFra
+                )
+    fra.save()
+    return fra.id
+
+def altaIvaFactura(request, idFactura):
+    ivas=request.session['fra']['totalIva']
+    for i in ivas:
+        iva=IvaFactura(fact_id=idFactura, tipusiva=i['nom'], total=i['total'])
+        iva.save()
+
+def altaLineasFra(idCistell, idFactura):
+    itemsCistella=LineaCistell.objects.filter(cistell_id=idCistell).all()
+
+    for item in itemsCistella:
+        preu=item.var.var.preu
+        qty=item.qty
+        dto=item.var.var.dto
+        iva=item.var.var.prod.iva.percentatge
+        total=round(((preu*qty)*(1-dto))*(1+(iva/100)),2)
+        lf=LineaFactura(fact_id=idFactura,
+                        tallavar_id=item.var.id,
+                        qty=qty, preu=preu,
+                        dto=dto, iva=iva,
+                        total=total)
+        lf.save()
+
 #pagament de cistella
 @pagarLimitation
 def pagamentCistella(request):

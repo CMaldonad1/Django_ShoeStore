@@ -59,12 +59,13 @@ class User(models.Model):
     poblacio=models.CharField(max_length=100)
     cp=models.CharField(max_length=5)
     pais=models.CharField(max_length=100)
-    
+    nif=models.CharField(max_length=9,null=False)
+
     def __str__(self):
         return self.nom
 
 class Cistell(models.Model):
-    enviament=models.ForeignKey(Enviament, on_delete=models.DO_NOTHING, null=True)
+    pagada=models.BooleanField(null=True, default=False)
     client=models.ForeignKey(User, on_delete=models.DO_NOTHING, null=False)
 
 class LineaCistell(models.Model):
@@ -94,14 +95,19 @@ class Factura(models.Model):
     cistell=models.ForeignKey(Cistell, on_delete=models.DO_NOTHING, null=False)
     pagament=models.ForeignKey(MetodePagament, on_delete=models.DO_NOTHING, null=False)
     botiga=models.ForeignKey(Botiga, on_delete=models.DO_NOTHING, null=False)
+    gtoEnvio=models.FloatField(null=False, default=0.0),
+    totalFra=models.FloatField(null=False, default=0.0)
 
 class LineaFactura(models.Model):
     fact=models.ForeignKey(Factura,on_delete=models.CASCADE, null=False)
-    nom=models.CharField(max_length=100,null=False)
-    var = models.ForeignKey(Variant, on_delete=models.DO_NOTHING, null=False)
-    talla = models.ForeignKey(Talla, on_delete=models.DO_NOTHING, null=False)
+    tallavar=models.ForeignKey(TallaVariant, on_delete=models.CASCADE, null=False)
     qty = models.IntegerField(null=False)
     preu = models.FloatField(null=False)
     dto = models.FloatField(null=True)
     iva = models.FloatField(null=False)
+    total=models.FloatField(null=False)
+
+class IvaFactura(models.Model):
+    fact=models.ForeignKey(Factura,on_delete=models.CASCADE, null=False)
+    tipusiva = models.FloatField(null=False)
     total=models.FloatField(null=False)

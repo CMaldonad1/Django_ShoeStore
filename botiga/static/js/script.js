@@ -459,3 +459,117 @@ async function updateItemCistell(id){
     }
   );
 }
+function verifyTarjeta(){
+  var cardImg=""
+  var err=""
+  var e=document.getElementById("numTarj");
+  var tarjeta=e.value;
+  var visaRegex=/^4[0-9]{12}(?:[0-9]{3})?$/;
+  var amexRegex=/^3[47][0-9]{13}$/;
+  var mastRegex=/^(5[1-5][0-9]{14}|2(22[1-9][0-9]{12}|2[3-9][0-9]{13}|[3-6][0-9]{14}|7[0-1][0-9]{13}|720[0-9]{12}))$/;
+  // Visa
+  if(visaRegex.exec(tarjeta)){
+    cardImg="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce-gateway-stripe/assets/images/visa.svg"
+  // American Express
+  }else if(amexRegex.exec(tarjeta)){
+    cardImg="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce-gateway-stripe/assets/images/amex.svg"
+  // Mastercard
+  }else if(mastRegex.exec(tarjeta)){
+    cardImg="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce-gateway-stripe/assets/images/mastercard.svg"
+  }else{
+    err="Tarjeta incorrecta! Revisa el número";
+  }
+  if(err.length>0){
+    e.classList.add("inputErr")
+  }else{
+    e.classList.add("inputOk")
+  }
+  document.getElementById("tarErr").innerText=err;
+  document.getElementById("tarjeta").setAttribute('src',cardImg);
+  return err.length;
+}
+function verifyCaducitat(){
+  var regex=/^(0[1-9]|1[0-2])\/\d{4}$/
+  var e=document.getElementById('caducitat');
+  var caducitat=e.value;
+  var err=""
+  if(regex.exec(caducitat)){
+    var period= new Date();
+    var anyAct=period.getFullYear();
+    var mesAct=period.getMonth();
+    var pos=caducitat.indexOf("/");
+    var mes=caducitat.substring(0,pos);
+    var any=caducitat.substring(pos+1);
+    
+    if(any<anyAct || mes<mesAct){
+      err="Tarjeta caducada!"
+    }
+  }else{
+    err="Caducitat incorrecta!"
+  }
+
+  if(err.length>0){
+    e.classList.add("inputErr")
+  }else{
+    e.classList.add("inputOk")
+  }
+  
+  document.getElementById("cadErr").innerText=err;
+  
+  return err.length;
+
+}
+function verifyCvv(){
+  var regex=/^[0-9]{3}$/
+  var e=document.getElementById('cvv');
+  var cvv=e.value;
+  var err=""
+  
+  if(!regex.exec(cvv)){
+    err="Codi incorrecte!";
+    e.classList.add("inputErr")
+  }else{
+    e.classList.add("inputOk")
+  }
+  document.getElementById("cvvErr").innerText=err;
+  return err.length;
+}
+function verifyNom(){
+  var e=document.getElementById('tarjetaNom');
+  var tn=e.value;
+  var err="";
+  e.classList.remove("inputOk","inputErr");
+  if(tn.length<15){
+    err="El nom es incorrecte!"
+    e.classList.add("inputErr")
+  }else{
+    e.classList.add("inputOk")
+  }
+  document.getElementById("tarjetaNomErr").innerText=err;
+  return err.length;
+}
+async function callPagament(){
+  var err=0;
+  err+=verifyTarjeta();
+  err+=verifyCaducitat();
+  err+=verifyCvv();
+  err+=verifyNom();
+  if(err==0){
+    const response = await fetch('http://127.0.0.1:8000/realitzarPagament/',
+      {method: "POST",
+          headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+          },
+      });
+    if (response.ok) {
+        // Get the HTML response
+        const htmlContent = await response.text();
+        // Insert the HTML response into a specific element in the DOM
+        document.getElementById('contingut').innerHTML = htmlContent;
+    }
+  } else {
+    document.getElementById('pagamentErr').innerText="La informació de pagament es incorrecta. Revisala."
+  }
+
+}

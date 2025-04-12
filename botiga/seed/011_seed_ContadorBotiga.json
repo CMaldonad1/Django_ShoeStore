@@ -1,0 +1,31 @@
+
+[
+    {
+        "model": "botiga.contadors",
+        "fields": {
+            "id": 1,
+            "tipus": "factura",
+            "qty": 1
+        }
+    },    
+    {
+        "model": "botiga.botiga",
+        "fields": {
+            "id": 1,
+            "nom": "Mavi Botiga, SL",
+            "nif": "B2926816",
+            "direccio": "Plans de la Tossa",
+            "poblacio": "Santa Margarida de Montbui",
+            "cp": "08710",
+            "pais": "Espanya",
+            "registre": "RM Barcelona, Tomo 34.274, Folio 210, Sección 8ª, Hoja B-18.218, Inscripción 262."
+        }
+    },
+    {
+        "model": "botiga.metodepagament",
+        "fields": {
+            "id": 1,
+            "nom": "tarjeta"
+        }
+    }
+]

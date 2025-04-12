@@ -20,6 +20,16 @@ html body {
   background-color: #96f1c5;
   color: #1d1e18;
 }
+html body .inputErr {
+  border: 3px solid red;
+}
+html body .inputOk {
+  border: 3px solid green;
+}
+html body .err {
+  color: pink !important;
+  font-weight: bold;
+}
 html body .bgSecondary {
   background-color: #ca46dc;
 }
@@ -39,6 +49,9 @@ html body .modal-content h1 {
 html body .secondaryText {
   color: #ca46dc;
 }
+html body .thirdText {
+  color: #1d1e18;
+}
 html body .nav-link {
   color: #96f1c5;
 }
@@ -53,6 +66,15 @@ html body .btn_normal {
 html body .btn_normal:hover {
   color: whitesmoke;
   background-color: #ca46dc;
+}
+html body .btn_normal2 {
+  border-radius: 5px;
+  color: whitesmoke;
+  background-color: #1d1e18;
+}
+html body .btn_normal2:hover {
+  color: #1d1e18;
+  background-color: #96f1c5;
 }
 html body .btn_outline {
   border-radius: 5px;
@@ -329,16 +351,22 @@ html body main #shoppingCart #pagamentinfo {
   background-color: #1d1e18 !important;
   border-radius: 5px;
 }
-html body main #pagamentSection {
-  padding: 10px;
-  color: whitesmoke;
-}
-html body main #pagamentSection #resum,
-html body main #pagamentSection #pagament {
+html body main #resum,
+html body main #pagament {
   background-color: #1d1e18;
   padding: 15px;
   margin-bottom: 5px;
   border-radius: 10px;
+}
+html body main #pagamentSection {
+  padding: 10px;
+  color: whitesmoke;
+}
+html body main #pagamentSection #Tarjeta {
+  height: fit-content;
+  color: whitesmoke;
+  background-color: #ca46dc;
+  border-radius: 5px;
 }
 html body main .eliminar {
   background-color: transparent;

@@ -22,6 +22,16 @@ input[type=number] {
 html{
     height:100%;
     body{
+        .inputErr{
+            border: 3px solid red;
+        }
+        .inputOk{
+            border: 3px solid green;
+        }
+        .err{
+            color:pink !important; 
+            font-weight: bold;
+        }
         .bgSecondary{
             background-color: @third_color;
         }
@@ -46,6 +56,9 @@ html{
         .secondaryText{
             color:@third_color;
         }
+        .thirdText{
+            color:@secondary_color;
+        }
         .nav-link{
             color: @main_color;
             &:hover{
@@ -59,6 +72,15 @@ html{
             &:hover{
                 color:@reg_text;
                 background-color:@third_color;
+            }
+        }
+        .btn_normal2{
+            border-radius: 5px;
+            color:@reg_text;
+            background-color:@secondary_color;
+            &:hover{
+                color: @secondary_color;
+                background-color: @main_color;
             }
         }
         .btn_outline{
@@ -343,14 +365,21 @@ html{
                     border-radius: 5px;
                 }
             }
+            #resum, #pagament{
+                background-color: @secondary_color;
+                padding:15px;
+                margin-bottom:5px;
+                border-radius: 10px;
+            }
             #pagamentSection{
                 padding: 10px;
                 color:@reg_text;
-                #resum, #pagament{
-                    background-color: @secondary_color;
-                    padding:15px;
-                    margin-bottom:5px;
-                    border-radius: 10px;
+
+                #Tarjeta{
+                    height:fit-content;
+                    color:@reg_text;
+                    background-color: @third_color;
+                    border-radius: 5px;
                 }
             }
             .eliminar{

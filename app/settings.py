@@ -138,3 +138,8 @@ EMAIL_HOST_USER = 'maldovtest@gmail.com'  # SMTP server username
 EMAIL_HOST_PASSWORD = 'sqjajovmsawmsptq'  # SMTP server password
 EMAIL_USE_SSL = True  # Set to True if using SSL
 DEFAULT_FROM_EMAIL = 'info@botigamavi.com'  # Default sender email address
+
+#JASPERSERVER
+JASPER_URL = 'http://localhost:8080/jasperserver/rest_v2/reports/Projecte2/InformeFactura.pdf'
+JASPER_USER = 'jasperadmin'
+JASPER_PASSWORD = 'bitnami'
