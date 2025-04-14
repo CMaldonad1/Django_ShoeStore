@@ -9,42 +9,43 @@
         </div>
         <!-- Product Images -->
         <div id="imgPrincipal" class="col-10 col-md-8 col-lg-5 mb-3 align-items-center">
-            <img id="imgGran" src="{% static prod.0.imatges_set.all.0.url %}" alt="Product" class="img-fluid rounded mb-3 product-image" id="mainImage">
+            <img id="imgGran" src="{% static prod.imatges_set.all.0.url %}" alt="Product" class="img-fluid rounded mb-3 product-image" id="mainImage">
             <div id="imgProd" class="d-flex justify-content-between">
-                {% for img in prod.0.imatges_set.all%}
+                {% for img in prod.imatges_set.all%}
                 <img src="{% static img.url %}" class="thumbnail rounded active" onmouseenter="setImage(event, this.src)">
                 {% endfor %}
             </div>
         </div>
         <!-- Product Details -->
         <div class="col-10 col-md-8 col-lg-5 ">
-            <p id="variantID" hidden>{{prod.0.id}}</p>
-            <h2 class="mb-1">{{prod.0.prod.nom}}</h2>
-            <p id="model" class="text-muted mb-1"><b>Model: </b>{{prod.0.nom}}</p>
-            <p class="text-muted mb-2"><b>Marca: </b>{{prod.0.prod.marca}}</p>
+            <p id="variantID" hidden>{{prod.id}}</p>
+            <h2 class="mb-1">{{prod.prod.nom}}</h2>
+            <p id="model" class="text-muted mb-1"><b>Model: </b>{{prod.nom}}</p>
+            <p class="text-muted mb-2"><b>Marca: </b>{{prod.prod.marca}}</p>
             <div id="preuSection" class="mb-2 d-flex flex-row align-items-end">
-                {% if prod.0.dto == 0 %}
+                {% if prod.dto == 0 %}
                 <div>
                     <span class="h4">Preu: </span>
-                    <span id="preuvar" class="text-muted">{{prod.0.preu}}€</span>
+                    <span id="preuvar" class="text-muted">{{prod.preu}}€</span>
                 </div>
                 {%else%}
                 <div>
                     <span class="h4">Preu: </span>
-                    <span id="preuvar" class="text-muted">{{prod.0.preu_dto}}€ <s>{{prod.0.preu}}€</s></span>
+                    <span id="preuvar" class="text-muted">{{prod.preu_dto}}€ <s>{{prod.preu}}€</s></span>
                 </div>
                 <div class="ps-4">
                     <span class="h5">Dto: </span>
-                    <span id="dtovar" class="text-muted">-{% widthratio prod.0.dto 1 100 %}%</span>
+                    <span id="dtovar" class="text-muted">-{% widthratio prod.dto 1 100 %}%</span>
                 </div>
                 {% endif %}
             </div>
-            <p class="mb-2">{{prod.0.prod.descripcio}}</p>
+            <p class="mb-2">{{prod.prod.descripcio}}</p>
             <!--Seccio Variants-->
             <div class="mb-2">
                 <h5>Variants:</h5>
-                <div class="d-flex col-8">
-                    {% for p in prod%}
+                <div id="varLlistat" class="d-flex col-8">
+                    <img id="{{ prod.id }}" src="{% static prod.imatges_set.all.0.url %}" alt="Thumbnail 1" class="thumbnail rounded me-3 imgSel" onclick="changeVariant(event, this.src)">  
+                    {% for p in resta%}
                         <img id="{{ p.id }}" src="{% static p.imatges_set.all.0.url %}" alt="Thumbnail 1" class="thumbnail rounded me-3" onclick="changeVariant(event, this.src)">  
                     {% endfor %}
                 </div>
@@ -55,7 +56,7 @@
                     <label for="sTalles" class="form-label">Talla:</label>
                     <select id="sTalles" class="form-control" onchange="activaBotoCarro()">
                         <option value="0"> - </option>
-                    {% for talla_variant in prod.0.tallavariant_set.all %}
+                    {% for talla_variant in prod.tallavariant_set.all %}
                         <option value="{{talla_variant.id}}" {% if talla_variant.qty == 0 %} disabled {% endif %}>{{talla_variant.talla.nom}} (Max Uds: {{talla_variant.qty}})</option>
                     {% endfor %}
                     </select>

@@ -36,7 +36,7 @@ def login(request):
             #verifiquem si te cistells
             exist=Cistell.objects.filter(client__id=idUser, pagada=False).first()
             qty=0
-            # #si te cistell guardem l'id i contem quants items té, sino creem un de nou 
+            #si te cistell guardem l'id i contem quants items té, sino creem un de nou 
             if exist:
                 cistell=exist.id
                 auxqty=LineaCistell.objects.filter(cistell=cistell).aggregate(Sum('qty'))
@@ -45,13 +45,8 @@ def login(request):
                 else:
                     qty=auxqty['qty__sum']
             else:
-                novaCistella=Cistell(client=logOK)
-                novaCistella.save()
-                cistell=novaCistella.id
-            request.session['cistella']={
-                    'id':cistell,
-                    'qty':qty
-                }
+                cistell=creacioNovaCistella(request)
+            sessioCistella(request, cistell, qty)
         else:
             request.session['logerr']="Usuari i/o contrasenya incorrecta!"
     page=request.session.get('page')
@@ -62,20 +57,22 @@ def login(request):
             return shopping(request)
         case 'informacio':
             return informacio(request, request.session.get('item'))
+
+def creacioNovaCistella(request):
+        novaCistella=Cistell(request.session["login"]['id'])
+        novaCistella.save()
+
+        return novaCistella.id
+
+def sessioCistella(request, cistell, qty):
+        request.session['cistella']={
+                'id':cistell,
+                'qty':qty
+            }
         
 def logoff(request):
     request.session.clear()
     return cataleg(request)
-
-def registrat(request):
-    #if request.method == 'POST':
-    #    Project.objects.create(name=request.POST['name']) 
-        
-    return render(request, 'sections/signIn.html',{
-        'title': 'Sign In',
-        'head': 'Registrat',
-        'form': SignIn(),
-    })
 
 def cataleg(request, catid=None):
     request.session["page"]="cataleg"
@@ -85,23 +82,37 @@ def cataleg(request, catid=None):
                                     "cnt on bc.id=cnt.jerarquia_id; ")
     talles=Talla.objects.all()
     jerarquia=""
-    if 'catSel' in request.session and request.session.get('catSel')!="" and catid==None:
-        idSessionCatSel=request.session.get('catSel')["id"]
-        jerarquia=Categoria.objects.filter(id__in=returnParentJerarqui(idSessionCatSel)).order_by('id')
-        productes=Producte.objects.filter(id__in=CatProd.objects.filter(categ_id__in=returnChildrenJerarqui(idSessionCatSel)).values_list('prod', flat=True)).prefetch_related('variant_set__imatges_set')
-    elif catid!=0 and catid!=None:
+
+    if catid!=0 and catid!=None:
         #guardem el nom de la categoria seleccionada
         request.session["catSel"]=Categoria.objects.filter(id=catid).values('nom','id').first()
-        #guardem tota la informació de les jerarquies
-        jerarquia=Categoria.objects.filter(id__in=returnParentJerarqui(catid)).order_by('id')
-        #guardem unicament els productes que estan en el llistat de categories seleccionades
-        productes=Producte.objects.filter(id__in=CatProd.objects.filter(categ_id__in=returnChildrenJerarqui(catid)).values_list('prod', flat=True)).prefetch_related('variant_set__imatges_set')
-    else:
+    elif catid==0 or catid==None:
+        #si la catid es 0 vol dir que no s'ha seleccionat cap
         request.session["catSel"]=""
-        productes = Producte.objects.prefetch_related(
-                Prefetch('variant_set__imatges_set')
-            )
+        print("hello")
+        
+    
+    #guardem tota la informació de les jerarquies si una ha sigut seleccionada
+    if request.session.get('catSel')!="":
+        jerarquia=Categoria.objects.filter(id__in=returnParentJerarqui(request.session.get('catSel')["id"])).order_by('id')
 
+    productes=llistatProductes(request)
+
+    return render(request, 'sections/cataleg.html',{
+        'title': 'cataleg',
+        'head': 'Productes',
+        'categories': categories,
+        'productes': productes,
+        'talles':talles,
+        'jerarquia':jerarquia
+    })
+
+def llistatProductes(request):
+    productes = Producte.objects.prefetch_related(
+            Prefetch('variant_set__imatges_set')
+        )
+    catid=request.session.get('catSel')
+    #si hi han filtres els apliquem
     if 'filtres' in request.session:
         filtres=request.session.get('filtres')
         if filtres['pmin']!="":
@@ -114,8 +125,14 @@ def cataleg(request, catid=None):
             tallaFiltre=filtres['talles']
             listtalles=tallaFiltre.split(",")
             productes=productes.filter(id__in=Variant.objects.filter(id__in=TallaVariant.objects.filter(talla__in=listtalles).values_list('var', flat=True)).values_list('prod', flat=True))
-   
-   #calculem el preu amb dte
+    if catid != "":
+        productes=productes.filter(id__in=CatProd.objects.filter(categ_id__in=returnChildrenJerarqui(catid['id'])).values_list('prod', flat=True))
+    
+    aplicarDto(productes)
+    return productes
+
+def aplicarDto(productes):
+    #calculem el preu amb dte
     for p in productes:
         dto=p.variant_set.all()[0].dto
         preu=p.variant_set.all()[0].preu
@@ -123,15 +140,29 @@ def cataleg(request, catid=None):
             preu=round(preu*(1-dto),2)
         p.variant_set.all()[0].preu_dto=preu
 
-    return render(request, 'sections/cataleg.html',{
-        'title': 'cataleg',
-        'head': 'Productes',
-        'categories': categories,
-        'productes': productes,
-        'form': filterCat(),
-        'talles':talles,
-        'jerarquia':jerarquia
-    })
+#API per filtrar en el catáleg
+@api_view(['POST'])
+def filtrar(request):
+    pmin=request.data["pmin"]
+    pmax=request.data["pmax"]
+    nom=request.data["nom"]
+    talles=request.data["talles"]
+
+    request.session['filtres']={
+        'pmin':pmin,
+        'pmax':pmax,
+        'nom':nom,
+        'talles':talles
+    }
+    
+    productes=llistatProductes(request)
+
+    html_content=render_to_string('sections/llistatProductes.html',
+                                  {
+                                      'productes':productes
+                                })
+    return HttpResponse(html_content) 
+
 #funciò recursiva per treure els pares de les categories
 def returnParentJerarqui(id):
     cat=[]
@@ -157,29 +188,26 @@ def informacio(request, varid=None):
         varSel = Variant.objects.filter(id=varid).prefetch_related(
                 Prefetch('tallavariant_set', queryset=TallaVariant.objects.select_related('talla')),
                 Prefetch('imatges_set')
-            )
+            ).first()
+        preu=varSel.preu
+        if(varSel.dto>0):
+            preu=round(varSel.preu*(1-varSel.dto),2)
+        varSel.preu_dto=preu
 
         #carreguem la resta menys la seleccionada
-        restaVar = Variant.objects.filter(prod=varSel[0].prod.id).exclude(id=varSel[0].id).prefetch_related(
+        restaVar = Variant.objects.filter(prod=varSel.prod.id).exclude(id=varSel.id).prefetch_related(
                 Prefetch('tallavariant_set', queryset=TallaVariant.objects.select_related('talla')),
                 Prefetch('imatges_set')
             )
-        allVar = varSel | restaVar #combinem els dos resultats
-
-        for p in allVar:
-            preu=p.preu
-            dto=p.dto
-            if(dto>0):
-                preu=round(preu*(1-dto),2)
-            p.preu_dto=preu
 
         return render(request, 'sections/informacio.html',{
-            'prod':allVar
+            'prod':varSel,
+            'resta':restaVar
         })
     else:
         return cataleg(request)
 
-@pagarLimitation
+@unauthenticated_user
 def user(request):
     request.session["page"]="usuari"
     return render(request, 'sections/usuari.html',{
@@ -220,19 +248,16 @@ def shopping(request):
         })
     else:
         return render(request, 'sections/shopping_cart.html')
-
 #elimnació d'un item de la cistella
 def deleteItem(request):
     var=request.POST.get('id')
     LineaCistell.objects.filter(var_id=var).delete()
     qty=int(request.POST.get('qty'))*-1
     updateSessionCistella(request,qty)
-
 #calcul de l'import de la cistella tenint en compte l'opció d'enviament
 def calcularCistella(llistat, opcion):
     #Calculem els totals per les factures
     totalSinIva=0
-    # totalIva=0
     totalIva=[]
     totalFra=0
     cost=0
@@ -302,7 +327,6 @@ def updateCistella(request):
     else:
         updateLinea(request, var, qty)
         updateSessionCistella(request,incrDecr)
-
 #verificació de si l'item existeix en la cisetlla
 def producteEnCistella(request,var):
     cistellId=request.session['cistella']['id']
@@ -316,7 +340,6 @@ def updateLinea(request, var, qty):
     idCistell=request.session['cistella']['id']
     LineaCistell.objects.update_or_create(cistell_id=idCistell, var_id=var, defaults={'qty': qty})
 
-
 @api_view(['POST'])
 def realitzarPagament(request):
     # idCistell=request.session['cistella']['id']
@@ -326,12 +349,19 @@ def realitzarPagament(request):
     idFactura=1
     # altaIvaFactura(request,idFactura)
     # altaLineasFra(idCistell, idFactura)
-    ##falta hacer que se carge la sesion de la factura, enviament y cesta
-    ##que cree una nueva cesta para el usuario 
-    ##crear una página nueva donde pueda volver a comprar e informando
-    ##que el pago se realizó correctament
+
+    #ens carreguem la informació que hi ha en sessio de la compra
+    # eliminarSessionsCompra(request)
+
+    #creació de nou cistell de compra per a l'usuari.
+    # cistell=creacioNovaCistella(request)
+    # sessioCistella(request, cistell, 0)
+
+    #demanem la factura a jasperReport
     response=jasperFactura(idFactura)
     header="Pagament realitzat correctament!"
+    #Si la factura de Jasper s'ha generat correctament l'enviem per correu. Depenent de 
+    #si s'ha pogut o no traslladarem un misatge o un altre.
     if response.status_code==200:
         enviarEmail(request,response,idFactura)
         msg="S'ha fet arribar al teu correu "+email+" la factura de la teva compra.<br>"
@@ -345,6 +375,11 @@ def realitzarPagament(request):
                                       'msg':msg
                                 })
     return HttpResponse(html_content)
+#eliminar Cistella, Fra i enviament de session
+def eliminarSessionsCompra(request):
+    request.session.pop('cistella')
+    request.session.pop('fra')
+    request.session.pop('enviament')
 
 def jasperFactura(idFactura):
     jasperserver_url = settings.JASPER_URL
@@ -453,54 +488,6 @@ def vuidarCistella(request):
     LineaCistell.objects.filter(cistell_id=request.session['cistella']['id']).delete()
     request.session['cistella']['qty']=0
     
-@api_view(['POST'])
-def filtrar(request):
-    pmin=request.data["pmin"]
-    pmax=request.data["pmax"]
-    nom=request.data["nom"]
-    talles=request.data["talles"]
-    listtalles=""
-    if len(talles)>0:
-        listtalles=talles.split(",")
-
-    productes=Variant.objects.prefetch_related('imatges_set')
-    if pmin!="":
-        productes=productes.filter(preu__gte=pmin)
-    if pmax!="":
-        productes=productes.filter(preu__lte=pmax)
-    if nom!="":
-        productes=productes.filter(Q(prod__nom__icontains=nom)|Q(prod__marca__icontains=nom))
-    if listtalles!="":
-        productes=productes.filter(id__in=TallaVariant.objects.filter(talla__in=listtalles).values_list('var', flat=True))
-    if request.session.get('catSel') != "":
-        productes=productes.filter(prod__id__in=CatProd.objects.filter(categ__in=returnChildrenJerarqui(request.session.get('catSel')['id'])).values_list('prod', flat=True))
-
-    request.session['filtres']={
-        'pmin':pmin,
-        'pmax':pmax,
-        'nom':nom,
-        'talles':talles
-    }
-
-    resposta=[]
-    for p in productes:
-        imatges=[]
-        for i in p.imatges_set.all():
-            imatges.append(i.url)
-        item={
-            "id": p.id,
-            "prod":p.prod.nom,
-            "prodId":p.prod.id,
-            "marca":p.prod.marca,
-            "var":p.nom,
-            "preu":p.preu,
-            "dto":p.dto,
-            "descr":p.prod.descripcio,
-            "imatges":imatges
-        }
-        resposta.append(item)
-    return JsonResponse(resposta, safe=False)    
-
 @api_view(['POST'])
 def variantInfo(request):
     idVar=request.data["idVar"]

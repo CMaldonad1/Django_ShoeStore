@@ -26,7 +26,6 @@ urlpatterns = [
     path('info/<str:varid>/', views.informacio, name='informacio'),
     path('prod/', views.cataleg, name='productes'),
     path('user/', views.user, name='usuari'),
-    path('sign_in/', views.registrat, name='registrat'),
     path('add/', views.addCistella, name='add'),
 
     path('login/',views.login,name='login'),

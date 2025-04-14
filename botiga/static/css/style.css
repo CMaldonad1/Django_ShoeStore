@@ -156,6 +156,10 @@ html body main {
   padding-bottom: 0px;
   height: 100%;
 }
+html body main .imgSel {
+  border: 2px solid #ca46dc;
+  border-radius: 8px;
+}
 html body main s {
   color: red !important;
 }
@@ -400,7 +404,7 @@ html body .ftr img {
   width: 30px;
   height: 30px;
 }
-@media screen and (max-width: 760px) {
+@media screen and (max-width: 820px) {
   html body header .container .logo {
     height: 40px;
     width: 40px;

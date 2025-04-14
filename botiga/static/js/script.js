@@ -33,153 +33,43 @@ function createElements(categ){
   li.appendChild(divcollapse);
   elementPare.appendChild(li);
 }
-function verifyIfSelected(nm){
-  var selected=document.getElementById(nm);
+// function verifyIfSelected(nm){
+//   var selected=document.getElementById(nm);
 
-  if(selected.classList.contains("selected")){
-    selected.classList.remove("selected");
-  }else{
-    selected.classList.add("selected");
+//   if(selected.classList.contains("selected")){
+//     selected.classList.remove("selected");
+//   }else{
+//     selected.classList.add("selected");
+//   }
+// }
+
+function showVariant(ev){
+  var idElement=ev.explicitOriginalTarget.id;
+  var preu_Dto=ev.explicitOriginalTarget.alt;
+  var url=ev.explicitOriginalTarget.src;
+  var id=idElement.substring(0, idElement.indexOf("-"))
+  // seleccionem totes les variants del producte per a treure-li la clase imgSel
+  var imgVar=document.getElementById("prodVariants-"+id).getElementsByTagName('img');
+  for(var i = 0; i < imgVar.length; i++) {
+    imgVar[i].classList.remove('imgSel');
   }
-}
-//creació de les tarjetes de la vista "cataleg"
-function createProductCard(product){
-  var elementPare=document.getElementById(product.prodId);
-
-  var imatge="/static/"+product.imatges[0]
-  if(elementPare==null){
-    creacioElementPare(product, imatge);
-  }else{
-    zonavariants=document.getElementById("variant-"+product.prodId);
-    creacioMiniImatge(zonavariants, imatge, product);
-  }
-}
-function creacioElementPare(product, imatge){
-  var cataleg= document.getElementById("prodcat");
-  
-  var container=document.createElement("div");
-  container.setAttribute("id", product.prodId)
-  container.setAttribute("class"," p-1");
-
-  var img= document.createElement("img");
-  img.setAttribute("id","imgtop-"+product.prodId);
-  img.setAttribute("class","card-img-top");
-  img.setAttribute("alt", "Product Image");
-  img.setAttribute("src", imatge);
-
-  var card=document.createElement("div");
-  card.setAttribute("class","card");
-  
-  var dto=document.createElement("div");
-  dto.setAttribute("id","dto-"+product.prodId);
- 
-  if(product.dto>0){
-     dto.setAttribute("class","dtoinfo position-absolute top-0 start-0 d-flex");
-  }else{
-    dto.setAttribute("class","dtoinfo position-absolute top-0 start-0 d-none")
-  }
-  var span=document.createElement("span");
-  span.innerText="-"+(product.dto*100)+"% dto."
-  dto.appendChild(span);
-  card.appendChild(dto);
-
-  var cardbody=document.createElement("div");
-  cardbody.setAttribute("class","card-body");
-
-  var cardtitle=document.createElement("h5");
-  cardtitle.setAttribute("class","card-title crd_nm");
-  cardtitle.innerHTML=product.prod;
-  cardbody.appendChild(cardtitle);
-
-  var marca=document.createElement("p")
-  marca.setAttribute("class","card-title")
-  marca.innerHTML="<b>Marca:</b> "+product.marca;
-  cardbody.appendChild(marca);
-
-  // var descr=document.createElement("p");
-  // descr.setAttribute("class","card-text");
-  // descr.innerHTML=product.descr;
-  // cardbody.appendChild(descr)
-
-  card.appendChild(img);
-  card.appendChild(cardbody);
-  
-  var options=document.createElement("div");
-  options.setAttribute("id","options-"+product.prodId);
-  options.setAttribute("class","d-flex flex-column align-items-center");
-
-  var preu=document.createElement("div");
-  preu.setAttribute("id","preu-"+product.prodId);
-  preu.setAttribute("class","col-11");
-  if(product.dto>0){
-    preu.innerHTML="<b>Preu:</b> "+ (product.preu*(1-product.dto>0)).toFixed(2)+"€ <s>"+product.preu+"€</s>";
-  }else{
-    preu.innerHTML="<b>Preu:</b> "+product.preu+"€";
-  }
-
-  options.appendChild(preu);
-
-  var zonavariants=document.createElement("div");
-  zonavariants.setAttribute("id","variant-"+product.prodId);
-  zonavariants.setAttribute("class","d-flex flex-row align-items-start p-2");
-
-  creacioMiniImatge(zonavariants, imatge, product);
-
-  options.appendChild(zonavariants);
-  card.appendChild(options);
-
-  var cardFooter=document.createElement("div");
-  cardFooter.setAttribute("id","foot-"+product.prodId);
-  cardFooter.setAttribute("class","card-footer d-flex justify-content-between bg-light");
-
-  var veureprod=document.createElement("a");
-  veureprod.setAttribute("class","btn btn_normal btn-sm");
-  veureprod.setAttribute("href","/info/"+product.id);
-  veureprod.innerHTML="Veure";
-
-  cardFooter.appendChild(veureprod);
-  card.appendChild(cardFooter);
-  
-  container.appendChild(card);
-  cataleg.appendChild(container);
-
-  return container;
-}
-function creacioMiniImatge(zonavariants, imatge, product){
-  var img= document.createElement("img");
-  img.setAttribute("id",product.prodId)
-  img.setAttribute("class","col-2 m-1");
-  img.setAttribute("alt", product.preu+"-"+product.dto);
-  img.setAttribute("src", imatge);
-  addhover(img);
-  zonavariants.appendChild(img);
-}
-function addhover(img){
-  img.addEventListener('mouseover', (ev)=>{
-    var element={
-      "id":ev.explicitOriginalTarget.id,
-      "preu":ev.explicitOriginalTarget.alt,
-      "url":ev.explicitOriginalTarget.src
-    }
-    hoverImage(element);
-  });
-}
-function hoverImage(element){
-  var pos=element.preu.indexOf("-");
-  var pos2=element.preu.indexOf("_");
-  var preu=element.preu.substring(0,pos);
-  var dto=element.preu.substring(pos+1,pos2);
-  var variant=element.preu.substring(pos2+1);
-  var preuElement=document.getElementById("preu-"+element.id);
-  var dtoElement=document.getElementById("dto-"+element.id);
-  var btnElement=document.getElementById("btn-"+element.id);
+  // li agregem al item que actualment ha sigut clicat
+  document.getElementById(idElement).classList.add('imgSel');
+  //extrayem la informació que hi ha en els camps de la imatge per ficar-la a la tarjeta
+  var pos=preu_Dto.indexOf("-");
+  var pos2=preu_Dto.indexOf("_");
+  var preu=preu_Dto.substring(0,pos);
+  var dto=preu_Dto.substring(pos+1,pos2);
+  var variant=preu_Dto.substring(pos2+1);
+  var preuElement=document.getElementById("preu-"+id);
+  var dtoElement=document.getElementById("dto-"+id);
+  var btnElement=document.getElementById("btn-"+id);
   dtoElement.classList.remove("d-flex");
   dtoElement.classList.remove("d-none");
-  document.getElementById("imgtop-"+element.id).setAttribute("src", element.url);
+  document.getElementById("imgtop-"+id).setAttribute("src", url);
   if(dto>0){
     dtoElement.classList.add("d-flex")
     dtoElement.querySelector("span").innerText=(dto*100)+"% dto.";
-
     preuElement.innerHTML="<b>Preu:</b> "+ (preu*(1-dto)).toFixed(2)+"€ <s>"+preu+"€</s>";
   }else{
     dtoElement.classList.add("d-none")
@@ -187,15 +77,6 @@ function hoverImage(element){
   }
   btnElement.setAttribute("href","/info/"+variant);
 }
-//afegir hover quan carrega per primera vegada la página
-function recorreMiniImatge(){
-  document.querySelectorAll('[id*="variant-"]').forEach(
-    el => el.querySelectorAll('img').forEach( img =>
-      addhover(img)
-    )
-  );
-}
-
 function hideFiltres(name){
   var hide=true;
   var classbutton="btn_outline";
@@ -220,6 +101,7 @@ function setImage(event, src){
 }
 async function changeVariant(event) {
   try {
+    id=event.explicitOriginalTarget.id;
     const response = await fetch('http://127.0.0.1:8000/variantInfo/', 
       {method: "POST",
         headers: {
@@ -227,10 +109,15 @@ async function changeVariant(event) {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          'idVar': event.explicitOriginalTarget.id
+          'idVar': id
         })
       }
     );
+    imgVar=document.getElementById('varLlistat').getElementsByTagName('img');
+    for(var i = 0; i < imgVar.length; i++) {
+      imgVar[i].classList.remove('imgSel');
+    }
+    document.getElementById(id).classList.add('imgSel');
     const data = await response.json();
     if(data.length==0){
       alert("No s'ha trobat cap resultat per la busqueda");
@@ -399,19 +286,16 @@ async function filtre(){
         })
       }
     );
-    const data = await response.json();
-    
-    if(data.length==0){
-      alert("No s'ha trobat cap resultat per la busqueda");
+    if (response.ok) {
+      // Get the HTML response
+      const htmlContent = await response.text();
+      // Insert the HTML response into a specific element in the DOM
+      document.getElementById('prodcat').innerHTML = htmlContent;
     }else{
-      var pare=document.getElementById("prodcat");
-      pare.innerHTML="";
-      for (var i = 0; i < data.length; i++){
-        createProductCard(data[i]);
-      }
+      alert("No s'ha trobat cap resultat per al filtre indicat")
     }
   } catch (error) {
-      alert("Error del servidor en filtrar la informació");
+      alert(error);
   }
 }
 function activaBotoCarro(){

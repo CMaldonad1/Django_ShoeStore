@@ -35,7 +35,7 @@
         <div id="tallesfiltre" class="filtrebox tallesfiltre p-2" hidden="">
           {% for t in talles %}
           <div class="col-3 p-1">
-            <input type="checkbox" id="chkbx{{t.id}}" value="{{t.id}}" name="chktalla" style="display:none" {% if t.id in string_talles %} checked {% endif %}>
+            <input type="checkbox" id="chkbx{{t.id}}" value="{{t.id}}" name="chktalla" style="display:none" {% if t.id|slugify  in request.session.filtres.talles %} checked {% endif %}>
             <label for="chkbx{{t.id}}" class="chkbutton btn_outline">{{t.nom}}</label>
           </div>
           {% endfor %}
