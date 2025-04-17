@@ -1,0 +1,33 @@
+{% load static %}
+<div class="col-6 col-sm-6 col-md-5 ">
+    <label for="nom" class="form-label">Nom</label>
+    <input type="text" class="form-control" id="nom" value="{{user.nom}}" disabled>
+  </div>
+  <div class="col-6 col-sm-6 col-md-5">
+    <label for="cognom" class="form-label">Cognom 1</label>
+    <input type="text" class="form-control" id="cognom" value="{{user.cognom}}" disabled>
+  </div>
+  <div class="col-6 col-sm-6 col-md-5">
+    <label for="cognom2" class="form-label">Cognom 2</label>
+    <input type="text" class="form-control" id="cognom2" value="{{user.cognom2}}" disabled>
+  </div>
+  <div class="col-sm-6 col-md-5">
+    <label for="email" class="form-label">Email</label>
+    <input type="email" class="form-control" id="email" value="{{user.mail}}" disabled>
+  </div>
+  <div class="col-sm-7">
+    <label for="direccio" class="form-label">Direcció</label>
+    <input type="text" class="form-control" id="direccio" value="{{user.direccio}}"disabled>
+  </div>
+  <div class="col-sm-7">
+    <label for="poblacio" class="form-label">Població</label>
+    <input type="text" class="form-control" id="poblacio" value="{{user.poblacio}}" disabled>
+  </div>
+  <div class="col-4 col-sm-3">
+    <label for="cp" class="form-label">Codi Postal</label>
+    <input type="text" class="form-control" id="cp" value="{{user.cp}}" disabled>
+  </div>
+  <div class="col-8 col-sm-7">
+    <label for="pais" class="form-label">Pais</label>
+    <input type="text" class="form-control" id="pais" value="{{user.pais}}" disabled>
+  </div>

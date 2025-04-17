@@ -75,12 +75,14 @@
                             +
                             </button>
                         </div>
-
                     </div>
                 </div>
             </div>
-            <button id="addCart" class="btn btn_normal mb-3 me-2" onClick='cistella(1);' disabled>
-                <i class="bi bi-cart-plus"></i> Add to Cart
+            <button id="addCart" class="btn btn_normal mb-3 me-2" onClick='cistella();' disabled>
+                <i class="bi bi-cart-plus"></i> Afegir al cistell
+            </button>
+            <button id="stockIncr" class="btn btn-warning mb-3 me-2" onClick='incrStock({{prod.prod.id}});'>
+                <i class="bi bi-cart-plus"></i> +5 stock
             </button>
         </div>
     </div>

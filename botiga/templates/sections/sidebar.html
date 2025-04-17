@@ -1,15 +1,17 @@
 <div id="sidebar" class="sidbr p-3 ">
   <div class="catFiltres" class="mb-4">
-    <div class="d-flex mb-2">
+    <div class="d-flex mb-2 position-relative">
       <button id="hidefiltreCataleg" class="btn_outline" onClick='hideFiltres("filtreCataleg");'>☰</button>
       <h4 class="ms-3">Filtres</h4>
+      <div id='filterGlow' class="filter" {% if 'filtres' not in request.session or request.session.filtres.filtres == 0 %} hidden {% endif %}></div>
     </div>
     <div id="filtreCataleg" class="ms-2" hidden>
       <!--Filtrar per nom-->
       <div class="filtrebox">
-        <div class="d-flex m-2">
+        <div class="d-flex m-2 position-relative">
           <button id="hidenomfiltre" class="btn_outline" onClick='hideFiltres("nomfiltre");'>★</button>
           <h5 class="ms-3">per nom</h5>
+          <div id='nomGlow' class="filter" {% if 'filtres' not in request.session or request.session.filtres.nom == "" %} hidden {% endif %}></div>
         </div>
         <div class="nomfiltre p-2" id="nomfiltre" class="d-flex flex-wrap" hidden="">
           <input type="text" id="nomf" class="filtre" {% if request.session.filtres.nom != '' %} value="{{request.session.filtres.nom}}" {% endif %}>
@@ -17,9 +19,10 @@
       </div>
       <!--Filtrar per preu-->
       <div class="filtrebox">
-        <div class="d-flex m-2">
+        <div class="d-flex m-2 position-relative">
           <button id="hidepreufiltre" class="btn_outline" onClick='hideFiltres("preufiltre");'>★</button>
           <h5 class="ms-3">per preu</h5>
+          <div id='preuGlow' class="filter" {% if 'filtres' not in request.session or request.session.filtres.pmin == "" and  request.session.filtres.pmax == ''%} hidden {% endif %}></div>
         </div>
         <div class="preufiltre p-2" id="preufiltre" class="d-flex flex-wrap" hidden="">
           <label>Preu Min:</label><input type="number" id="pmin" class="filtre" {% if request.session.filtres.pmin != '' %} value="{{request.session.filtres.pmin}}" {% endif %}>
@@ -28,11 +31,12 @@
       </div>
       <!--Filtrar per talla-->
       <div class="filtrebox">
-        <div class="d-flex m-2">
+        <div class="d-flex m-2 position-relative">
           <button id="hidetallesfiltre" class="btn_outline" onClick='hideFiltres("tallesfiltre");'>★</button>
           <h5 class="ms-3">per talla</h5>
+          <div id='tallaGlow' class="filter" {% if 'filtres' not in request.session or request.session.filtres.talles == "" %} hidden {% endif %}></div>
         </div>
-        <div id="tallesfiltre" class="filtrebox tallesfiltre p-2" hidden="">
+        <div id="tallesfiltre" class="filtrebox tallesfiltre p-2 " hidden="">
           {% for t in talles %}
           <div class="col-3 p-1">
             <input type="checkbox" id="chkbx{{t.id}}" value="{{t.id}}" name="chktalla" style="display:none" {% if t.id|slugify  in request.session.filtres.talles %} checked {% endif %}>

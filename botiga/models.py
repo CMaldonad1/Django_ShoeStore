@@ -95,7 +95,7 @@ class Factura(models.Model):
     cistell=models.ForeignKey(Cistell, on_delete=models.DO_NOTHING, null=False)
     pagament=models.ForeignKey(MetodePagament, on_delete=models.DO_NOTHING, null=False)
     botiga=models.ForeignKey(Botiga, on_delete=models.DO_NOTHING, null=False)
-    gtoEnvio=models.FloatField(null=False, default=0.0),
+    gtoEnvio=models.FloatField(null=False, default=0.0)
     totalFra=models.FloatField(null=False, default=0.0)
 
 class LineaFactura(models.Model):

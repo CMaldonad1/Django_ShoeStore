@@ -45,38 +45,7 @@
           <div id="infoUsuari" class="col-12 col-md-7 d-flex justify-content-center flex-wrap">
             <h4 class="mb-3 secondaryText">Direcció de facturació i enviament</h4>
             <div class="row g-3">
-              <div class="col-6 col-sm-5 me-1">
-                <label for="nom" class="form-label">Nom</label>
-                <input type="text" class="form-control" id="nom" value="{{user.nom}}" disabled>
-              </div>
-              <div class="col-6 col-sm-5">
-                <label for="cognom" class="form-label">Cognom 1</label>
-                <input type="text" class="form-control" id="cognom" value="{{user.cognom}}" disabled>
-              </div>
-              <div class="col-6 col-sm-5">
-                <label for="cognom2" class="form-label">Cognom 2</label>
-                <input type="text" class="form-control" id="cognom2" value="{{user.cognom2}}" disabled>
-              </div>
-              <div class="col-sm-5">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="email" value="{{user.mail}}" disabled>
-              </div>
-              <div class="col-sm-7">
-                <label for="direccio" class="form-label">Direcció</label>
-                <input type="text" class="form-control" id="direccio" value="{{user.direccio}}"disabled>
-              </div>
-              <div class="col-sm-7">
-                <label for="poblacio" class="form-label">Població</label>
-                <input type="text" class="form-control" id="poblacio" value="{{user.poblacio}}" disabled>
-              </div>
-              <div class="col-4 col-sm-3">
-                <label for="cp" class="form-label">Codi Postal</label>
-                <input type="text" class="form-control" id="cp" value="{{user.cp}}" disabled>
-              </div>
-              <div class="col-8 col-sm-7">
-                <label for="pais" class="form-label">Pais</label>
-                <input type="text" class="form-control" id="pais" value="{{user.pais}}" disabled>
-              </div>
+              {% include 'sections/informacioClient.html' %}
               <hr class="my-4 d-md-none">
             </div>
           </div>

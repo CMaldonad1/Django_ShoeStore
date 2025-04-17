@@ -1,19 +1,18 @@
 from django.shortcuts import render
 from django.core.serializers import serialize
 from django.core.mail import EmailMessage
-from django.http import JsonResponse
-from django.db.models import Sum
 from rest_framework.decorators import api_view
 from .forms import *
 from .models import *
-from django.db.models import Prefetch, Q
+from django.db.models import Prefetch, Q, F, Sum
 from django.shortcuts import render
 from .decorator import *
 import requests
-from django.http import HttpResponse
+from django.http import HttpResponse, FileResponse, JsonResponse
 from requests.auth import HTTPBasicAuth
 from django.conf import settings
 from django.template.loader import render_to_string
+from django.core.paginator import Paginator
 
 # Create your views here.
 def login(request):
@@ -24,6 +23,7 @@ def login(request):
         #verifiquem que l'usuari s'ha loginat correctament
         if logOK!=None:
             idUser=logOK.id
+            
             #borrem el possible missatge d'error
             if 'logerr' in request.session:
                 request.session.pop('logerr')
@@ -59,7 +59,7 @@ def login(request):
             return informacio(request, request.session.get('item'))
 
 def creacioNovaCistella(request):
-        novaCistella=Cistell(request.session["login"]['id'])
+        novaCistella=Cistell(client_id=request.session['login']['id'])
         novaCistella.save()
 
         return novaCistella.id
@@ -88,15 +88,16 @@ def cataleg(request, catid=None):
         request.session["catSel"]=Categoria.objects.filter(id=catid).values('nom','id').first()
     elif catid==0 or catid==None:
         #si la catid es 0 vol dir que no s'ha seleccionat cap
-        request.session["catSel"]=""
-        print("hello")
-        
+        request.session["catSel"]=""       
     
     #guardem tota la informació de les jerarquies si una ha sigut seleccionada
     if request.session.get('catSel')!="":
         jerarquia=Categoria.objects.filter(id__in=returnParentJerarqui(request.session.get('catSel')["id"])).order_by('id')
 
     productes=llistatProductes(request)
+    p = Paginator(productes, 4)
+    page_number = request.GET.get('page')
+    productes = p.get_page(page_number)
 
     return render(request, 'sections/cataleg.html',{
         'title': 'cataleg',
@@ -147,8 +148,13 @@ def filtrar(request):
     pmax=request.data["pmax"]
     nom=request.data["nom"]
     talles=request.data["talles"]
+    filtres=0
+
+    if(pmin!="" or pmax!="" or nom!="" or talles!=""):
+        filtres=1
 
     request.session['filtres']={
+        'filtres':filtres,
         'pmin':pmin,
         'pmax':pmax,
         'nom':nom,
@@ -156,7 +162,8 @@ def filtrar(request):
     }
     
     productes=llistatProductes(request)
-
+    p = Paginator(productes, 4)
+    productes = p.get_page(1)
     html_content=render_to_string('sections/llistatProductes.html',
                                   {
                                       'productes':productes
@@ -209,10 +216,17 @@ def informacio(request, varid=None):
 
 @unauthenticated_user
 def user(request):
-    request.session["page"]="usuari"
+    request.session["page"]="usuari",
+    user=User.objects.filter(id=request.session['login']['id']).first()
+    fact=Factura.objects.filter(cistell__id__in=Cistell.objects.filter(client__id=request.session["login"]['id']).values_list('id', flat=True)).prefetch_related(
+            Prefetch('lineafactura_set')
+        )
+    if not fact:
+        fact=""
+        
     return render(request, 'sections/usuari.html',{
-        'title': 'Usuari',
-        'head': 'Usuari',
+        'user':user,
+        'fact':fact,
     })
 #programa de la vista de la cistella
 def shopping(request):
@@ -406,9 +420,10 @@ def enviarEmail(request, response, idFactura):
         from_email=settings.EMAIL_HOST_USER,
         to=[request.session['login']['mail']]
     )
+    fra=Factura.objects.filter(id=idFactura).first()
     email.content_subtype = 'html'
     email.attach(
-        "Factura_"+str(idFactura)+".pdf",
+        str(fra.numero)+".pdf",
         response.content,
         'application/pdf'
     )
@@ -499,12 +514,7 @@ def variantInfo(request):
         for i in p.imatges_set.all():
             imatges.append(i.url)
         for t in p.tallavariant_set.all():
-            talla={
-                'tNom':t.talla.nom,
-                'tId':t.id,
-                'qty':t.qty
-            }
-            talles.append(talla)
+            talles.append(jsonTalla(t))
         item={
             "id": p.id,
             "nom": p.nom,
@@ -516,9 +526,44 @@ def variantInfo(request):
         
         resposta.append(item)
     return JsonResponse(resposta[0], safe=False) 
+def jsonTalla(t):
+    talla={
+        'tNom':t.talla.nom,
+        'tId':t.id,
+        'qty':t.qty
+    }
+    return talla
 
 @api_view(['GET'])
 def eliminarMissatge(request):
     if 'logerr' in request.session:
         request.session.pop('logerr')
     return JsonResponse({'done':1}, safe=False) 
+
+@api_view(['POST'])
+def incrStock(request):
+    idprod=request.data["prod"]
+    idvar=request.data["varid"]
+    TallaVariant.objects.filter(var__in=Variant.objects.filter(prod_id=idprod).values_list('id', flat=True)).all().update(qty=F('qty') + 5)
+    varSel=Variant.objects.filter(id=idvar).all()
+    items=[]
+    for var in varSel:
+        for t in var.tallavariant_set.all():
+            items.append(jsonTalla(t))
+    return JsonResponse(items, safe=False) 
+
+@unauthenticated_user
+def imprimirFra(request):
+    if request.method == 'POST':
+        id = request.POST.get('idFra')
+        response=jasperFactura(id)
+        if response.status_code == 200:
+            pdf_file = HttpResponse(response.content, content_type='application/pdf')
+            fra=Factura.objects.filter(id=id).first()
+            pdf_file['Content-Disposition'] = f'attachment; filename="{fra.numero}.pdf"'
+
+            return pdf_file
+        else:
+            return HttpResponse("Error al generar el PDF.", status=500)
+    else:
+        return HttpResponse("Error al generar el PDF.", status=500)

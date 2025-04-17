@@ -37,4 +37,6 @@ urlpatterns = [
     path('filtrar/', views.filtrar, name='filtrar'),
     path('variantInfo/', views.variantInfo, name='variantInfo'),
     path('eliminarMissatge/', views.eliminarMissatge, name='eliminarMissatge'),
+    path('ver_pdf', views.imprimirFra, name='ver_pdf'),
+    path('incrStock/', views.incrStock, name='incrStock')
 ]

@@ -83,6 +83,17 @@ html{
                 background-color: @main_color;
             }
         }
+        .btn_normal3{
+            border-radius: 5px;
+            border-color:@third_color;
+            color:@third_color;
+            background-color:@secondary_color;
+            &:hover{
+                color: @secondary_color;
+                border-color:@secondary_color;
+                background-color: @third_color;
+            }
+        }
         .btn_outline{
             border-radius: 5px;
             border-color: @main_color;
@@ -159,7 +170,6 @@ html{
                     font-size: 12px;
                 }
             }
-
         }
         main{
             overflow: auto;
@@ -172,6 +182,17 @@ html{
             s{
                 color:red !important;
             }
+            .filter{
+                position:absolute;
+                background-color: @third_color;
+                color:@secondary_color;
+                box-shadow: 0 0 5px 3px @third_color;
+                border-radius: 50%;
+                width: 15px;
+                height: 15px;
+                margin-left: 88%;
+                margin-top: 8px;
+            }
             .infobody{
                 position: relative;
                 display: flex;
@@ -179,6 +200,7 @@ html{
                 flex-direction: row;
                 height: 100%;
                 width: 100%;
+                overflow-y: hidden;
                 aside{
                     height:100%;
                     .list-unstyled{
@@ -273,20 +295,19 @@ html{
                     flex-direction: column;
                     height:100%;
                     width:100%;
+                    overflow-y:scroll;
+                    scrollbar-color: @reg_text @secondary_color;
+                    --bs-gutter-x: 0rem !important;
                     .prodcat{
                         padding:1%;
                         height:100%;
                         width:100%;
-                        overflow-x: scroll;
-                        scrollbar-color: @reg_text @secondary_color;
-                        --bs-gutter-x: 0rem !important;
                         .card-body{
                             .crd_nm{
                                 font-weight: bold;
                                 font-size:15px;
                                 color:@third_color
                             }
-                            
                         }
                         .dtoinfo{
                             background-color: @third_color;
@@ -396,10 +417,10 @@ html{
             }
             #breadcrumb-div{
                 width:100%;
-                height:40px;
+                height:30px;
                 display:flex;
                 background-color: @third_color;
-                padding:5px;
+                padding-left:5px;
                 .breadcrumb-item{
                     color:@reg_text !important;
                 }
@@ -410,6 +431,21 @@ html{
                     }
                 }
                 
+            }
+            #perfilUsuari{
+                background-color: @secondary_color;
+                border-radius: 10px;
+                color:@reg_text;
+                .filtrebox{
+                    border: 1px solid @main_color;
+                    border-radius: 6px;
+                    width:100%;
+                }
+                #dadesFact{
+                    max-height: 300px;
+                    overflow-y: scroll;
+
+                }
             }
         }
         .ftr{

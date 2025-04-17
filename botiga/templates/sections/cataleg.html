@@ -8,7 +8,7 @@
     
     <section>
         <!--braedcrumb-->
-        <div id="breadcrumb-div">
+        <div id="breadcrumb-div" class="sticky-top">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     {% if jerarquia|length == 0 %}
@@ -27,7 +27,7 @@
             </nav>
         </div>
         <!--llistat de productes-->
-        <div id="prodcat" class="prodcat row row-cols-2 row-cols-sm-3 row-cols-lg-4 row-cols-xxl-5">
+        <div id="prodcat">
             {% include 'sections/llistatProductes.html' %}
         </div>
     </section>

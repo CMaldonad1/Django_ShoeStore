@@ -10,7 +10,7 @@
         <div class="logo order-1 order-sm-0">
           <img src="{% static 'img/logo.png' %}">
         </div>
-        <ul class="nav col-5 col-sm-3 me-sm-auto mb-2 justify-content-start  order-2 order-sm-0">
+        <ul class="nav col-5 col-sm-4 me-sm-auto mb-2 justify-content-start  order-2 order-sm-0">
           <li {% if request.session.page == 'cataleg' %} class="selected" {% endif %}>
             <a href="{% url 'cataleg' %}" class="nav-link">Catàleg</a>
           </li>
@@ -20,17 +20,16 @@
           </li>
           {% endif %}
         </ul>
-        {% if 'login' not in request.session or request.session.login.id == 0  %}
+        
         <!--si no ho está menú de login-->
-        <div class="text-end col-2 col-sm-4 mb-0 order-3 order-sm-0 d-flex flex-wrap align-items-center align-items-sm-end justify-content-end ">
-          <button type="button" class="btn btn_normal" data-bs-toggle="modal" data-bs-target="#login">Login</button>
-          <!-- <a class="btn btn_normal" href="{% url 'registrat' %}">Sign-up</a> -->
-        </div>
-        {% else %}
-        <div class="text-end col-2 col-sm-4 mb-0 order-3 order-sm-0 d-flex flex-wrap align-items-center align-items-sm-end justify-content-end ">
+        <div class="text-end col-2 col-md-auto mb-0 order-3 order-sm-0 d-flex flex-wrap align-items-center align-items-sm-end justify-content-end ">
+          {% if 'login' not in request.session or request.session.login.id == 0  %}
+            <button type="button" class="btn btn_normal" data-bs-toggle="modal" data-bs-target="#login">Login</button>
+          {% else %}
           <button type="button" class="btn btn_outline" onclick="location.href='{% url 'logoff' %}'">Logoff</button>
+          {% endif %}
         </div>
-        {% endif %}
+        
         <!--cistella de la comrpa-->
         <a href="{% url 'cistella' %}" class="col-1 nav-link mb-0 me-sm-3 me-2 order-5 order-sm-0">
           <div id="divCistella" class="{% if request.session.page == 'shopping' %}bselected {% else %}basket{% endif %}">

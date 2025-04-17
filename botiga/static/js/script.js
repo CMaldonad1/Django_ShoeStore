@@ -78,23 +78,38 @@ function showVariant(ev){
   btnElement.setAttribute("href","/info/"+variant);
 }
 function hideFiltres(name){
+  var pagUser=name.includes("usr");
+  
   var hide=true;
   var classbutton="btn_outline";
   var filtres=document.getElementById(name);
   var button=document.getElementById("hide"+name);
-  var listvar=document.getElementById("listVar")
+  var hidden=filtres.hidden
+  
   button.removeAttribute("class");
-  if(filtres.hidden==true){
+  if(hidden){
     hide=false;
+    button.classList.remove(classbutton)
     classbutton="btn_normal";
-    listvar.style.overflowY="scroll";
-    listvar.style.maxHeight="50%";
   }else{
-    listvar.style.overflowY="hidden";
-    listvar.style.maxHeight="100%";
+    button.classList.remove("btn_normal")
+  }
+  if(!pagUser && name!="sidebar"){
+    scrollLlistatVariants(hidden)
   }
   filtres.hidden=hide;
-  button.setAttribute("class",classbutton);
+  button.classList.add(classbutton);
+}
+function scrollLlistatVariants(hidden){
+  var overflowY="hidden";
+  var maxHeight="100%";
+  var listvar=document.getElementById("listVar")
+  if(hidden){
+    overflowY="scroll";
+    maxHeight="50%";
+  }
+  listvar.style.overflowY=overflowY;
+  listvar.style.maxHeight=maxHeight;
 }
 function setImage(event, src){
   document.getElementById("imgGran").setAttribute("src",src)
@@ -207,7 +222,7 @@ function generarPreuInfo(data){
   }
   divPreu.appendChild(spanPreu2);
 }
-async function cistella(data){
+async function cistella(){
   var e=document.getElementById("sTalles");
   try {
     const response = await fetch('http://127.0.0.1:8000/add/', 
@@ -240,6 +255,28 @@ async function cistella(data){
     alert("Error en accedir a la informació de la cistella");
   }
 }
+async function incrStock(id){
+  try {
+    const response = await fetch('http://127.0.0.1:8000/incrStock/', 
+      {method: "POST",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          'prod': id,
+          'varid': document.getElementById('variantID').innerText
+        })
+      }
+    );
+    const data = await response.json();
+    generarTallesSelector(data);
+    activaBotoCarro();
+    alert("Totes les talles del model han sigut incrementades");
+  } catch (error) {
+    alert(error);
+  }
+}
 async function activarModal(){
   var myModal = new bootstrap.Modal(document.getElementById('login'), {});
   myModal.show();
@@ -251,6 +288,21 @@ function desfiltra(){
   document.getElementById('nomf').value="";
   document.querySelectorAll('input[name=chktalla]:checked').forEach(ckbx => ckbx.checked=false);
   filtre();
+}
+function amagar_mostrarChivato(pmin,pmax,nom,talles){
+  var chivatoPreu=(pmin !="")?false:(pmax != "")?false:true;
+  var chivatoNom=(nom !="")?false:true;
+  var chivatoTalles=(talles !="")?false:true;
+  var chivatoFiltres=true;
+  
+  document.getElementById("nomGlow").hidden=chivatoNom;
+  document.getElementById("preuGlow").hidden=chivatoPreu;
+  document.getElementById("tallaGlow").hidden=chivatoTalles;
+
+  if(!chivatoNom || !chivatoPreu || !chivatoTalles){
+    chivatoFiltres=false;
+  }
+  document.getElementById("filterGlow").hidden=chivatoFiltres;
 }
 async function filtre(){
   var pmin=document.getElementById('pmin').value;
@@ -271,6 +323,9 @@ async function filtre(){
     pmax=pmin
     document.getElementById('pmax').value=pmin
   }
+
+  amagar_mostrarChivato(pmin,pmax,nom,talles);
+
   try {
     const response = await fetch('http://127.0.0.1:8000/filtrar/', 
       {method: "POST",
@@ -306,7 +361,7 @@ function activaBotoCarro(){
   var tallaSel=e.options[e.selectedIndex].text
   var qtyTalla=tallaSel.substring(tallaSel.indexOf(":")+2, tallaSel.length-1);
   var btns=document.getElementsByClassName("incrdcr");
-
+  
   if(e.options[e.selectedIndex].value != 0){
     qty.setAttribute('max',qtyTalla);
     if(qty.value>qtyTalla){
@@ -314,10 +369,12 @@ function activaBotoCarro(){
     }
     disabled=false;
   }
+
   btn.disabled=disabled;
   for(i=0;i<btns.length;i++){
     btns[i].disabled=disabled;
   }
+
 }
 async function updateItemCistell(id){
   var index=id.indexOf("_");
