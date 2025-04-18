@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% block content %}
 <section>
-    <div id="perfilUsuari" class="container col-12 col-lg-7 mt-4 p-2">
+    <div id="perfilUsuari" class="container col-11 col-lg-7 mt-4 p-2">
         <center><h2 class="secondaryText">Perfil de {{ request.session.login.nom }}</h2></center> 
         <!-- Informació de l'usuari no modificable -->
         <div class="filtrebox p-1">
-            <div class="d-flex align-items-center justify-content-start mb-1">
+            <div class="d-flex align-items-center justify-content-start">
                 <button id="hidedadesPersonalsusr" class="btn_outline" onClick='hideFiltres("dadesPersonalsusr");'>★</button>
                 <h5 class="ms-3">Dades Personals</h5>
             </div>
@@ -17,25 +17,25 @@
         </div>
         <!-- Informacio de factures -->
         <div class="filtrebox p-1 mt-2">
-            <div class="d-flex align-items-center justify-content-start mb-1">
+            <div class="d-flex align-items-center justify-content-start">
                 <button id="hidedadesFactusr" class="btn_outline" onClick='hideFiltres("dadesFactusr");'>★</button>
                 <h5 class="ms-3">Historic de Factures</h5>
             </div>
-            <div id="dadesFactusr" hidden="">
+            <div id="dadesFactusr" hidden="" class="mt-2 p-2">
                 {% if fact == "" %}
                 <h5 class="secondaryText ms-4">No tens cap factura al teu perfil</h5>
                 {% else %}
-                <div class="d-flex flex-wrap col-12 p-1">
+                <div class="d-flex flex-wrap col-12">
                     {% for f in fact%}
-                    <div class="overflow-scroll col-12">
-                        <div class="d-flex align-items-center justify-content-start mb-1 flex-wrap">
-                            <button id="hide{{f.numero}}usr" class="btn_outline ms-3" onClick='hideFiltres("{{f.numero}}usr");'>Veure Detall</button>
+                    <div class="overflow-scroll col-12 mb-3">
+                        <div class="d-flex align-items-center justify-content-start flex-wrap mb-2">
+                            <button id="hide{{f.numero}}usr" class="btn_outline" onClick='hideFiltres("{{f.numero}}usr");'>Veure Detall</button>
                             <div class="ms-3 col-10 col-md-auto "><span class="secondaryText">Factura:</span> {{f.numero}}</div>
-                            <div class="ms-3 col-5 col-md-auto "><span class="secondaryText">Gtos Enviament:</span> {{f.gtoEnvio|floatformat:2}}€</div>
+                            <div class="ms-3 col-5 col-md-auto "><span class="secondaryText">Gtos Env.:</span> {{f.gtoEnvio|floatformat:2}}€</div>
                             <div class="ms-3 col-5 col-md-auto "><span class="secondaryText">Total Fra:</span> {{f.totalFra}}€</div>
                         </div>
-                        <div id="{{f.numero}}usr" class="pt-2" hidden="">
-                            <div class="pb-1">
+                        <div id="{{f.numero}}usr" hidden="">
+                            <div class="mb-2">
                                 <form method="post" action="{% url 'ver_pdf' %}" target="_blank">
                                     {% csrf_token %}
                                     <input type="text" name="idFra" id="idFra" value="{{f.id}}" hidden>
@@ -48,30 +48,29 @@
                                     <th>Marca</th>
                                     <th>Producte</th>
                                     <th>Variant</th>
-                                    <th>Talla</th>
-                                    <th>Quantitat</th>
-                                    <th>Preu</th>
-                                    <th>Dto</th>
-                                    <th>IVA</th>
-                                    <th>Total</th>
+                                    <th class="text-center">Talla</th>
+                                    <th class="text-center">Qty</th>
+                                    <th class="text-center">Preu</th>
+                                    <th class="text-center">Dte</th>
+                                    <th class="text-center">IVA</th>
+                                    <th class="text-center">Total</th>
                                 </tr>
                             {% for lf in f.lineafactura_set.all %}
                                 <tr>
                                     <td>{{lf.tallavar.var.prod.marca}}</td>
                                     <td>{{lf.tallavar.var.prod.nom}}</td>
                                     <td>{{lf.tallavar.var.nom}}</td>
-                                    <td>{{lf.tallavar.talla.nom}}</td>
-                                    <td>{{lf.qty}}</td>
-                                    <td>{{lf.preu}}</td>
-                                    <td>{{lf.dto}}%</td>
-                                    <td>{{lf.iva}}%</td>
-                                    <td>{{lf.total}}</td>
+                                    <td class="text-center">{{lf.tallavar.talla.nom}}</td>
+                                    <td class="text-center">{{lf.qty}}</td>
+                                    <td class="text-center">{{lf.preu}}</td>
+                                    <td class="text-center">{% widthratio lf.dto 1 100 %}%</td>
+                                    <td class="text-center">{{lf.iva}}%</td>
+                                    <td class="text-center">{{lf.total}}</td>
                                 </tr>
                             {% endfor %}
                             </table>
                         </div>
                     </div>
-                       
                     {% endfor %}
                 </div>
                 {% endif %}

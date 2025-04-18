@@ -26,7 +26,7 @@
                     <form method="POST">
                       {% csrf_token %}
                       <button name="accion" value="vuidar" class="btn btn_normal"
-                      {% if 'cistella' not in request.session or request.session.cistella == 0 %}
+                      {% if 'cistella' not in request.session or request.session.cistella.qty == 0 %}
                         disabled
                       {% endif %}>
                         Eliminar cistella
@@ -120,7 +120,7 @@
                       {% csrf_token %}
                       <p id="infoEnv"></p>
                       <select name="enviament" id="enviament" class="col-12 align-text-center mb-3" onchange="this.form.submit()"
-                      {% if 'cistella' not in request.session or request.session.cistella == 0 %}
+                      {% if 'cistella' not in request.session or request.session.cistella.qty == 0 %}
                         disabled
                       {% endif %}>
                       >

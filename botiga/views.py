@@ -200,7 +200,7 @@ def informacio(request, varid=None):
         if(varSel.dto>0):
             preu=round(varSel.preu*(1-varSel.dto),2)
         varSel.preu_dto=preu
-
+    
         #carreguem la resta menys la seleccionada
         restaVar = Variant.objects.filter(prod=varSel.prod.id).exclude(id=varSel.id).prefetch_related(
                 Prefetch('tallavariant_set', queryset=TallaVariant.objects.select_related('talla')),
@@ -356,20 +356,21 @@ def updateLinea(request, var, qty):
 
 @api_view(['POST'])
 def realitzarPagament(request):
-    # idCistell=request.session['cistella']['id']
+    idCistell=request.session['cistella']['id']
     email=request.session['login']['mail']
-    # pagarCistell(idCistell)
-    # idFactura=creacioFactura(request, idCistell)
-    idFactura=1
-    # altaIvaFactura(request,idFactura)
-    # altaLineasFra(idCistell, idFactura)
+    pagarCistell(idCistell)
+    #creem la factura...
+    idFactura=creacioFactura(request, idCistell)
+    #..i donem d'alta l'iva d'aquesta i les lines
+    altaIvaFactura(request,idFactura)
+    altaLineasFra(idCistell, idFactura)
 
     #ens carreguem la informació que hi ha en sessio de la compra
-    # eliminarSessionsCompra(request)
+    eliminarSessionsCompra(request)
 
     #creació de nou cistell de compra per a l'usuari.
-    # cistell=creacioNovaCistella(request)
-    # sessioCistella(request, cistell, 0)
+    cistell=creacioNovaCistella(request)
+    sessioCistella(request, cistell, 0)
 
     #demanem la factura a jasperReport
     response=jasperFactura(idFactura)
@@ -389,6 +390,7 @@ def realitzarPagament(request):
                                       'msg':msg
                                 })
     return HttpResponse(html_content)
+
 #eliminar Cistella, Fra i enviament de session
 def eliminarSessionsCompra(request):
     request.session.pop('cistella')
@@ -411,8 +413,9 @@ def jasperFactura(idFactura):
     return response
 
 def enviarEmail(request, response, idFactura):
+    fra=Factura.objects.filter(id=idFactura).first()
     email= EmailMessage(
-        subject="Factura "+str(idFactura),
+        subject="MaviBotiga - Factura "+fra.numero,
         body="Hola "+request.session['login']['nom']+",<br><br>graciès per la teva compra. "+ 
             "Troba adjunt la teva factura.<br><br>"+
             "Atentament,<br>"+
@@ -420,7 +423,7 @@ def enviarEmail(request, response, idFactura):
         from_email=settings.EMAIL_HOST_USER,
         to=[request.session['login']['mail']]
     )
-    fra=Factura.objects.filter(id=idFactura).first()
+
     email.content_subtype = 'html'
     email.attach(
         str(fra.numero)+".pdf",
@@ -435,20 +438,28 @@ def pagarCistell(idCistell):
     cistell.save()
     
 def creacioFactura(request,idCistell):
+    #retornem el metode de pagament (nomes hi ha un)
     metodePago=MetodePagament.objects.filter(id=1).first()
+    #retornem el tiups de factura (nomes hi ha una)
     tipus=Contadors.objects.filter(id=1).first()
+    #retornem la informació de la botiga (nomes hi ha una)
     botiga=Botiga.objects.filter(id=1).first()
+    #donem format al numero de la factura 
     numFormat=f"{tipus.qty:06d}"
     numFra=tipus.tipus+"-"+numFormat
+    #recuperem els gastos d'enviament i el total de la factura
     costEnviament=request.session['fra']['totalEnvio']
     totalFra=request.session['fra']['totalFra']
-
+    #donem d'alta la factura
     fra=Factura(numero=numFra,tipus=tipus,
                 cistell_id=idCistell,pagament=metodePago,
                 botiga=botiga,gtoEnvio=costEnviament,
-                totalFra=totalFra
+                totalFra=round(totalFra,2)
                 )
     fra.save()
+    
+    #incrementem el contador de la factura
+    Contadors.objects.filter(id=1).update(qty=F('qty') + 1)
     return fra.id
 
 def altaIvaFactura(request, idFactura):
