@@ -8,9 +8,16 @@
       </ol>
   </nav>
 </div>
+{% if errors != "" %}
+<center>
+  <div id="resum" class="col-11 col-sm-10 payment mt-1">
+    <h5 style="color:red;">{{errors}}</h5>
+  </div>
+</center>
+{% endif %}
 <section id="shoppingCart" class="h-100 h-custom">
   <div class="container">
-    <div class="row d-flex justify-content-center mt-5 h-100">
+    <div class="row d-flex justify-content-center mt-3 h-100">
       <div class="col">
         <div class="card">
           <div class="card-body p-3">
@@ -85,7 +92,8 @@
                           <div class="btn">
                             <span>{{ll.qty}}</span>
                           </div>
-                          <button type="submit" name="accion" value="incr" class="btn btn_normal">
+                          <button type="submit" name="accion" value="incr" class="btn btn_normal" 
+                          {% if ll.qty >= ll.var.qty %} disabled {% endif %}>
                             +
                           </button>
                         </div>
@@ -93,7 +101,7 @@
                         <div>
                           <p class="mb-1 ms-2">{{ll.preu_qty|floatformat:2}}€</p>
                         </div>
-                        <input type="hidden" name="qty" value="{{ ll.qty }}" />
+                        <input type="hidden" name="qty" value="{{ ll.qty }}"/>
                         <input type="hidden" name="id" value="{{ ll.var.id }}" />
                         <a href="#!" style="color: #cecece;"><i class="fas fa-trash-alt"></i></a>
                       </div>
@@ -102,6 +110,9 @@
                           <svg height="20px" width="20px" fill="currentColor" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 457.503 457.503" xml:space="preserve"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <g> <path d="M381.575,57.067h-90.231C288.404,25.111,261.461,0,228.752,0C196.043,0,169.1,25.111,166.16,57.067H75.929 c-26.667,0-48.362,21.695-48.362,48.362c0,26.018,20.655,47.292,46.427,48.313v246.694c0,31.467,25.6,57.067,57.067,57.067 h195.381c31.467,0,57.067-25.6,57.067-57.067V153.741c25.772-1.02,46.427-22.294,46.427-48.313 C429.936,78.761,408.242,57.067,381.575,57.067z M165.841,376.817c0,8.013-6.496,14.509-14.508,14.509 c-8.013,0-14.508-6.496-14.508-14.509V186.113c0-8.013,6.496-14.508,14.508-14.508c8.013,0,14.508,6.496,14.508,14.508V376.817z M243.26,376.817c0,8.013-6.496,14.509-14.508,14.509c-8.013,0-14.508-6.496-14.508-14.509V186.113 c0-8.013,6.496-14.508,14.508-14.508c8.013,0,14.508,6.496,14.508,14.508V376.817z M320.679,376.817 c0,8.013-6.496,14.509-14.508,14.509c-8.013,0-14.509-6.496-14.509-14.509V186.113c0-8.013,6.496-14.508,14.509-14.508 s14.508,6.496,14.508,14.508V376.817z"></path></svg>
                       </button>
                     </div>
+                    {% if ll.error != "" %}
+                      <span style="color:red;">{{ll.error}}</span>
+                    {% endif %}
                   </div>
                   </form>
                   {% endfor %}
@@ -150,6 +161,7 @@
                       <p>Total (IVA Incl.)</p>
                       <p>{{ request.session.fra.totalFra|floatformat:2 }}€</p>
                     </div>
+                    {% if errors == "" %}
                     <a type="button" class="btn btn_outline btn_outline2 bt-xl
                     {% if 'enviament' not in request.session or request.session.enviament == 0 %}
                       disabled_link
@@ -161,6 +173,7 @@
                         <i class="fas fa-long-arrow-alt-right ms-2"></i>
                       </span>
                     </a>
+                    {% endif %}
                   </div>
                 </div>
               </div>

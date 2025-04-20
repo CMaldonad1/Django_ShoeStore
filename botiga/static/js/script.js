@@ -33,16 +33,6 @@ function createElements(categ){
   li.appendChild(divcollapse);
   elementPare.appendChild(li);
 }
-// function verifyIfSelected(nm){
-//   var selected=document.getElementById(nm);
-
-//   if(selected.classList.contains("selected")){
-//     selected.classList.remove("selected");
-//   }else{
-//     selected.classList.add("selected");
-//   }
-// }
-
 function showVariant(ev){
   var idElement=ev.explicitOriginalTarget.id;
   var preu_Dto=ev.explicitOriginalTarget.alt;
@@ -161,9 +151,13 @@ function generarTallesSelector(talles){
   pare.appendChild(fill);
   for(i=0; i<talles.length;i++){
     console.info(talles[i].tNom)
-      var opt=fill.cloneNode()
+      var opt=fill.cloneNode();
+      var qty= talles[i].qty;
       opt.value= talles[i].tId;
-      opt.text=talles[i].tNom+" (Max Uds: "+ talles[i].qty+")";
+      opt.text=talles[i].tNom+" (Max Uds: "+ qty+")";
+      if(qty==0){
+        opt.disabled=true;
+      }
       pare.appendChild(opt);
   }
 }
@@ -224,6 +218,9 @@ function generarPreuInfo(data){
 }
 async function cistella(){
   var e=document.getElementById("sTalles");
+  var index=e.selectedIndex
+  var id=e.options[index].value;
+  var qty=document.getElementById("sQty").value
   try {
     const response = await fetch('http://127.0.0.1:8000/add/', 
       {method: "POST",
@@ -232,27 +229,45 @@ async function cistella(){
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          'var': e.options[e.selectedIndex].value,
-          'qty': document.getElementById("sQty").value,
+          'var': id,
+          'qty': qty,
         })
       }
     );
-    const data = await response.json();
-    const items = data.cistella;
+    var data = await response.json();
+    var items = data.cistella;
+    var newqty= data.qty;
     if(items==-1){
       activarModal();
     }else{
-      var elementExists=document.getElementById('cistella');
-      if(!elementExists){
-        var cistella=document.createElement("div");
-        cistella.setAttribute('id','cistella');
-        cistella.setAttribute('class','check position-absolute');
-        document.getElementById('divCistella').appendChild(cistella);
-      }
-      document.getElementById('cistella').innerText = items;
+      actualitzarCistella(items);
+      updateDropDownPosition(e,index,newqty)
     }
   } catch (error) {
     alert("Error en accedir a la informació de la cistella");
+  }
+}
+function actualitzarCistella(items){
+  var elementExists=document.getElementById('cistella');
+  if(!elementExists){
+    var cistella=document.createElement("div");
+    cistella.setAttribute('id','cistella');
+    cistella.setAttribute('class','check position-absolute');
+    document.getElementById('divCistella').appendChild(cistella);
+  }
+  document.getElementById('cistella').innerText = items;
+}
+function updateDropDownPosition(e,index,qty){
+  var tallaSel=e.options[index].text
+  var qtyTalla=tallaSel.substring(tallaSel.indexOf(":")+2, tallaSel.length-1);
+  e.options[index].text=tallaSel.replace(qtyTalla, qty);
+
+  if(qty==0){
+    e.options[index].disabled;
+    document.getElementById("addCart").disabled=true;
+    document.getElementById("incr").disabled=true;
+    document.getElementById("decr").disabled=true;
+    document.getElementById("sQty").value=0;
   }
 }
 async function incrStock(id){

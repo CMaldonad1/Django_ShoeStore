@@ -200,7 +200,11 @@ def informacio(request, varid=None):
         if(varSel.dto>0):
             preu=round(varSel.preu*(1-varSel.dto),2)
         varSel.preu_dto=preu
-    
+        #decrementem la quantitat que hi ha en cistella
+        
+        for t in varSel.tallavariant_set.all():
+            t.qty=verificacioExistencies(request, t)
+
         #carreguem la resta menys la seleccionada
         restaVar = Variant.objects.filter(prod=varSel.prod.id).exclude(id=varSel.id).prefetch_related(
                 Prefetch('tallavariant_set', queryset=TallaVariant.objects.select_related('talla')),
@@ -213,6 +217,18 @@ def informacio(request, varid=None):
         })
     else:
         return cataleg(request)
+
+def verificacioExistencies(request, t):
+    idcist=request.session['cistella']['id']
+    qtyCistell=LineaCistell.objects.filter(var_id=t.id,cistell_id=idcist).values_list('qty', flat=True).first()
+
+    if(qtyCistell):
+        auxQty=t.qty-qtyCistell
+        if auxQty>=0:
+            return auxQty
+        else:
+            return 0
+    return t.qty
 
 @unauthenticated_user
 def user(request):
@@ -254,14 +270,32 @@ def shopping(request):
         llistat=LineaCistell.objects.filter(cistell_id=request.session['cistella']['id']).all()
         enviament=Enviament.objects.all()
         request.session['fra']=calcularCistella(llistat, opcion)
-
+        errors=verificacioQuantitats(llistat)
         return render(request, 'sections/shopping_cart.html',{
             'llistat':llistat,
             'enviament':enviament,
-            'opcSelect':int(opcion)
+            'opcSelect':int(opcion),
+            'errors':errors
         })
     else:
         return render(request, 'sections/shopping_cart.html')
+#verifiquem que la diferencia entre el stock i el que hi ha en cistella es suficient
+def verificacioQuantitats(llistat):
+    errors=""  # error general que, d'existir, no deixará fer el pagament
+    #iterem pels productes de la cistella i revisem si hi han existencies suficients per fer el pagament
+    for e in llistat:
+        qtyStock=TallaVariant.objects.filter(id=e.var.id).values_list('qty', flat=True).first()
+        error=""
+        if(qtyStock==0):
+            error="No quedan unitats del producte"
+        elif(e.qty > qtyStock):
+            error="No hi han existencies suficients per fer la comanda. Unitats máximes: "+str(qtyStock)
+        # en el cas de detectarse que no hi ha existencies, i si l'error general no ha sigut sobrescrit, el sobreescribim
+        if(error!="" and errors==""):
+            errors="S'han detectat elements que no tenen stocks o quanties suficients. Corregeix la teva cistella per a poder continuar."
+        e.error=error
+    return errors
+
 #elimnació d'un item de la cistella
 def deleteItem(request):
     var=request.POST.get('id')
@@ -357,37 +391,50 @@ def updateLinea(request, var, qty):
 @api_view(['POST'])
 def realitzarPagament(request):
     idCistell=request.session['cistella']['id']
-    email=request.session['login']['mail']
-    pagarCistell(idCistell)
-    #creem la factura...
-    idFactura=creacioFactura(request, idCistell)
-    #..i donem d'alta l'iva d'aquesta i les lines
-    altaIvaFactura(request,idFactura)
-    altaLineasFra(idCistell, idFactura)
+    llistat=LineaCistell.objects.filter(cistell_id=idCistell).all()
+    #avans de realitzar pagament tornem a verificar si hi han existencies
+    auxmsg=verificacioQuantitats(llistat)
+    err=0
+    #si tot es correcte enviem la factura i fem tot el control de factura i stock
+    if(auxmsg==""):
+        email=request.session['login']['mail']
+        baixaStock(llistat)
+        pagarCistell(idCistell)
+        #creem la factura...
+        idFactura=creacioFactura(request, idCistell)
+        #..i donem d'alta l'iva d'aquesta i les lines
+        altaIvaFactura(request,idFactura)
+        altaLineasFra(idCistell, idFactura)
 
-    #ens carreguem la informació que hi ha en sessio de la compra
-    eliminarSessionsCompra(request)
+        #ens carreguem la informació que hi ha en sessio de la compra
+        eliminarSessionsCompra(request)
 
-    #creació de nou cistell de compra per a l'usuari.
-    cistell=creacioNovaCistella(request)
-    sessioCistella(request, cistell, 0)
+        #creació de nou cistell de compra per a l'usuari.
+        cistell=creacioNovaCistella(request)
+        sessioCistella(request, cistell, 0)
 
-    #demanem la factura a jasperReport
-    response=jasperFactura(idFactura)
-    header="Pagament realitzat correctament!"
-    #Si la factura de Jasper s'ha generat correctament l'enviem per correu. Depenent de 
-    #si s'ha pogut o no traslladarem un misatge o un altre.
-    if response.status_code==200:
-        enviarEmail(request,response,idFactura)
-        msg="S'ha fet arribar al teu correu "+email+" la factura de la teva compra.<br>"
+        #demanem la factura a jasperReport
+        response=jasperFactura(idFactura)
+        header="Pagament realitzat correctament!"
+        #Si la factura de Jasper s'ha generat correctament l'enviem per correu. Depenent de 
+        #si s'ha pogut o no traslladarem un misatge o un altre.
+        if response.status_code==200:
+            enviarEmail(request,response,idFactura)
+            msg="S'ha fet arribar al teu correu "+email+" la factura de la teva compra.<br>"
+        else:
+            msg="La teva factura no s'ha pogut enviar al teu correu "+email+" per problemes técnics.<br>"
+        
+        msg+="Pots tornar a renviarte les teves factures a través del teu perfil."
     else:
-        msg="La teva factura no s'ha pogut enviar al teu correu "+email+" per problemes técnics.<br>"
-    
-    msg+="Pots tornar a renviarte les teves factures a través del teu perfil."
+        header="El Pagament no s'ha fet efectiu"
+        msg="El pagament no ha sigut efectuat degut a falta de stock.<br>"
+        msg+=auxmsg
+        err=1
     html_content=render_to_string('sections/pagamentComplet.html',
                                   {
                                       'header':header,
-                                      'msg':msg
+                                      'msg':msg,
+                                      'err':err
                                 })
     return HttpResponse(html_content)
 
@@ -396,7 +443,7 @@ def eliminarSessionsCompra(request):
     request.session.pop('cistella')
     request.session.pop('fra')
     request.session.pop('enviament')
-
+#crida de la factura de JasperServer
 def jasperFactura(idFactura):
     jasperserver_url = settings.JASPER_URL
     username = settings.JASPER_USER
@@ -411,7 +458,7 @@ def jasperFactura(idFactura):
         headers={'Accept': 'application/pdf'}
     )
     return response
-
+#enviament de la factura via email
 def enviarEmail(request, response, idFactura):
     fra=Factura.objects.filter(id=idFactura).first()
     email= EmailMessage(
@@ -431,7 +478,7 @@ def enviarEmail(request, response, idFactura):
         'application/pdf'
     )
     email.send()
-
+#marquem el cistell com a pagat
 def pagarCistell(idCistell):
     cistell=Cistell.objects.get(id=idCistell)
     cistell.pagada=True
@@ -484,6 +531,10 @@ def altaLineasFra(idCistell, idFactura):
                         total=total)
         lf.save()
 
+def baixaStock(llistat):
+    for e in llistat:
+        TallaVariant.objects.filter(id=e.var.id).update(qty=F('qty') - e.qty)
+
 #pagament de cistella
 @pagarLimitation
 def pagamentCistella(request):
@@ -506,9 +557,14 @@ def addCistella(request):
        
     # incrementem el contador de la cistella
     updateSessionCistella(request,qty)
-
+    # calculem la nova existencia amb referéncia amb el que hi ha a la llista
+    t=TallaVariant.objects.filter(id=var).first()
+    newqty=verificacioExistencies(request, t)
     # guardem els items que han agregat a la cistella
-    return JsonResponse({'cistella': request.session['cistella']['qty']})
+    return JsonResponse(
+        {'cistella': request.session['cistella']['qty'],
+         'qty':newqty
+         })
 
 def vuidarCistella(request):
     LineaCistell.objects.filter(cistell_id=request.session['cistella']['id']).delete()
@@ -525,7 +581,7 @@ def variantInfo(request):
         for i in p.imatges_set.all():
             imatges.append(i.url)
         for t in p.tallavariant_set.all():
-            talles.append(jsonTalla(t))
+            talles.append(jsonTalla(request, t))
         item={
             "id": p.id,
             "nom": p.nom,
@@ -537,11 +593,12 @@ def variantInfo(request):
         
         resposta.append(item)
     return JsonResponse(resposta[0], safe=False) 
-def jsonTalla(t):
+
+def jsonTalla(request, t):
     talla={
         'tNom':t.talla.nom,
         'tId':t.id,
-        'qty':t.qty
+        'qty':verificacioExistencies(request, t)
     }
     return talla
 
@@ -560,7 +617,7 @@ def incrStock(request):
     items=[]
     for var in varSel:
         for t in var.tallavariant_set.all():
-            items.append(jsonTalla(t))
+            items.append(jsonTalla(request, t))
     return JsonResponse(items, safe=False) 
 
 @unauthenticated_user

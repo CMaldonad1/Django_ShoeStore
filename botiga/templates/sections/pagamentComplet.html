@@ -1,13 +1,27 @@
+{% load static %}
 <section id="shoppingCart" class="h-100 h-custom">
     <div id="pagamentSection" class="row d-flex justify-content-center h-auto">
         <div id="resum" class="col-11 col-sm-9 col-md-8 col-lg-5 col-xl-4 payment order-1 order-md-0">
             <div class="d-flex align-items-center justify-content-center flex-wrap align-text-center">
-                <div class="col-12 col-md-11 d-flex justify-content-center"><h4 class="secondaryText">{{header}}</h2></div>
+                <div class="col-12 col-md-11 d-flex justify-content-center">
+                    {% if err != 0 %}
+                    <div class="logo me-2">
+                        <img src="{% static 'img/danger.png' %}" width="30" height="30">
+                    </div>
+                    {% endif %}
+                    <h4 class="secondaryText">{{header}}</h2>
+                </div>
                 <div class="col-12 d-flex justify-content-center"><p class="mt-2">{{msg|safe}}</p></div>
                 <h4 class="mb-3 col-10 d-flex justify-content-center">
-                    <a href="/" class="btn btn_normal bt-xl mt-2 mb-2" >
+                    {% if err == 0 %}
+                    <a href="{% url 'cataleg' %}" class="btn btn_normal bt-xl mt-2 mb-2" >
                         <i class="fas fa-long-arrow-alt-left me-2"></i>Tornar a la botiga
                     </a>
+                    {% else %}
+                    <a href="{% url 'cistella' %}" class="btn btn-danger bt-xl mt-2 mb-2" >
+                        <i class="fas fa-long-arrow-alt-left me-2"></i>Cistella
+                    </a>
+                    {% endif %}
                 </h4>
             </div>
         </div>

@@ -65,20 +65,23 @@
                     <div class="d-flex flex-column mb-4">
                         <label for="sQty" class="form-label">Quantity:</label>
                         <div class="d-flex flex-row">
-                            <button data-mdb-button-init data-mdb-ripple-init class="incrdcr btn btn_normal px-3 me-2"
-                            onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
+                            <button id="decr" data-mdb-button-init data-mdb-ripple-init class="incrdcr btn btn_normal px-3 me-2"
+                            onclick="this.parentNode.querySelector('input[type=number]').stepDown()"
+                            >
                             -
                             </button>
                             <input id="sQty" min="1" name="quantity" value="1" type="number" class="form-control" disabled/>
-                            <button data-mdb-button-init data-mdb-ripple-init class="incrdcr btn btn_normal px-3 ms-2"
-                            onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
+                            <button id="incr" data-mdb-button-init data-mdb-ripple-init class="incrdcr btn btn_normal px-3 ms-2"
+                            onclick="this.parentNode.querySelector('input[type=number]').stepUp()"
+                            >
                             +
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
-            <button id="addCart" class="btn btn_normal mb-3 me-2" onClick='cistella();' disabled>
+            <button id="addCart" class="btn btn_normal mb-3 me-2" onClick='cistella();' 
+            disabled>
                 <i class="bi bi-cart-plus"></i> Afegir al cistell
             </button>
             <button id="stockIncr" class="btn btn-warning mb-3 me-2" onClick='incrStock({{prod.prod.id}});'>
