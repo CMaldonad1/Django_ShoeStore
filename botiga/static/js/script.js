@@ -511,6 +511,8 @@ async function callPagament(){
   err+=verifyCvv();
   err+=verifyNom();
   if(err==0){
+    var loading= document.getElementById("loading");
+    loading.style.display="flex";
     const response = await fetch('http://127.0.0.1:8000/realitzarPagament/',
       {method: "POST",
           headers: {
@@ -519,10 +521,10 @@ async function callPagament(){
           },
       });
     if (response.ok) {
-        // Get the HTML response
-        const htmlContent = await response.text();
-        // Insert the HTML response into a specific element in the DOM
-        document.getElementById('contingut').innerHTML = htmlContent;
+      // Get the HTML response
+      const htmlContent = await response.text();
+      // Insert the HTML response into a specific element in the DOM
+      document.getElementById('contingut').innerHTML = htmlContent;
     }
   } else {
     document.getElementById('pagamentErr').innerText="La informació de pagament es incorrecta. Revisala."
