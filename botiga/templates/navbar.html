@@ -1,9 +1,9 @@
 {% load static %}
 <header class="p-2 text-bg-dark">
-    <div class="container-fluid justify-content-between">
-      <div class="navigator d-flex flex-wrap align-items-center justify-content-between ">
+    <div class="container-fluid">
+      <div class="navigator d-flex flex-wrap align-items-center ">
         {% if request.session.page == 'cataleg' %}
-        <div class="order-0 order-md-0 col-2 mb-3 mb-lg-0">
+        <div class="order-0 order-md-0 mb-lg-0 me-3">
           <button id="hidesidebar" class="btn_outline" onClick='hideFiltres("sidebar");'>☰</button>
         </div>
         {% endif %}
@@ -43,4 +43,4 @@
         </a>
       </div>
     </div>
-  </header>
+</header>

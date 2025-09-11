@@ -34,9 +34,10 @@ function createElements(categ){
   elementPare.appendChild(li);
 }
 function showVariant(ev){
-  var idElement=ev.explicitOriginalTarget.id;
-  var preu_Dto=ev.explicitOriginalTarget.alt;
-  var url=ev.explicitOriginalTarget.src;
+  console.info(ev);
+  var idElement=ev.target.id;
+  var preu_Dto=ev.target.alt;
+  var url=ev.target.src;
   var id=idElement.substring(0, idElement.indexOf("-"))
   // seleccionem totes les variants del producte per a treure-li la clase imgSel
   var imgVar=document.getElementById("prodVariants-"+id).getElementsByTagName('img');
@@ -68,27 +69,17 @@ function showVariant(ev){
   btnElement.setAttribute("href","/info/"+variant);
 }
 function hideFiltres(name){
-  var pagUser=name.includes("usr");
-  
-  var hide=true;
-  var classbutton="btn_outline";
   var filtres=document.getElementById(name);
   var button=document.getElementById("hide"+name);
   var hidden=filtres.hidden
   
-  button.removeAttribute("class");
-  if(hidden){
-    hide=false;
-    button.classList.remove(classbutton)
-    classbutton="btn_normal";
-  }else{
-    button.classList.remove("btn_normal")
-  }
-  if(!pagUser && name!="sidebar"){
+  button.classList.toggle("btn_outline");
+  button.classList.toggle("btn_normal");
+  if(name=="filtreCataleg"){
     scrollLlistatVariants(hidden)
+    filtres.parentElement.style.overflowY=(hidden)?"scroll":"hidden";
   }
-  filtres.hidden=hide;
-  button.classList.add(classbutton);
+  filtres.hidden=!hidden;
 }
 function scrollLlistatVariants(hidden){
   var overflowY="hidden";
@@ -106,7 +97,7 @@ function setImage(event, src){
 }
 async function changeVariant(event) {
   try {
-    id=event.explicitOriginalTarget.id;
+    id=event.target.id;
     const response = await fetch('http://127.0.0.1:8000/variantInfo/', 
       {method: "POST",
         headers: {
@@ -169,7 +160,7 @@ function generarImatgesPetites(imatges){
     el.setAttribute("src","/static/"+imatges[i]);
     el.setAttribute("class","thumbnail rounded active");
     el.addEventListener("mouseenter",(ev)=>{
-      setImage(ev, ev.explicitOriginalTarget.src)
+      setImage(ev, ev.target.src)
     })
     pare.appendChild(el);
   }

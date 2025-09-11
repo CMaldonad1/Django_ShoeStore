@@ -3,11 +3,11 @@ input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
-  width: 50px;
 }
 /* Firefox */
 input[type=number] {
   -moz-appearance: textfield;
+  text-align: center;
   width: 50px;
 }
 html {
@@ -290,8 +290,7 @@ html body main .infobody aside .sidbr .catFiltres {
   padding-bottom: 10px;
   margin-bottom: 10px;
   max-height: 50%;
-  width: 90%;
-  overflow-y: scroll;
+  overflow-y: hidden;
 }
 html body main .infobody aside .sidbr .catFiltres #filtreCataleg {
   display: flex;
@@ -357,7 +356,6 @@ html body main .infobody section {
 }
 html body main .infobody section .prodcat {
   padding: 1%;
-  height: 100%;
   width: 100%;
 }
 html body main .infobody section .prodcat .card-body .crd_nm {

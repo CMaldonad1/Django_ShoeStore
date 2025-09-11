@@ -264,6 +264,8 @@ def shopping(request):
         else:
             opcion = int(request.POST.get('enviament'))
     
+    if request.session['cistella']['qty']==0:
+        opcion=0
     request.session['enviament']=opcion
 
     if 'cistella' in request.session:

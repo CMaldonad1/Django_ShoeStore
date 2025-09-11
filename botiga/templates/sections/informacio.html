@@ -66,13 +66,13 @@
                         <label for="sQty" class="form-label">Quantity:</label>
                         <div class="d-flex flex-row">
                             <button id="decr" data-mdb-button-init data-mdb-ripple-init class="incrdcr btn btn_normal px-3 me-2"
-                            onclick="this.parentNode.querySelector('input[type=number]').stepDown()"
+                            onclick="this.parentNode.querySelector('input[id=sQty]').stepDown()"
                             >
                             -
                             </button>
                             <input id="sQty" min="1" name="quantity" value="1" type="number" class="form-control" disabled/>
                             <button id="incr" data-mdb-button-init data-mdb-ripple-init class="incrdcr btn btn_normal px-3 ms-2"
-                            onclick="this.parentNode.querySelector('input[type=number]').stepUp()"
+                            onclick="this.parentNode.querySelector('input[id=sQty]').stepUp()"
                             >
                             +
                             </button>
